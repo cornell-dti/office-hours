@@ -225,7 +225,8 @@ const Wrapped= (props: Props): JSX.Element => {
                     if (studentData.timeHelpingStudents === undefined || studentData.timeHelpingStudents === 0) {
                         numStages = 6;
                         setRole(0); // Only Student
-                    } else if ((studentData.favTaId === "" || studentData.favTaId === undefined) && (studentData.numVisits === 0)) {
+                    } else if ((studentData.favTaId === "" || studentData.favTaId === undefined) 
+                        && (studentData.numVisits === 0)) {
                         numStages = 4;
                         setRole(2); // Only TA
                     } else {
@@ -237,15 +238,15 @@ const Wrapped= (props: Props): JSX.Element => {
                     if (studentData.favTaId) {
                         const userDocRef = doc(firestore, 'users', studentData.favTaId || '');
                         const userDocSnap = await getDoc(userDocRef);
-                            if (userDocSnap.exists()) {
-                                setTaName(userDocSnap.data() as { 
-                                    firstName: string;
-                                    lastName: string;
-                                });  
-                                taNameExists = true;
-                            } else {
-                                console.log('No such TA document!');
-                            }
+                        if (userDocSnap.exists()) {
+                            setTaName(userDocSnap.data() as { 
+                                firstName: string;
+                                lastName: string;
+                            });  
+                            taNameExists = true;
+                        } else {
+                            console.log('No such TA document!');
+                        }
                     }
                     // We are "skipping" a slide only if user is a Student or StudentTA, NOT a TA
                     if (
@@ -306,7 +307,7 @@ const Wrapped= (props: Props): JSX.Element => {
         
         <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
-                <Dot key={index}  active={index === stage} onClick={() => setStage(index)}/>
+                <Dot key={index} active={index === stage} onClick={() => setStage(index)}/>
             ))}
         </div>
     );
@@ -327,7 +328,7 @@ const Wrapped= (props: Props): JSX.Element => {
               make note that width and height are basically the box containing the circle,
               so they need to be double the radius
               */}
-                <svg className="red-circle" width="300" height="300">
+                <svg className="red-circle" viewBox="0 0 300 300">
                     {/* this creates the color gradients on the qmi logo */}
                     <defs>
                         <linearGradient 
@@ -345,9 +346,9 @@ const Wrapped= (props: Props): JSX.Element => {
                                     
                     {/* this is the actual circle part. 
                                     cx and cy are centers so shld be half of height/width. r is radius */}
-                    <circle cx='50%' cy='50%' r='38%'> </circle>
+                    <circle cx='150' cy='150' r='115'> </circle>
                 </svg>
-                <svg className="blue-circle" width="400" height="400">
+                <svg className="blue-circle" viewBox="0 0 400 400">
                     <defs>
                         <linearGradient 
                             id="blue-gradient" 
@@ -361,7 +362,7 @@ const Wrapped= (props: Props): JSX.Element => {
                             <stop offset="1" stopColor="#78B6F4" />
                         </linearGradient>
                     </defs>
-                    <circle cx='50%' cy='50%' r='45%'> </circle>
+                    <circle cx='200' cy='200' r='190'> </circle>
                 </svg>
                 {/* imported way of using svgs, so cant adjust stroke colors */}
                 <img src={arrow} className="arrow-circle" alt="dti arrow" />
