@@ -3,7 +3,7 @@ import { CURRENT_SEMESTER } from "../constants";
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    //databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    databaseURL: 'https://qmi-test.firebaseio.com'
 
 });
 
@@ -18,16 +18,16 @@ const errorUsers: {
 }[] = [];
 
 // Firestore Timestamps for the query range
-
-const startDate = admin.firestore.Timestamp.fromDate(new Date('2025-01-22'));
-const endDate = admin.firestore.Timestamp.fromDate(new Date('2025-11-22'));
+const year = (new Date()).getFullYear();
+const startDate = admin.firestore.Timestamp.fromDate(new Date(year+'-01-22'));
+const endDate = admin.firestore.Timestamp.fromDate(new Date(year+'-11-22'));
 
 const getWrapped = async () => {
     // Refs
-    const questionsRef = db.collection('questions');
-    const sessionsRef = db.collection('sessions');
-    const wrappedRef = db.collection('wrapped');
-    const usersRef = db.collection('users');
+    const questionsRef = db.collection('questions-test');
+    const sessionsRef = db.collection('sessions-test');
+    const wrappedRef = db.collection('wrapped-fa25');
+    const usersRef = db.collection('users-test');
 
     // Query all questions asked between FA23 and SP24
     const questionsSnapshot = await questionsRef
@@ -60,11 +60,10 @@ const getWrapped = async () => {
 
     const getWrappedSessionDocs = async () => {
         const docs: {[sessionId:string]: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>} = {};
-        const sessionIds: string[] = [];
-        questionsSnapshot.docs.map((doc) => sessionIds.push(doc.get('sessionId')));
-        sessionIds.sort();
+        const sessionIds: string[] = questionsSnapshot.docs.map((doc) => doc.get('sessionId'));
         await Promise.all(sessionIds.map(async (id) => {
-            if (id) {
+            // Check if sessionId exists and is not repeated
+            if (id && !(id in docs)) {
                 docs[id] = await sessionsRef.doc(id).get();
             }
         }
@@ -86,7 +85,9 @@ const getWrapped = async () => {
     // Helper functions
 
     /**
-     * This function does final checks for the validity of a user, and then writes the user to the wrapped collection and updates the field "wrapped" in the users collection. Keeps track of users that encountered an error for debugging.
+     * This function does final checks for the validity of a user, 
+     * then writes the user to the wrapped collection and updates the field "wrapped" in the users collection.
+     * Keeps track of users that encountered an error for debugging.
      */
     const updateWrappedDocs = async () => {
         // Update the wrapped collection
@@ -97,9 +98,11 @@ const getWrapped = async () => {
             if (userId) {
                 /* Defition of active: 
             If a user is only a student, they need to have at least one OH visit. 
-            If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student OR both values for studentsHelped and timeHelpingStudents.
+            If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student 
+            OR both values for studentsHelped and timeHelpingStudents.
         */
-                // This is true if the user is either an active student, or a TA who who helped more than 0 students for more than 0 minutes
+                // This is true if the user is either an active student, or a TA who who helped more than
+                // 0 students for more than 0 minutes
                 const taStatsExist = stats.timeHelpingStudents && stats.numStudentsHelped;
                 const hasVisits = stats.numVisits > 0 || taStatsExist;
 
@@ -143,7 +146,10 @@ const getWrapped = async () => {
     }
 
     /**
-     * This function initializes an object of Wrapped statistics in the userStats dictionary for the asker and answerer with the respective student and TA fields. It also initializes a student's taCounts object (which tracks how many times they interacted with a TA), officeHourSessions list (which tracks which sessions they have been to), and monthTimeCounts list (which tracks the number of visits for each month).
+     * This function initializes an object of Wrapped statistics in the userStats dictionary for the asker and answerer
+     * with the respective student and TA fields. It also initializes a student's taCounts object (which tracks how
+     * many times they interacted with a TA), officeHourSessions list (which tracks which sessions they have been to),
+     * and monthTimeCounts list (which tracks the number of visits for each month).
      * @param answererId: the userID of the person answering a question. Expected to be valid ID.
      * @param askerId: the userID of the person asking a question. Expected to be valid ID.
      */
@@ -200,8 +206,9 @@ const getWrapped = async () => {
 
     }
 
-     /**
-     * This function calculates all user's Wrapped stats with the helper variables we have been storing such as officeHourSessions and monthTimeCounts.
+    /**
+     * This function calculates all user's Wrapped stats with the helper 
+     * variables we have been storing such as officeHourSessions and monthTimeCounts.
      */
     const processStats = () => {
         count = 0;
