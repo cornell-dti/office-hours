@@ -1,6 +1,7 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/no-unused-prop-types */
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 // import { Icon } from "semantic-ui-react";
 import rightArrowIcon from "../../media/RightArrow.svg";
@@ -37,7 +38,14 @@ const WaitTimeGraph = (props: Props) => {
         .toLowerCase()
         .replace(" ", "");
 
-    const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
+    const [vw, setVw] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setVw(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const scale = Math.min(1, vw / 1024);
 
     // Windowed 3-hour view with 30-minute slots (6 columns)
@@ -65,12 +73,12 @@ const WaitTimeGraph = (props: Props) => {
     // check this responsive sizing
     const chartMargin = React.useMemo(() => ({ 
         top: 15 * scale, 
-        right: vw < 768 ? 10 : 20, // was 12 before check this
-        bottom: 40, 
-        left: 12 * scale  // was 55 before check this
+        right: vw < 768 ? 10 : 20,
+        bottom: 40 * scale, 
+        left: 12 * scale
     }), []);
     // Visual gap between the bars and the separator line
-    const baselineGapPx = -30;
+    const baselineGapPx = (vw < 1406 && vw > 1279) ? -67 : (vw < 700) ? -15 : (vw < 920) ? -25 : -30;
 
     // Build 6-slot data for the selected day and current 3-hour window
     const transformData = () => {
@@ -91,11 +99,10 @@ const WaitTimeGraph = (props: Props) => {
             style={{ 
                 width: "100%",
                 minWidth: 0,
-                height: `${140 * scale + 150}px`, 
+                height: "160px", 
                 position: "relative"
             }}
         >
-            {/* this part confuses me a bit, check for responsiveness */}
             <style>
                 {`
                     /* Target only the actual bar rectangles, not the container or other SVG elements */
@@ -283,10 +290,7 @@ const WaitTimeGraph = (props: Props) => {
                         style={{
                             display: "flex",
                             flexDirection: "column",
-                            // justifyContent: "center",
-                            // alignItems: "center",
                             padding: `${8 * scale}px ${12 * scale}px`,
-                            // border: "1px solid #D0D7E2",
                             background: "white",
                             fontSize: `${13 * scale + 4}px`,
                             borderRadius: "8px",
@@ -295,23 +299,6 @@ const WaitTimeGraph = (props: Props) => {
                             gap: "2px"
                         }}
                     >
-                        {/* <strong style={{ color: "black" }}>
-                            {selectedDay}, {data.hour}
-                        </strong>
-                        <div style={{ marginTop: `${8 * scale}px` }}>
-                            <Icon />
-                            {props.OHDetails[data.hour].startHour} - {props.OHDetails[data.hour].endHour}
-                            <br />
-                            <Icon />
-                            {props.OHDetails[data.hour].location}
-                            <br />
-                            <Icon />
-                            TA(s): {props.OHDetails[data.hour].ta}
-                            <br />
-                            <Icon />
-                            <strong>{value} minutes</strong> average wait time
-                        </div> */}
-                        {/* <strong>{props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} minutes`}</strong> */}
                         <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
                             At {data.slot}
                         </div>
@@ -321,18 +308,7 @@ const WaitTimeGraph = (props: Props) => {
                         </div>
                     </div>
                 )}
-                // axisLeft={{
-                //     legendPosition: "middle",
-                //     legendOffset: -45,
-                //     legend: props.legend,
-                //     tickSize: 0,
-                //     tickPadding: 8,
-                // }}
                 axisBottom={{
-                    // legendPosition: "middle",
-                    // legendOffset: 40,
-                    // legend: "Hours",
-                    // tickPadding: 10,
                     legend: "",
                     tickSize: 0,
                     tickPadding: 8,
@@ -355,11 +331,7 @@ const WaitTimeGraph = (props: Props) => {
                             },
                         },
                     },
-                    // grid: {
-                    //     line: {
-                    //         strokeWidth: 0,
-                    //     },
-                    // },
+
                     // added below, check if necessary?
                     tooltip: { 
                         container: { 

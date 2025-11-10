@@ -3,7 +3,7 @@ import * as React from "react";
 import Moment from "react-moment";
 import { Icon } from "semantic-ui-react";
 
-import { Grid } from "@material-ui/core";
+import { Grid, Switch } from "@material-ui/core";
 import { connect } from "react-redux";
 import { useState } from "react";
 import { pauseSession } from "../../firebasefunctions/session";
@@ -237,7 +237,7 @@ const SessionInformationHeader = ({
                                 item
                                 style={{
                                     display: "flex",
-                                    height: "60%",
+                                    height: "65%",
                                 }}
                             >
                                 <div className="LeftInformationHeader" style={{ width: "100%" }}>
@@ -293,6 +293,29 @@ const SessionInformationHeader = ({
                                                 format={" - h:mm A"} 
                                             />
                                         </div>
+                                    </div>
+
+                                    <div className="OneQueueInfo">
+                                        {isTa && isOpen &&
+                                        (<Grid
+                                            container
+                                            direction="row"
+                                            justifyContent="center" 
+                                            alignItems={'center'}
+                                            spacing={4}
+                                        >
+                                            <Grid item xs={2} >
+                                                <Switch 
+                                                    className="closeQueueSwitch" 
+                                                    checked={!isPaused} 
+                                                    onChange={handlePause} 
+                                                    color="primary" 
+                                                />
+                                            </Grid>
+                                            <Grid item xs={10} className="QueueText">
+                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
+                                            </Grid>
+                                        </Grid>)}
                                     </div>
 
                                     <div className="ZoomLink">
@@ -393,7 +416,7 @@ const SessionInformationHeader = ({
                                                             >
                                                                 <img src={zoom} alt="zoom" />
                                                             </Grid>
-                                                            <Grid item lg={6} md={10} xs={6}>
+                                                            <Grid item lg={6} md={10} xs={6} className="ZoomLinkText">
                                                                 <p>Zoom Link</p>
                                                             </Grid>
                                                             <a
@@ -429,7 +452,7 @@ const SessionInformationHeader = ({
                                                     >
                                                         <img src={zoom} alt="zoom" />
                                                     </Grid>
-                                                    <Grid item lg={6} md={10} xs={6}>
+                                                    <Grid item lg={6} md={10} xs={6} className="ZoomLinkText">
                                                         <p>Zoom link</p>
                                                     </Grid>
                                                     <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
@@ -473,7 +496,7 @@ const SessionInformationHeader = ({
                                                     <Grid container justifyContent="flex-start" item lg={2} md={2}>
                                                         <img src={zoom} alt="zoom" />
                                                     </Grid>
-                                                    <Grid item lg={6} md={10}>
+                                                    <Grid item lg={6} md={10} className="ZoomLinkText">
                                                         <p>Zoom Link</p>
                                                     </Grid>
 
@@ -514,7 +537,7 @@ const SessionInformationHeader = ({
                                                         session.useTALink === false) ? (<Grid container item xs={10}>
                                                             <p>Use student provided Zoom link</p>
                                                         </Grid>): (<>
-                                                            <Grid item lg={6} md={10} xs={6}>
+                                                            <Grid item lg={6} md={10} xs={6} className="ZoomLinkText">
                                                                 <p>Zoom Link</p>
                                                             </Grid>
                                                             <Grid 
@@ -573,7 +596,7 @@ const SessionInformationHeader = ({
                                     </div>
                                 </div>
                             </Grid>
-                            <Grid item style={{ width: "100%", display: "flex", height: "40%" }}>
+                            <Grid item style={{ width: "100%", display: "flex", height: "35%" }}>
                                 <div className="TAsHeader">
                                     <Grid
                                         container
@@ -626,14 +649,9 @@ const SessionInformationHeader = ({
                                                                         display: "inline-block"
                                                                     }}
                                                                     onMouseEnter={() => {
-                                                                        // eslint-disable-next-line no-console
-                                                                        console.log('Hovering TA:', 
-                                                                            ta.firstName, ta.lastName);
                                                                         setHoveredTA(index);
                                                                     }}
                                                                     onMouseLeave={() => {
-                                                                        // eslint-disable-next-line no-console
-                                                                        console.log('Leaving TA');
                                                                         setHoveredTA(null);
                                                                     }}
                                                                 >
