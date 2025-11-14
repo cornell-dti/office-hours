@@ -19,10 +19,13 @@ const errorUsers: {
 
 // Firestore Timestamps for the query range
 const year = (new Date()).getFullYear();
+// eslint-disable-next-line no-console
 console.log('Current year is: '+ year);
 const startDate = admin.firestore.Timestamp.fromDate(new Date(year+'-01-22'));
 const endDate = admin.firestore.Timestamp.fromDate(new Date(year+'-11-22'));
+// eslint-disable-next-line no-console
 console.log('Querying from ' + startDate.toDate().toDateString() + " to " + endDate.toDate().toDateString());
+// eslint-disable-next-line no-console
 console.log("-------------STARTING-------------")
 
 const getWrapped = async () => {
@@ -282,7 +285,7 @@ const getWrapped = async () => {
                     // Calculating day counts ONLY for mode course
                     for (const TAsession of resSession) {
                         if (TAsession.courseId === modeCourseId) {
-                             dayFrequency[TAsession.day] = ( dayFrequency[TAsession.day] ?? 0) + 1;
+                            dayFrequency[TAsession.day] = ( dayFrequency[TAsession.day] ?? 0) + 1;
                         }    
                     }
 
