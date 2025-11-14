@@ -220,7 +220,8 @@ const Wrapped= (props: Props): JSX.Element => {
                     };
     
                     setWrappedData(studentData);
-    
+                    
+                    // Deciding which role and how many stages to show
                     let numStages = 0;
                     if (studentData.timeHelpingStudents === undefined || studentData.timeHelpingStudents === 0) {
                         numStages = 6;
@@ -233,7 +234,8 @@ const Wrapped= (props: Props): JSX.Element => {
                         numStages = 7;
                         setRole(1); // TA + Student
                     }
-    
+
+                    // Extra checks for if documents actually exist. Adjust stages if needed
                     let taNameExists = false;
                     if (studentData.favTaId) {
                         const userDocRef = doc(firestore, 'users', studentData.favTaId || '');
@@ -248,30 +250,35 @@ const Wrapped= (props: Props): JSX.Element => {
                             console.log('No such TA document!');
                         }
                     }
-                    // We are "skipping" a slide only if user is a Student or StudentTA, NOT a TA
-                    if (
-                        (studentData.favClass === "" || 
-                        studentData.favDay === -1 || 
-                        studentData.favTaId === "" || 
-                        !taNameExists) && (studentData.numVisits != 0)
-                    ) {
-                        setDisplayFavs(false);
-                        numStages--;
-                    } 
     
-                    setTotalStages(numStages);
-                    
-                    if (studentData.favClass !== "") {
+                    let courseNameExists = false; 
+                    if (studentData.favClass) {
                         const courseDocRef = doc(firestore, "courses", studentData.favClass);
                         const coursesDocSnap = await getDoc(courseDocRef);
                         if (coursesDocSnap.exists()) {
                             setFavClass(coursesDocSnap.data() as {
                                 code: string;
                             });
+                            courseNameExists = true;
                         } else {
                             console.log('No such course document!');
                         }
                     }
+
+                    // We are "skipping" a slide only if user is a Student or StudentTA, NOT a TA
+                    if (
+                        (studentData.favClass === "" || 
+                        studentData.favDay === -1 || 
+                        studentData.favTaId === "" || 
+                        !taNameExists ||
+                        !courseNameExists) && 
+                        (studentData.numVisits !== 0)
+                    ) {
+                        setDisplayFavs(false);
+                        numStages--;
+                    } 
+
+                    setTotalStages(numStages);
                     
                 } else {
                     console.log('No such wrapped document!');
@@ -312,6 +319,7 @@ const Wrapped= (props: Props): JSX.Element => {
         </div>
     );
 
+    // ----- code for Intro Animation -------
     const handleAnimationEnd = () => {
         const timer = setTimeout(() => {
             setLoading(false);
