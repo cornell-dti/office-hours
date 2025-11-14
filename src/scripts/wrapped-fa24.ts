@@ -27,10 +27,10 @@ console.log("-------------STARTING-------------")
 
 const getWrapped = async () => {
     // Refs
-    const questionsRef = db.collection('questions-test');
-    const sessionsRef = db.collection('sessions-test');
-    const wrappedRef = db.collection('wrapped-fa25');
-    const usersRef = db.collection('users-test');
+    const questionsRef = db.collection('questions');
+    const sessionsRef = db.collection('sessions');
+    const wrappedRef = db.collection('wrapped');
+    const usersRef = db.collection('users');
 
     // Query all questions asked between startDate and endDate
     const questionsSnapshot = await questionsRef
