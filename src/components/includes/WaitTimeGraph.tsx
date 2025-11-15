@@ -202,7 +202,7 @@ const WaitTimeGraph = (props: Props) => {
     const visibleSlots = slots.slice(hourStart, hourStart + windowSize);
 
     // Keep chart margin centralized so overlays align with the plot area
-    // check this responsive sizing
+    // responsive sizing by adjusting by vw and scale -- annie
     const chartMargin = React.useMemo(() => ({ 
         top: 15 * scale, 
         right: vw < 768 ? 10 : 20,
@@ -210,7 +210,8 @@ const WaitTimeGraph = (props: Props) => {
         left: 12 * scale
     }), []);
     // Visual gap between the bars and the separator line
-    const baselineGapPx = (vw < 1406 && vw > 1279) ? -67 : (vw < 700) ? -15 : (vw < 920) ? -25 : -30;
+    // Important to keep for responsiveness! - annie
+    const baselineGapPx = (vw < 1418 && vw > 1279) ? -67 : (vw < 700) ? -15 : (vw < 920) ? -25 : -30;
 
     // Build data for the selected day and current window of 30‑minute slots
     const transformData = () => {

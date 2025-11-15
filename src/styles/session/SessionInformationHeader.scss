@@ -312,7 +312,9 @@
   .ZoomLink {
     background-color: white;
     border-radius: 8px;
-    padding: 5% 10% 3% 0%;
+    padding-right: 10%;
+    margin-top: 10px;
+    margin-bottom: 15px;
     width: 100%;
     font-family: Roboto;
 
@@ -952,8 +954,8 @@
 
 @media (max-width: 1279px) {
   .DesktopSessionInformationHeader .LeftInformationHeader {
-    min-height: 270px;
-    max-height: 300px;
+    min-height: 240px;
+    max-height: 250px;
     padding: 23px 0 0 28px;
     margin-bottom: 65px;
     box-sizing: border-box;
