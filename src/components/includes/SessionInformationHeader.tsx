@@ -260,7 +260,9 @@ const SessionInformationHeader = ({
         return () => {
             ignore = true;
         };
-    }, [course?.courseId, selectedDateEpoch]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+    [course?.courseId, selectedDateEpoch]);
 
     //----TA info------
 
