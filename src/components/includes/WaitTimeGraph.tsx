@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/require-default-props */
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/no-unused-prop-types */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
@@ -233,7 +233,7 @@ const WaitTimeGraph = (props: Props) => {
         });
         return data;
     };
-return (
+    return (
         <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
             <style>
                 {`
@@ -271,9 +271,8 @@ return (
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: `${20 * scale}px`,
-                    gap: `${10 * scale}px`,
-                    flexWrap: "wrap",
+                    marginBottom: "20px",
+                    gap: "10px",
                 }}
             >
                 {dayNames.map((dayName) => {
@@ -372,10 +371,6 @@ return (
                             opacity: hasPrevHours ? 1 : 0.4,
                             cursor: hasPrevHours ? "pointer" : "default",
                             zIndex: 10,
-                            padding: `${6 * scale}px ${12 * scale}px`,
-                            borderRadius: "6px",
-                            fontSize: `${13 * scale}px`,
-                            transition: "all 0.2s ease"
                         }}
                     >
                         <img src={leftArrowIcon} alt="prev hours" style={{ width: 14, height: 14 }} />
