@@ -158,12 +158,11 @@ const SessionInformationHeader = ({
         today,
     );
 
-    const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide");
+    //------Virtual info----------
+     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide");
     const [zoomLink, setZoomLink] = React.useState("");
     const [showError, setShowError] = React.useState(false);
     const [showErrorMessage, setShowErrorMessage] = React.useState("");
-
-    // ----Virtual Functionality-------
 
     React.useEffect(() => {
         if (typeof virtualLocation === "string" && virtualLocation.trim() !== "") {
@@ -220,9 +219,8 @@ const SessionInformationHeader = ({
         setShowErrorMessage(message);
     };
 
-    //--------Wait Time Graph information------
-
-    // WaitTime graph data (replaces dummy_data.json)
+    //------Wait Time info---------
+    // WaitTime graph data
     const [graphData, setGraphData] = React.useState({
         barData: [] as any[],
         timeKeys: [] as string[],
@@ -263,6 +261,8 @@ const SessionInformationHeader = ({
             ignore = true;
         };
     }, [course?.courseId, selectedDateEpoch]);
+
+    //----TA info------
 
     const [startIndex, setStartIndex] = useState(0);
     const [hoveredTA, setHoveredTA] = useState<number | null>(null);
@@ -877,10 +877,6 @@ const SessionInformationHeader = ({
     );
 };
 
-SessionInformationHeader.defaultProps = {
-    virtualLocation: undefined,
-    assignedQuestion: undefined,
-};
 
 const mapStateToProps = (state: RootState) => ({
     user: state.auth.user,

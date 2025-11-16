@@ -70,11 +70,12 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [missingLocation, setMissingLocation] = useState<boolean>(false);
     const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
     const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
-    const [initial, setInitial] = useState<boolean>(true);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
     const activeTags = tags.filter((tag) => tag.active);
+    const locationMissing = ((session.modality === "hybrid" && isVirtual) || session.modality === "virtual") 
+        ? false : !location;
 
     useEffect(() => {
         const updateWindowDimensions = () => {
@@ -83,6 +84,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         window.addEventListener("resize", updateWindowDimensions);
 
+        return () => {
+            window.removeEventListener("resize", updateWindowDimensions);
+        };
+    }, []);
+
+   
+    useEffect(() => {
         const tags$ = collectionData<FireTag>(
             query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
                 where('courseId', '==', course.courseId)),{idField: "tagId"}
@@ -90,10 +98,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
         return () => {
-            window.removeEventListener("resize", updateWindowDimensions);
             subscription.unsubscribe();
         };
-    });
+    }, [course.courseId]);
 
     const handleXClick = () => {
         setRedirect(true);
@@ -194,6 +201,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const allowRedirect = addQuestion(
             auth.currentUser,
             session,
+            course,
             firestore,
             location,
             selectedPrimary,
@@ -210,19 +218,14 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         console.log("Button Clicked");
 
         setAttemptedSubmit(true);
-        setInitial(false);
 
-        const primaryTagsMissing = !selectedPrimary;
-        const secondaryTagsMissing = !selectedSecondary;
-        const locationMissing = session.modality === "virtual" ? false : !location;
-        const questionMissing = !question;
-
-        setMissingPrimaryTags(primaryTagsMissing);
-        setMissingSecondaryTags(secondaryTagsMissing);
+        setMissingPrimaryTags(!selectedPrimary);
+        setMissingSecondaryTags(!selectedSecondary);
         setMissingLocation(locationMissing);
-        setMissingQuestion(questionMissing);
+        setMissingQuestion(!question);
 
-        if (primaryTagsMissing || secondaryTagsMissing || locationMissing || questionMissing) {
+        if ((primaryTags.length > 0 && missingPrimaryTags) || (secondaryTags.length > 0 && missingSecondaryTags) 
+            || missingLocation || missingQuestion) {
             // eslint-disable-next-line no-console
             console.log("Fields missing, showing error state");
             return;
@@ -247,10 +250,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         if (attemptedSubmit){
             setMissingPrimaryTags(!selectedPrimary);
             setMissingSecondaryTags(!selectedSecondary);
-            setMissingLocation(!location);
+            setMissingLocation(locationMissing);
             setMissingQuestion(!question);
         }
-    }, [selectedPrimary, selectedSecondary, location, question, attemptedSubmit]);
+    }, [selectedPrimary, selectedSecondary, location, locationMissing, question, attemptedSubmit]);
 
 
     const handleJoinClick = (): void => {
@@ -297,6 +300,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     }
 
     return (
+        
         <div className="QuestionView" onKeyDown={(e) => handleKeyPressDown(e)}>
             {(stage < CLOSE_TO_END_OF_OH || width < mobileBreakpoint) && (
                 <div className="AddQuestion">
@@ -306,7 +310,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <div className={`topRow ${missingPrimaryTags ? "error" : initial ? "" : "clearError"}`}>
+                                <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
                                     <div className="disclaimerContainer text">
                                         <p> <Asterisk /> Required</p>
                                     </div>
@@ -336,7 +340,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <hr />
                                 <div className={`tagsMiniContainer 
-                                    ${missingSecondaryTags ? "error " : initial ? " " : "clearError "}`
+                                    ${missingSecondaryTags ? "error " :  ""}`
                                     + !!selectedPrimary
                                 }
                                 >
@@ -367,9 +371,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : 
-                                    initial ? "" : "clearError"}`}
-                                >
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
                                     {
                                         <p className="header">
                                             {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
@@ -395,13 +397,17 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     className="hybridCheckbox"
                                                     label="Are you virtual?"
                                                     checked={isVirtual}
-                                                    onClick={() => setIsVirtual(!isVirtual)}
+                                                    onClick={() => {
+                                                        setIsVirtual(!isVirtual);
+                                                        !isVirtual && setMissingLocation(false);
+                                                        !isVirtual && setStage(LOCATION_INPUTTED);
+                                                    }}
                                                 />
                                             )}
                                             {!(
                                                 session.modality === "hybrid" &&
                                                 typeof session.useTALink !== "undefined" &&
-                                                session.useTALink
+                                                session.useTALink && isVirtual
                                             ) && (
                                                 <textarea
                                                     className="TextInput location"
@@ -422,7 +428,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             </>
                         )}
                         <hr/>
-                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : initial ? "" : "clearError"}`}>
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
                             <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||

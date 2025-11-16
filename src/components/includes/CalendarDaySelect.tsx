@@ -4,7 +4,6 @@ import CalendarDateItem from './CalendarDateItem';
 import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
-const ONE_WEEK = 7 /* days */ * ONE_DAY;
 const dayList = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -22,8 +21,8 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     const [selectedWeekEpoch, setSelectedWeekEpoch] = React.useState(() => {
         const week = new Date(); // now
         week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
-        const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
-        week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
+        const daysSinceMonday = ((week.getDay() - 1) + 7) % 7; // shift back to Monday of this week
+        week.setDate(week.getDate() - daysSinceMonday);
 
         // TODO(ewlsh) Check that using state setters within state initializers is allowed.
         setActive(daysSinceMonday);
@@ -32,15 +31,16 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     });
 
     const incrementWeek = React.useCallback((forward: boolean) => {  
-        const newDate = selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
-            
-        callback(newDate + active * ONE_DAY);
-            
-        setSelectedWeekEpoch(newDate);
+        const d = new Date(selectedWeekEpoch);
+        d.setDate(d.getDate() + (forward ? 7 : -7));
+        callback(d.getTime() + active * ONE_DAY);
+        setSelectedWeekEpoch(d.getTime());
  
     }, [callback, selectedWeekEpoch, active]);
 
     const  handleDateClick = React.useCallback((item: number) => {
+        const d = new Date(selectedWeekEpoch);
+        d.setDate(d.getDate() + item);
         callback(selectedWeekEpoch + item * ONE_DAY);
 
         setActive(item);
@@ -49,12 +49,22 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     const now = new Date(selectedWeekEpoch);
 
     const hasSessionsDays = new Array(7);
+    // compute start and end of the week using calendar arithmetic
+    const weekStart = new Date(selectedWeekEpoch);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7); // exactly 7 local days later
     const sessionDays = props.sessionDates
-        .filter((d) => d.getTime() >= selectedWeekEpoch && d.getTime() <= selectedWeekEpoch + ONE_WEEK)
+        .filter((d) => d >= weekStart && d < weekEnd)
         .map((d) => d.getDay());
     for (const d of sessionDays) {
         hasSessionsDays[((d - 1) + 7) % 7] = true;
     }
+
+    const getDateAtOffset = (base: Date, offsetDays: number) => {
+        const d = new Date(base);
+        d.setDate(d.getDate() + offsetDays);
+        return d;
+    };
 
     return (
         <div className="CalendarDaySelect">
@@ -71,7 +81,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
                     key={day}
                     index={i}
                     day={day}
-                    date={new Date(now.getTime() + i * ONE_DAY).getDate()}
+                    date={getDateAtOffset(now, i).getDate()}
                     active={i === active}
                     handleClick={handleDateClick}
                     hasSession={hasSessionsDays[i]}

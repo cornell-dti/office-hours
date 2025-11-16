@@ -23,6 +23,7 @@ import TaAnnouncements from "./TaAnnouncements";
 
 import "firebase/auth";
 
+
 type Props = {
     course: FireCourse;
     session: FireSession;
@@ -91,9 +92,10 @@ const SessionView = ({
         },
         [questions, user]
     );
-
+    const myQuestions = questions.filter((q) => q.askerId === user.userId);
+    const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
     useEffect(() => {
-        const myQuestions = questions.filter((q) => q.askerId === user.userId);
+        
         const lastAskedQuestion =
             myQuestions.length > 0
                 ? myQuestions.reduce((prev, current) =>
@@ -208,9 +210,6 @@ const SessionView = ({
         new Date(session.endTime.toDate()) >= new Date() &&
         questions.some(({ askerId, status }) => askerId === user.userId && status === "unresolved");
 
-    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
-    const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
-
     const myQuestion = React.useMemo(() => {
         if (myQuestions && myQuestions.length > 0) {
             return (
@@ -229,7 +228,7 @@ const SessionView = ({
                 <Banner key={index} icon={banner.icon} announcement={banner.text} />
             ))}
             <SessionInformationHeader
-                session={session}
+               session={session}
                 course={course}
                 callback={backCallback}
                 isDesktop={isDesktop}

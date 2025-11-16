@@ -1,0 +1,39 @@
+{
+    "barData": [
+        {
+            "dayOfWeek": "Monday",
+            "value": "10",
+            "detail": "10 minutes per student"
+        },
+        {
+            "dayOfWeek": "Tuesday",
+            "value": "15",
+            "detail": "15 minutes per student"
+        },
+        {
+            "dayOfWeek": "Wednesday",
+            "value": "13",
+            "detail": "13 minutes per student"
+        },
+        {
+            "dayOfWeek": "Thursday",
+            "value": "7",
+            "detail": "7 minutes per student"
+        },
+        {
+            "dayOfWeek": "Friday",
+            "value": "11",
+            "detail": "11 minutes per student"
+        },
+        {
+            "dayOfWeek": "Saturday",
+            "value": "9",
+            "detail": "9 minutes per student"
+        },
+        {
+            "dayOfWeek": "Sunday",
+            "value": "6",
+            "detail": "6 minutes per student"
+        }
+    ]
+}
