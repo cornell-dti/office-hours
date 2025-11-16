@@ -37,6 +37,7 @@ type Props = {
     sessionBanners: Announcement[];
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
+    selectedDateEpoch: number;
 };
 
 type UndoState = {
@@ -66,6 +67,7 @@ const SessionView = ({
     timeWarning,
     sessionBanners,
     showProfessorStudentView,
+    selectedDateEpoch,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -202,8 +204,6 @@ const SessionView = ({
     }
 
     // First check that the session is not ended yet.
-    // eslint-disable-next-line no-console
-    console.log (session);
     const haveAnotherQuestion =
         new Date(session.endTime.toDate()) >= new Date() &&
         questions.some(({ askerId, status }) => askerId === user.userId && status === "unresolved");
@@ -244,6 +244,7 @@ const SessionView = ({
                 }}
                 questions={questions.filter((q) => q.status === "unresolved")}
                 isPaused={session.isPaused}
+                selectedDateEpoch={selectedDateEpoch}
             />
 
             <TaAnnouncements showProfessorStudentView={showProfessorStudentView} />
