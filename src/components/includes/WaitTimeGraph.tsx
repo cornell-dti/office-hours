@@ -3,8 +3,8 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
-import rightArrowIcon from "../../media/Right Arrow.svg";
-import leftArrowIcon from "../../media/Left Arrow.svg";
+import rightArrowIcon from "../../media/RightArrow.svg";
+import leftArrowIcon from "../../media/LeftArrow.svg";
 import { getSessionTimeRange } from "../../firebasefunctions/waitTimeMap";
 
 type Props = {
@@ -73,9 +73,17 @@ const isInCurrentOrNextWeek = (date: Date): boolean => {
 };
 
 const WaitTimeGraph = (props: Props) => {
-    const today = new Date();
-    const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
+    // vw and scale declarations, important for responsiveness --annie
+    const [vw, setVw] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setVw(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const scale = Math.min(1, vw / 1024);
+    const today = new Date();
     const selectedDate = new Date(props.selectedDateEpoch);
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const selectedDay = dayNames[(selectedDate.getDay() + 6) % 7]; // Adjust for Sunday=0
@@ -225,16 +233,8 @@ const WaitTimeGraph = (props: Props) => {
         });
         return data;
     };
-
-    return (
-        <div 
-            style={{ 
-                width: "100%",
-                minWidth: 0,
-                height: "160px", 
-                position: "relative"
-            }}
-        >
+return (
+        <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
             <style>
                 {`
                     /* Target only the actual bar rectangles, not the container or other SVG elements */
@@ -604,32 +604,6 @@ const WaitTimeGraph = (props: Props) => {
                     />
                 </>
             )}
-              
-            {/* Separator line and soft white fade just above the x-axis to create a hover effect */}
-            <div
-                style={{
-                    position: "absolute",
-                    left: chartMargin.left,
-                    right: chartMargin.right,
-                    bottom: chartMargin.bottom + baselineGapPx,
-                    height: 18,
-                    pointerEvents: "none",
-                    zIndex: 5,
-                }}
-            />
-            <div
-                style={{
-                    position: "absolute",
-                    left: chartMargin.left,
-                    right: chartMargin.right,
-                    bottom: chartMargin.bottom + baselineGapPx,
-                    height: 1.25,
-                    background: "rgba(17, 24, 39, 0.85)",
-                    borderRadius: 0.5,
-                    pointerEvents: "none",
-                    zIndex: 6,
-                }}
-            />
         </div>
     );
 };

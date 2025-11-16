@@ -228,6 +228,7 @@ const SessionView = ({
                 isTa={isTa}
                 myQuestion={myQuestion}
                 questions={questions.filter((q) => q.status === "unresolved")}
+                isPaused={session.isPaused}
                 selectedDateEpoch={selectedDateEpoch}
             />
 

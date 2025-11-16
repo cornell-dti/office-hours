@@ -19,6 +19,7 @@ import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import WaitTimeGraph from "./WaitTimeGraph";
 import { buildWaitTimeDataFromMap, hasSessionsOnDate } from "../../firebasefunctions/waitTimeMap";
+import JoinErrorMessage from "./JoinErrorMessage";
 
 type Props = {
     session: FireSession;
@@ -29,7 +30,12 @@ type Props = {
     isTa: boolean;
     myQuestion: FireQuestion | null;
     questions: readonly FireQuestion[];
+    isPaused: boolean | undefined;
     selectedDateEpoch: number;
+};
+
+const pluralize = (count: number, singular: string, plural: string) => {
+    return count <= 1 ? singular : plural;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -53,7 +59,6 @@ const formatAvgTime = (rawTimeSecs: number) => {
     }
     return timeHours + " h " + timeDispMins + " mins";
 };
-
 const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
     if (!Number.isFinite(waitTimeSecs)) {
         return " (No estimate available) ";
@@ -81,7 +86,7 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
         totalHour = (totalHour + 1) % 12;
     }
     if (totalMins < 10) {
-        return  <> (<> <strong>{totalHour}:0{totalMins}{amPm}</strong> </>) </>;
+        return <> (<> <strong>{totalHour}:0{totalMins}{amPm}</strong> </>) </>;
     }
     return <> (<> <strong>{totalHour}:{totalMins}{amPm}</strong> </>) </>;
 };
@@ -95,6 +100,7 @@ const SessionInformationHeader = ({
     isTa,
     myQuestion,
     questions,
+    isPaused,
     selectedDateEpoch,
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
@@ -132,7 +138,7 @@ const SessionInformationHeader = ({
         dynamicPosition = questions.length + 1;
     }
 
-    const avgWaitTime =
+      const avgWaitTime =
         formatAvgTime((session.totalWaitTime / session.assignedQuestions)
             * (isTa ? 1 : dynamicPosition - 1));
 
@@ -145,6 +151,54 @@ const SessionInformationHeader = ({
 
     // Compact typography for the wait-time summary lines
     const summaryTextStyle: React.CSSProperties = { fontSize: 14, lineHeight: '16px' };
+
+    // WaitTime graph data (replaces dummy_data.json)
+    const [graphData, setGraphData] = React.useState({
+        barData: [] as any[],
+        timeKeys: [] as string[],
+        yMax: 10,
+        legend: "Avg minutes per student",
+        OHDetails: {} as any,
+    });
+
+    // ----Virtual Functionality-------
+
+    React.useEffect(() => {
+        let ignore = false;
+        async function load() {
+            if (!course?.courseId) return;
+            const data = await buildWaitTimeDataFromMap(course.courseId);
+            if (!ignore) setGraphData(data);
+        }
+        load();
+        return () => {
+            ignore = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [course?.courseId, selectedDateEpoch]);
+
+    // Determine if the selected date has any session (exact day match)
+    const [hasSessionsSelectedDay, setHasSessionsSelectedDay] = React.useState<boolean | undefined>(undefined);
+    React.useEffect(() => {
+        let ignore = false;
+        async function run() {
+            if (!course?.courseId) {
+                setHasSessionsSelectedDay(undefined);
+                return;
+            }
+            const date = new Date(selectedDateEpoch);
+            const exists = await hasSessionsOnDate(course.courseId, date);
+            if (!ignore) setHasSessionsSelectedDay(exists);
+        }
+        run();
+        return () => {
+            ignore = true;
+        };
+    }, [course?.courseId, selectedDateEpoch]);
+
+
+
+    //--------Wait Time Graph information------
 
     // WaitTime graph data (replaces dummy_data.json)
     const [graphData, setGraphData] = React.useState({
@@ -187,8 +241,6 @@ const SessionInformationHeader = ({
             ignore = true;
         };
     }, [course?.courseId, selectedDateEpoch]);
-
-
 
     const [startIndex, setStartIndex] = useState(0);
     const [hoveredTA, setHoveredTA] = useState<number | null>(null);
@@ -641,6 +693,14 @@ const SessionInformationHeader = ({
                                                                         src={ta.photoUrl || "/placeholder.png"}
                                                                         alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                         className="TACircle"
+                                                                        style={{
+                                                                        width: "48px",
+                                                                        height: "48px",
+                                                                        border: "2px solid #f2f2f2",
+                                                                        borderRadius: "50%",
+                                                                        objectFit: "cover",
+                                                                        cursor: "pointer"
+                                                                    }}
                                                                         referrerPolicy="no-referrer"
                                                                     />
                                                                     {hoveredTA === index && (
@@ -692,19 +752,77 @@ const SessionInformationHeader = ({
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={6} style={{ display: "flex", minWidth: 0 }}>
                         <div className="QueueInfo">
-                            <p className="WaitTitle">Wait Time</p>
-                            {avgWaitTime !== "No information available" ? (
+                            {(() => {
+                            const isTodayForHeader = new Date(selectedDateEpoch).toDateString() === 
+                                new Date().toDateString();
+                            return (
+                                <p 
+                                    className="WaitTitle" 
+                                    style={isTodayForHeader ? { marginBottom: 2 } : undefined}
+                                >
+                                    Wait Time
+                                </p>
+                            );
+                        })()}
+                        {(() => {
+                            const selectedDate = new Date(selectedDateEpoch);
+                            const today = new Date();
+                            const isToday = selectedDate.toDateString() === today.toDateString();
+                            const isFutureDate = selectedDate > today;
+                            const dayNames = [
+                                "Sunday", "Monday", "Tuesday", "Wednesday", 
+                                "Thursday", "Friday", "Saturday"
+                            ];
+                            const selectedDay = dayNames[selectedDate.getDay()];
+                            
+                            // Subtitle rules:
+                            // - Today with no sessions: show "Wait times for Today"
+                            // - Today with sessions: no subtitle (we show the live block below)
+                            // - Not today: keep existing future/past subtitles
+                            if (isToday) {
+                                if (hasSessionsSelectedDay === false) {
+                                    return (
+                                        <p className="WaitSubtitle">
+                                            Wait times for Today
+                                        </p>
+                                    );
+                                }
+                                return null;
+                            }
+
+                            return (
+                                <p className="WaitSubtitle">
+                                    {isFutureDate ? (
+                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {
+                                            course.code
+                                        }.</>
+                                    ) : (
+                                        `Wait times for ${selectedDay}`
+                                    )}
+                                </p>
+                            );
+                        })()}
+                        {(() => {
+                            const selectedDate = new Date(selectedDateEpoch);
+                            const today = new Date();
+                            const isToday = selectedDate.toDateString() === today.toDateString();
+                            
+                            // Only show queue info for today AND if today has scheduled office hours
+                            if (!isToday || hasSessionsSelectedDay === false) return null;
+                        
+                            return avgWaitTime !== "No information available" ? (
                                 <>
                                     <p className="WaitSummary">
                                         <img src={users} alt="users" className="waitIcon" />
-                                        <span className="red">{numAhead} students</span>
+                                        <span className="red"> {numAhead === 1 ? numAhead + ' student' :
+                                            numAhead + ' students'} </span>
                                         <span>ahead</span>
                                     </p>
                                     <p className="WaitSummary">
                                         <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
                                         <span className="blue"> {avgWaitTime}</span>
                                         <span className="gray"> {esimatedTime}</span>
-                                        <span>estimated wait time</span>
+                                        <span> {isTa ? 'to move one position' : 'estimated wait time'} </span>
                                     </p>
                                 </>
                             ) : (
@@ -719,14 +837,18 @@ const SessionInformationHeader = ({
                                         <span className="blue"> No information available</span>
                                     </p>
                                 </>
-                            )}
+                            )
+                        })()}
                             <WaitTimeGraph
-                                barData={sampleData.barData}
-                                yMax={sampleData.yMax}
-                                timeKeys={sampleData.timeKeys}
-                                legend={sampleData.legend}
-                                OHDetails={sampleData.OHDetails}
-                            />
+                            barData={graphData.barData}
+                            timeKeys={graphData.timeKeys}
+                            OHDetails={graphData.OHDetails}
+                            selectedDateEpoch={selectedDateEpoch}
+                            hasSessionsForSelectedDay={hasSessionsSelectedDay}
+                            courseId={course?.courseId}
+                            sessionStartTime={session.startTime}
+                            sessionEndTime={session.endTime}
+                        />
                         </div>
                     </Grid>
                 </Grid>
