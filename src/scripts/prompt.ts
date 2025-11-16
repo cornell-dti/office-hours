@@ -57,30 +57,36 @@ async function analyzeFeedback(feedback: FeedbackRecord) {
     return JSON.parse(response.text);
 }
 
-/**Nikhill Andrew's userId*/
-const userId = "xSq2hFlgsWgzUIbwawsUKjT1w4B2"
+
 
 /**Loops through feedback list for one user
  * and returns feedback on each feedback record.
  */
-async function analyzeFeedbackResponses() {
+async function analyzeFeedbackResponses(userId : string) {
     try {
         const feedbackRef = doc(firestore, "users", userId);
         const feedbackSnap = await getDoc(feedbackRef);
+        const analyses: any[] = [];
 
         if (feedbackSnap.exists()) {
             const data = feedbackSnap.data() as FireUser;
             for (const record of data.feedbackList!) {
+                // eslint-disable-next-line 
                 const analysis = await analyzeFeedback(record);
+                analyses.push(analysis);
+                // eslint-disable-next-line no-console
                 console.log(`Analysis for ${userId}:`, analysis);
             }
+            return analyses;
         } else {
+            // eslint-disable-next-line no-console
             console.log("No such document!");
         }
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error analyzing feedback:", error);
     }
+    
 }
 
-analyzeFeedbackResponses()
-            
+export default analyzeFeedbackResponses;          

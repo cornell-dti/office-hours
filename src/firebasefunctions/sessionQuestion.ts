@@ -230,50 +230,66 @@ export const getComments = (questionId: string, setComments: (comments: FireComm
 to the firebase under the users tab for each question asked. Also adds a verification field
 to determine whether or not a review was checked. */
 export const submitFeedback =
-    (removedQuestionId: string | undefined) =>
-        (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
-            const questionRef = doc(firestore, `questions/${removedQuestionId}`);
-            console.log(questionRef.id);
-            getDoc(questionRef).then((questionDoc) => {
-                if (questionDoc.exists()) {
-                    console.log('question exists');
-                    const taID = questionDoc.data()?.answererId || undefined;
-                    const timeStamp = questionDoc.data()?.timeAddressed || undefined;
-                    const rawFeedbackRecord = {
-                        organization: rating1,
-                        efficiency: rating2,
-                        overallExperience: rating3,
-                        timeStamp,
-                        writtenFeedback: feedback,
-                        verification: verified,
-                    };
+    (removedQuestionId: string | undefined, sessionId: string) =>
+        async (
+            rating1?: number,
+            rating2?: number,
+            rating3?: number,
+            feedback?: string,
+            verified?: boolean | undefined,
+        ) => {
 
-                    const feedbackRecord: Record<string, any> = {};
-                    for (const key in rawFeedbackRecord) {
-                        const typedKey = key as keyof typeof rawFeedbackRecord;
-                        if (rawFeedbackRecord[typedKey] !== undefined) {
-                            feedbackRecord[typedKey] = rawFeedbackRecord[typedKey];
-                        }
-                    }
-                    if (taID == undefined) {
-                        throw new Error("taID is undefined")
-                    }
-                    const usersRef = doc(firestore, `users/${taID}`);
-                    getDoc(usersRef).then((doc) => {
-                        if (doc.exists()) {
-                            const existingFeedbackList = doc.data()?.feedbackList || [];
+            if (!removedQuestionId) {
+                return;
+            }
 
-                            existingFeedbackList.push(feedbackRecord);
+            try {
+                const questionRef = doc(firestore, `questions/${removedQuestionId}`);
+                const questionDoc = await getDoc(questionRef);
 
-                            const updateData: any = {
-                                feedbackList: existingFeedbackList,
-                            };
-
-                            return updateDoc(usersRef, updateData);
-                        }
-                        return null;
-                    });
+                if (!questionDoc.exists()) {
+                    return;
                 }
-                return Promise.resolve();
-            });
+
+                const taID = questionDoc.data()?.answererId || undefined;
+                const timeStamp = questionDoc.data()?.timeAddressed || undefined;
+
+                if (!taID) {
+                    return;
+                }
+
+                const feedbackRecord = {
+                    organization: rating1,
+                    efficiency: rating2,
+                    overallExperience: rating3,
+                    timeStamp,
+                    writtenFeedback: feedback,
+                    session: sessionId,
+                    verification: verified,
+                };
+
+                const usersRef = doc(firestore, `users/${taID}`);
+                const userDoc = await getDoc(usersRef);
+
+                if (!userDoc.exists()) {
+                    return;
+                }
+
+                const existingFeedbackList = userDoc.data()?.feedbackList || [];
+                existingFeedbackList.push(feedbackRecord);
+
+                const updateData: any = {
+                    feedbackList: existingFeedbackList,
+                };
+
+                // Only set verified if it doesn’t exist yet
+                if (userDoc.data().verified === undefined && verified !== undefined) {
+                    updateData.verified = verified;
+                }
+
+                await updateDoc(usersRef, updateData);
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log("Error updating")
+            }
         };
