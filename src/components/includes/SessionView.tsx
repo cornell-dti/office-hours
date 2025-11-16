@@ -48,12 +48,6 @@ type UndoState = {
     timeoutId: NodeJS.Timeout | null;
 };
 
-type AbsentState = {
-    showAbsent: boolean;
-    dismissedAbsent: boolean;
-    lastAskedQuestion: FireQuestion | null;
-};
-
 const SessionView = ({
     course,
     session,
@@ -78,11 +72,6 @@ const SessionView = ({
     const [{ undoAction, undoName, undoQuestionId, timeoutId }, setUndoState] = useState<UndoState>({
         timeoutId: null,
     });
-    const [, setAbsentState] = useState<AbsentState>({
-        showAbsent: true,
-        dismissedAbsent: true,
-        lastAskedQuestion: null,
-    });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -92,33 +81,8 @@ const SessionView = ({
         },
         [questions, user]
     );
-    const myQuestions = questions.filter((q) => q.askerId === user.userId);
+    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
     const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
-    useEffect(() => {
-        
-        const lastAskedQuestion =
-            myQuestions.length > 0
-                ? myQuestions.reduce((prev, current) =>
-                    prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
-                )
-                : null;
-
-        setAbsentState((currentState) => {
-            let showAbsent = currentState.showAbsent;
-            let dismissedAbsent = currentState.dismissedAbsent;
-            if (lastAskedQuestion !== null && lastAskedQuestion.status !== "no-show") {
-                if (currentState.showAbsent) {
-                    showAbsent = false;
-                    dismissedAbsent = true;
-                } else if (currentState.dismissedAbsent) {
-                    showAbsent = true;
-                    dismissedAbsent = false;
-                }
-            }
-            return { lastAskedQuestion, showAbsent, dismissedAbsent };
-        });
-        // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
      * state of the current question. Firebase's [onSnapshot] method is used to monitor any
@@ -228,7 +192,7 @@ const SessionView = ({
                 <Banner key={index} icon={banner.icon} announcement={banner.text} />
             ))}
             <SessionInformationHeader
-               session={session}
+                session={session}
                 course={course}
                 callback={backCallback}
                 isDesktop={isDesktop}

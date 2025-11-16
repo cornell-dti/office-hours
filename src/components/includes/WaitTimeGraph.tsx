@@ -233,7 +233,7 @@ const WaitTimeGraph = (props: Props) => {
         });
         return data;
     };
-return (
+    return (
         <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
             <style>
                 {`
