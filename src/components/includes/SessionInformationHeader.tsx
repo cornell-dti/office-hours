@@ -356,11 +356,11 @@ const SessionInformationHeader = ({
                                         (<Grid
                                             container
                                             direction="row"
-                                            justifyContent="center" 
+                                            justifyContent="flex-start" 
                                             alignItems={'center'}
                                             spacing={4}
                                         >
-                                            <Grid item xs={2} >
+                                            <Grid item xs={2} className="switchIcon">
                                                 <Switch 
                                                     className="closeQueueSwitch" 
                                                     checked={!isPaused} 
@@ -381,14 +381,32 @@ const SessionInformationHeader = ({
                                             >
                                                 {(typeof session.useTALink === 'undefined' || 
                                                     session.useTALink === false) ?
-                                                    <Grid container direction="row" justifyContent="center" spacing={1}>
-                                                        <Grid container justifyContent="flex-start" item xs={2}>
+                                                    <Grid 
+                                                        container 
+                                                        direction="row" 
+                                                        justifyContent="flex-start" 
+                                                        spacing={1}
+                                                    >
+                                                        <Grid 
+                                                            container 
+                                                            justifyContent="flex-start" 
+                                                            item 
+                                                            xs={2} 
+                                                            className="zoomIcon"
+                                                        >
                                                             <img src={zoom} alt="zoom" />
                                                         </Grid>
 
                                                         {zoomLinkDisplay === 'show' && (
                                                             <>
-                                                                <Grid container item lg={7} md={10} xs={7}>
+                                                                <Grid 
+                                                                    container 
+                                                                    item 
+                                                                    lg={7} 
+                                                                    md={10} 
+                                                                    xs={7} 
+                                                                    className="zoomInput"
+                                                                >
                                                                     <input
                                                                         type="text"
                                                                         id="zoomLinkInput"
@@ -407,12 +425,13 @@ const SessionInformationHeader = ({
                                                                 </Grid>
                                                                 <Grid
                                                                     container
-                                                                    justifyContent="center"
+                                                                    justifyContent="flex-start"
                                                                     alignItems={'center'}
                                                                     item
                                                                     lg={3}
                                                                     md={12}
                                                                     xs={3}
+                                                                    className="saveButton"
                                                                 >
                                                                     <button
                                                                         type="button"
@@ -440,7 +459,7 @@ const SessionInformationHeader = ({
 
                                                         {zoomLinkDisplay === 'saved' && (
                                                             <>
-                                                                <Grid container justifyContent="center" item xs={8}>
+                                                                <Grid container item xs={8} className="savedZoomText">
                                                                     <p>{zoomLink}</p>
                                                                 </Grid>
                                                                 <Grid container item justifyContent="center" xs={2}>
@@ -469,6 +488,7 @@ const SessionInformationHeader = ({
                                                                 lg={2} 
                                                                 md={2} 
                                                                 xs={2}
+                                                                className="zoomIcon"
                                                             >
                                                                 <img src={zoom} alt="zoom" />
                                                             </Grid>
@@ -495,7 +515,6 @@ const SessionInformationHeader = ({
                                                 <Grid
                                                     container
                                                     direction="row"
-                                                    justifyContent="center"
                                                     alignItems={'center'}
                                                 >
                                                     <Grid 
@@ -505,13 +524,14 @@ const SessionInformationHeader = ({
                                                         lg={2} 
                                                         md={2} 
                                                         xs={2}
+                                                        className="zoomIcon"
                                                     >
                                                         <img src={zoom} alt="zoom" />
                                                     </Grid>
                                                     <Grid item lg={6} md={10} xs={6} className="ZoomLinkText">
                                                         <p>Zoom link</p>
                                                     </Grid>
-                                                    <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
+                                                    <Grid container item lg={4} md={12} xs={4} className="zoomButton">
                                                         {(!(typeof session.useTALink === 'undefined' || 
                                                                     session.useTALink === false) && session.TALink) || 
                                                                     assignedQuestion?.answererLocation ? (
@@ -549,7 +569,14 @@ const SessionInformationHeader = ({
                                                     justifyContent="center"
                                                     alignItems={'center'}
                                                 >
-                                                    <Grid container justifyContent="flex-start" item lg={2} md={2}>
+                                                    <Grid 
+                                                        container 
+                                                        justifyContent="flex-start" 
+                                                        item 
+                                                        lg={2} 
+                                                        md={2}
+                                                        className="zoomIcon"
+                                                    >
                                                         <img src={zoom} alt="zoom" />
                                                     </Grid>
                                                     <Grid item lg={6} md={10} className="ZoomLinkText">
@@ -563,6 +590,7 @@ const SessionInformationHeader = ({
                                                         lg={4}
                                                         md={12}
                                                         alignItems={'center'}
+                                                        className="zoomButton"
                                                     >
                                                         <a
                                                             target="_blank"
@@ -603,6 +631,7 @@ const SessionInformationHeader = ({
                                                                 lg={4} 
                                                                 md={12} 
                                                                 xs={4}
+                                                                className="zoomButton"
                                                             >
                                                                 <a
                                                                     target="_blank"

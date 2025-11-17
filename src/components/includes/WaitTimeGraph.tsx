@@ -219,7 +219,7 @@ const WaitTimeGraph = (props: Props) => {
     }), []);
     // Visual gap between the bars and the separator line
     // Important to keep for responsiveness! - annie
-    const baselineGapPx = (vw < 1418 && vw > 1279) ? -67 : (vw < 700) ? -15 : (vw < 920) ? -25 : -30;
+    const baselineGapPx = (vw < 1418 && vw > 1279) ? -15 : (vw < 700) ? -15 : (vw < 920) ? -17 : -18;
 
     // Build data for the selected day and current window of 30‑minute slots
     const transformData = () => {
@@ -234,7 +234,7 @@ const WaitTimeGraph = (props: Props) => {
         return data;
     };
     return (
-        <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
+        <div style={{ height: 200, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
             <style>
                 {`
                     /* Target only the actual bar rectangles, not the container or other SVG elements */
@@ -271,8 +271,9 @@ const WaitTimeGraph = (props: Props) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginBottom: "20px",
-                    gap: "10px",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    gap: "3px",
                 }}
             >
                 {dayNames.map((dayName) => {
@@ -398,179 +399,181 @@ const WaitTimeGraph = (props: Props) => {
                     >
                         <img src={rightArrowIcon} alt="next hours" style={{ width: 14, height: 14 }} />
                     </button>
-
-                    <ResponsiveBar
-                        data={transformData()}
-                        keys={["waitTime"]}
-                        indexBy="slot"
-                        margin={chartMargin}
-                        padding={0.2}
-                        colors={(bar) => {
-                            const currentTime = new Date();
-                            const todayNormalized = new Date();
-                            todayNormalized.setHours(0, 0, 0, 0);
-                            
-                            // Compare actual dates, not just day names
-                            const selectedDateNormalized = new Date(selectedDate);
-                            selectedDateNormalized.setHours(0, 0, 0, 0);
-                            
-                            const isTodayNormalized = selectedDateNormalized.getTime() === todayNormalized.getTime();
-                            const isFutureDateNormalized = selectedDateNormalized > todayNormalized;
-                    
-                            // If selected day is today, use the original time-based logic
-                            if (isTodayNormalized) {
-                                const [time, period] = bar.data.slot.split(' ');
-                                const [hour, minute] = time.split(':');
-                        
-                                // Set the bar start time based on the slot
-                                const barStartTime = new Date();
-                                barStartTime.setHours(
-                                    period === 'PM' && hour !== '12' ? 
-                                        parseInt(hour, 10) + 12 : 
-                                        period === 'AM' && hour === '12' ? 
-                                            0 : parseInt(hour, 10)
-                                );
-                                barStartTime.setMinutes(parseInt(minute, 10));
-                                barStartTime.setSeconds(0, 0);
+                    <div style={{height: 160}}>
+                        <ResponsiveBar
+                            data={transformData()}
+                            keys={["waitTime"]}
+                            indexBy="slot"
+                            margin={chartMargin}
+                            padding={0.2}
+                            colors={(bar) => {
+                                const currentTime = new Date();
+                                const todayNormalized = new Date();
+                                todayNormalized.setHours(0, 0, 0, 0);
                                 
-                                // Calculate the end time of this 30-minute slot
-                                const barEndTime = new Date(barStartTime);
-                                barEndTime.setMinutes(barEndTime.getMinutes() + 30);
-                        
-                                // Check if current time falls within this slot (currently ongoing)
-                                const isCurrentSlot = currentTime >= barStartTime && currentTime < barEndTime;
+                                // Compare actual dates, not just day names
+                                const selectedDateNormalized = new Date(selectedDate);
+                                selectedDateNormalized.setHours(0, 0, 0, 0);
                                 
-                                // Compare with current time
-                                if (barStartTime < currentTime && !isCurrentSlot) {
-                                    return "#D9D9D9"; // Past time
-                                } 
-                                if (isCurrentSlot) {
-                                    return "#6399D6"; // Current time block - darker blue
-                                } 
-                                return "#DAE9FC"; // Future time
+                                const isTodayNormalized = 
+                                    selectedDateNormalized.getTime() === todayNormalized.getTime();
+                                const isFutureDateNormalized = selectedDateNormalized > todayNormalized;
                         
-                            }
-                            // If selected day is in the future, all bars should be blue (estimated styling)
-                            if (isFutureDateNormalized) {
-                                return "#DAE9FC"; // Blue for future estimates
-                            }
-                            // If selected day is in the past, all bars are past time
-                    
-                            return "#D9D9D9"; // Past time
-                    
-                        }}
-                        axisLeft={null}
-                        enableGridY={false}
-                        enableLabel={false}
-                        isInteractive={true}
-                        tooltip={({ data }) => {
-                            const oh = (props.OHDetails as any) || {};
-                            const ohForSlot = data && (data as any).hour ? oh[(data as any).hour] : undefined;
-                            const wait = typeof (data as any).waitTime === "number" ? 
-                                Math.round(Number((data as any).waitTime)) : undefined;
-                            return (
-                                <div
-                                    style={{
-                                        background: "white",
-                                        padding: "8px 12px",
-                                        borderRadius: "8px",
-                                        fontSize: "13px",
-                                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "2px",
-                                        textAlign: "left",
-                                    }}
-                                >
-                                    <div style={{ 
-                                        fontSize: "13px", 
-                                        fontWeight: "normal", 
-                                        color: "#333" 
-                                    }}
+                                // If selected day is today, use the original time-based logic
+                                if (isTodayNormalized) {
+                                    const [time, period] = bar.data.slot.split(' ');
+                                    const [hour, minute] = time.split(':');
+                            
+                                    // Set the bar start time based on the slot
+                                    const barStartTime = new Date();
+                                    barStartTime.setHours(
+                                        period === 'PM' && hour !== '12' ? 
+                                            parseInt(hour, 10) + 12 : 
+                                            period === 'AM' && hour === '12' ? 
+                                                0 : parseInt(hour, 10)
+                                    );
+                                    barStartTime.setMinutes(parseInt(minute, 10));
+                                    barStartTime.setSeconds(0, 0);
+                                    
+                                    // Calculate the end time of this 30-minute slot
+                                    const barEndTime = new Date(barStartTime);
+                                    barEndTime.setMinutes(barEndTime.getMinutes() + 30);
+                            
+                                    // Check if current time falls within this slot (currently ongoing)
+                                    const isCurrentSlot = currentTime >= barStartTime && currentTime < barEndTime;
+                                    
+                                    // Compare with current time
+                                    if (barStartTime < currentTime && !isCurrentSlot) {
+                                        return "#D9D9D9"; // Past time
+                                    } 
+                                    if (isCurrentSlot) {
+                                        return "#6399D6"; // Current time block - darker blue
+                                    } 
+                                    return "#DAE9FC"; // Future time
+                            
+                                }
+                                // If selected day is in the future, all bars should be blue (estimated styling)
+                                if (isFutureDateNormalized) {
+                                    return "#DAE9FC"; // Blue for future estimates
+                                }
+                                // If selected day is in the past, all bars are past time
+                        
+                                return "#D9D9D9"; // Past time
+                        
+                            }}
+                            axisLeft={null}
+                            enableGridY={false}
+                            enableLabel={false}
+                            isInteractive={true}
+                            tooltip={({ data }) => {
+                                const oh = (props.OHDetails as any) || {};
+                                const ohForSlot = data && (data as any).hour ? oh[(data as any).hour] : undefined;
+                                const wait = typeof (data as any).waitTime === "number" ? 
+                                    Math.round(Number((data as any).waitTime)) : undefined;
+                                return (
+                                    <div
+                                        style={{
+                                            background: "white",
+                                            padding: "8px 12px",
+                                            borderRadius: "8px",
+                                            fontSize: "13px",
+                                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "2px",
+                                            textAlign: "left",
+                                        }}
                                     >
-                                        On {selectedDay.slice(0, 3)} at {
-                                            (data as any).slot
-                                        }
-                                    </div>
-                                    <div style={{ 
-                                        fontSize: "13px", 
-                                        fontWeight: "normal", 
-                                        color: "#333" 
-                                    }}
-                                    >
-                                        <strong>Est Wait:</strong> {
-                                            wait !== undefined ? `${wait} min` : "No data"
-                                        }
-                                    </div>
-                                    {isFutureDate && (
                                         <div style={{ 
-                                            fontSize: "12px", 
+                                            fontSize: "13px", 
                                             fontWeight: "normal", 
-                                            color: "#666", 
-                                            fontStyle: "italic" 
+                                            color: "#333" 
                                         }}
                                         >
-                                            Based on historical data
+                                            On {selectedDay.slice(0, 3)} at {
+                                                (data as any).slot
+                                            }
                                         </div>
-                                    )}
-                                    {ohForSlot && (
                                         <div style={{ 
-                                            fontSize: "12px", 
-                                            marginTop: 6, 
-                                            color: "#374151" 
+                                            fontSize: "13px", 
+                                            fontWeight: "normal", 
+                                            color: "#333" 
                                         }}
                                         >
-                                            {ohForSlot.location && (
-                                                <div>
-                                                    <strong>Location:</strong> {ohForSlot.location}
-                                                </div>
-                                            )}
-                                            {ohForSlot.ta && (
-                                                <div>
-                                                    <strong>TA:</strong> {ohForSlot.ta}
-                                                </div>
-                                            )}
-                                            {(ohForSlot.startHour || ohForSlot.endHour) && (
-                                                <div>
-                                                    <strong>Time:</strong> {ohForSlot.startHour} {
-                                                        ohForSlot.endHour ? `– ${ohForSlot.endHour}` : ""
-                                                    }
-                                                </div>
-                                            )}
+                                            <strong>Est Wait:</strong> {
+                                                wait !== undefined ? `${wait} min` : "No data"
+                                            }
                                         </div>
-                                    )}
-                                </div>
-                            );
-                        }}
-                        theme={{
-                            axis: {
-                                legend: { text: { fontSize: 16, outlineWidth: 0 } },
-                                ticks: { 
-                                    text: { 
-                                        fontSize: 13, 
-                                        fill: "#111827", 
-                                        fontWeight: "300" 
+                                        {isFutureDate && (
+                                            <div style={{ 
+                                                fontSize: "12px", 
+                                                fontWeight: "normal", 
+                                                color: "#666", 
+                                                fontStyle: "italic" 
+                                            }}
+                                            >
+                                                Based on historical data
+                                            </div>
+                                        )}
+                                        {ohForSlot && (
+                                            <div style={{ 
+                                                fontSize: "12px", 
+                                                marginTop: 6, 
+                                                color: "#374151" 
+                                            }}
+                                            >
+                                                {ohForSlot.location && (
+                                                    <div>
+                                                        <strong>Location:</strong> {ohForSlot.location}
+                                                    </div>
+                                                )}
+                                                {ohForSlot.ta && (
+                                                    <div>
+                                                        <strong>TA:</strong> {ohForSlot.ta}
+                                                    </div>
+                                                )}
+                                                {(ohForSlot.startHour || ohForSlot.endHour) && (
+                                                    <div>
+                                                        <strong>Time:</strong> {ohForSlot.startHour} {
+                                                            ohForSlot.endHour ? `– ${ohForSlot.endHour}` : ""
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }}
+                            theme={{
+                                axis: {
+                                    legend: { text: { fontSize: 16, outlineWidth: 0 } },
+                                    ticks: { 
+                                        text: { 
+                                            fontSize: 13, 
+                                            fill: "#111827", 
+                                            fontWeight: "300" 
+                                        } 
+                                    },
+                                    // Use default, subtle domain line to match analytics cards
+                                },
+                                tooltip: { 
+                                    container: { 
+                                        border: "none", 
+                                        padding: 0, 
+                                        boxShadow: "none", 
+                                        background: "transparent" 
                                     } 
                                 },
-                                // Use default, subtle domain line to match analytics cards
-                            },
-                            tooltip: { 
-                                container: { 
-                                    border: "none", 
-                                    padding: 0, 
-                                    boxShadow: "none", 
-                                    background: "transparent" 
-                                } 
-                            },
-                        }}
-                        axisBottom={{
-                            legend: "",
-                            tickSize: 0,
-                            tickPadding: 10,
-                            tickRotation: 0,
-                            format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
-                        }}
-                    />
+                            }}
+                            axisBottom={{
+                                legend: "",
+                                tickSize: 0,
+                                tickPadding: 10,
+                                tickRotation: 0,
+                                format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
+                            }}
+                        />
+                    </div>
 
                     {/* Separator line and soft white fade just above the x-axis to create a hover effect */}
                     <div

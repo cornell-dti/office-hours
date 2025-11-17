@@ -15,10 +15,20 @@
     justify-content: center;
     margin-top: 10px;
     width: 100%;
+    .QueueText {
+      max-width: none !important;
+      flex-basis: auto !important;
+    }
+
+    .switchIcon {
+      max-width: none !important;
+      flex-basis: auto !important;
+    }
   }
 
   .MuiGrid-spacing-xs-4 > .MuiGrid-item {
     padding: 2px;
+    min-width: fit-content;
   }
 
   .switchWrapper {
@@ -74,7 +84,7 @@
     .Title {
       margin-bottom: 6px;
       margin-left: 0;
-      overflow: hidden;
+      // overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       color: #4d4d4d;
@@ -306,15 +316,6 @@
     }
   }
 
-
-
-
-  @media only screen and (max-width: 1300px) {
-    .closeQueueSwitch {
-      margin-left: -10px;
-    }
-  }
-
   .ZoomLink {
     background-color: white;
     border-radius: 8px;
@@ -363,6 +364,10 @@
       .DisabledJoinButton {
         pointer-events: none;
         cursor: not-allowed;
+      }
+
+      .zoomIcon {
+        max-width: 50px !important;
       }
     }
 
@@ -420,6 +425,16 @@
         }
       }
 
+      .zoomInput {
+        max-width: 50% !important;
+        flex-basis: 50% !important;
+      }
+
+      .saveButton{
+        max-width: 80px !important;
+        flex-basis: 33.33% !important;
+      }
+
       .SaveZoomLink {
         width: fit-content;
         height: fit-content;
@@ -448,10 +463,21 @@
     margin-top: 8px;
     margin-bottom: 3px;
     width: 100%;
+
+    .QueueText {
+      max-width: none !important;
+      flex-basis: auto !important;
+    }
+
+    .switchIcon {
+      max-width: none !important;
+      flex-basis: auto !important;
+    }
   }
 
   .MuiGrid-spacing-xs-4 > .MuiGrid-item {
       padding: 2px;
+      min-width: fit-content;
   }
 
   .switchWrapper {
@@ -729,7 +755,9 @@
   .ZoomLink {
     background-color: white;
     border-radius: 8px;
-    padding: 5% 10% 3% 0%;
+    padding-right: 10%;
+    margin-top: 10px;
+    margin-bottom: 15px;
     width: 100%;
     font-family: Roboto;
 
@@ -748,6 +776,7 @@
       p {
         padding-left: 10px;
         padding-right: 30px;
+        max-width: fit-content;
       }
 
       button {
@@ -771,6 +800,10 @@
       .DisabledJoinButton {
         pointer-events: none;
         cursor: not-allowed;
+      }
+
+      .zoomIcon {
+        max-width: 50px !important;
       }
     }
 
@@ -826,6 +859,16 @@
           border: none;
           background-color: transparent;
         }
+      }
+
+      .zoomInput {
+        max-width: 50% !important;
+        flex-basis: 50% !important;
+      }
+
+      .saveButton{
+        max-width: 80px !important;
+        flex-basis: 33.33% !important;
       }
 
       .SaveZoomLink {
@@ -978,10 +1021,24 @@
   }
 }
 
-@media (min-width: 900px) and (max-width: 1279px) {
+@media (max-width: 1279px) {
   .ZoomLinkText {
     max-width: none !important;
     flex-basis: auto !important; 
+  }
+}
+
+@media (max-width: 1279px) {
+  .savedZoomText {
+    max-width: 33.33% !important;
+    flex-basis: 33.33% !important; 
+  }
+}
+
+@media (min-width: 960px) {
+  .zoomButton {
+    max-width: 33.33% !important;
+    flex-basis: 33.33% !important; 
   }
 }
 
@@ -1003,8 +1060,7 @@
 
 @media (max-width: $mobile-breakpoint){
   .SessionInformationHeader .QueueInfo {
-    // margin-top: 20px;
-    padding: 20px 12px 5% 20px;    
+    padding: 20px 12px 10px 20px;    
     max-width: 100%;
     width: 100%;
   }
@@ -1026,12 +1082,12 @@
 
 @media (min-width: 1280px) and (max-width: 1720px){
   .DesktopSessionInformationHeader .QueueInfo {
-    padding: 20px 12px 13% 20px;    
+    padding: 20px 12px 15px 20px;    
   }
 }
 
 @media (min-width: $mobile-breakpoint) and (max-width: 1279px){
   .DesktopSessionInformationHeader .QueueInfo {
-    padding: 20px 12px 15% 20px;    
+    padding: 20px 12px 15px 20px;    
   }
 }
