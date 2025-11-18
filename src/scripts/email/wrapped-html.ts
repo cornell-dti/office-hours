@@ -11,7 +11,7 @@ export const HTML =`
     <div style="padding: 20px; margin-bottom: 15px; margin-top: 15px;">
         <p style="margin: 0; font-size: 16px;"><strong>Hey there!</strong></p>
             <p style="line-height: 1.5; font-size: 16px;">
-            As the semester is wrapping up, our team at Queue Me In wanted to celebrate all the hard work you've put in this semester — especially with office hours! <br>
+            As the semester is wrapping up, our team at Queue Me In wanted to celebrate all the hard work you've put in this year — especially with office hours! <br>
             Presenting <strong>Queue Me In Wrapped</strong>, a way for you to see your yearly office hour stats. Check it out by navigating to a class on your <a href="https://queueme.in/">home page</a> and clicking on the ribbon icon!
             </p>
 
