@@ -34,7 +34,8 @@ const indexStopped = process.argv[2];
  * totalEmails is a list of all the user emails to send to. 
  * batchSize should be 49 or less to maintain free emailing.
  * Throws an error if this pre-condition is violated.
- * NOTE - FA25: Resend seems to have updated their checks, so each bcc'ed email still counts to the 100. In this case, batch size doesn't really matter.
+ * NOTE - FA25: Resend seems to have updated their checks, so each bcc'ed email still counts to the 100.
+ * In this case, batch size doesn't really matter.
  *  */
 const createBatches =  (totalEmails: string[], batchSize: number, subj: string, content: string, startInd: string) => {
     let i = parseInt(startInd, 10);
