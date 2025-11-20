@@ -277,6 +277,10 @@
       display: flex;          // align icon and text neatly on a row
       align-items: center;
     }
+    
+    .WaitSummary strong {
+      font-weight: 500;      // lighter than default bold (700)
+    }
     // Add a little space between stacked summary lines
     .WaitSummary + .WaitSummary {
       margin-top: 6px;
