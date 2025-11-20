@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
@@ -13,6 +13,7 @@ import {
     useSessionProfile,
     useAskerQuestions,
 } from "../../firehooks";
+import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 import { firestore } from "../../firebase";
 
@@ -47,12 +48,6 @@ type UndoState = {
     timeoutId: NodeJS.Timeout | null;
 };
 
-type AbsentState = {
-    showAbsent: boolean;
-    dismissedAbsent: boolean;
-    lastAskedQuestion: FireQuestion | null;
-};
-
 const SessionView = ({
     course,
     session,
@@ -77,39 +72,17 @@ const SessionView = ({
     const [{ undoAction, undoName, undoQuestionId, timeoutId }, setUndoState] = useState<UndoState>({
         timeoutId: null,
     });
-    const [, setAbsentState] = useState<AbsentState>({
-        showAbsent: true,
-        dismissedAbsent: true,
-        lastAskedQuestion: null,
-    });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
-    useEffect(() => {
-        const myQuestions = questions.filter((q) => q.askerId === user.userId);
-        const lastAskedQuestion =
-            myQuestions.length > 0
-                ? myQuestions.reduce((prev, current) =>
-                    prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
-                )
-                : null;
-
-        setAbsentState((currentState) => {
-            let showAbsent = currentState.showAbsent;
-            let dismissedAbsent = currentState.dismissedAbsent;
-            if (lastAskedQuestion !== null && lastAskedQuestion.status !== "no-show") {
-                if (currentState.showAbsent) {
-                    showAbsent = false;
-                    dismissedAbsent = true;
-                } else if (currentState.dismissedAbsent) {
-                    showAbsent = true;
-                    dismissedAbsent = false;
-                }
-            }
-            return { lastAskedQuestion, showAbsent, dismissedAbsent };
-        });
-        // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
+    const updateSessionProfile = useCallback(
+        (virtualLocation: string) => {
+            updateQuestion(firestore, virtualLocation, questions, user);
+        },
+        [questions, user]
+    );
+    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
+    const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
 
     /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
      * state of the current question. Firebase's [onSnapshot] method is used to monitor any
@@ -201,8 +174,6 @@ const SessionView = ({
         new Date(session.endTime.toDate()) >= new Date() &&
         questions.some(({ askerId, status }) => askerId === user.userId && status === "unresolved");
 
-    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
-
     const myQuestion = React.useMemo(() => {
         if (myQuestions && myQuestions.length > 0) {
             return (
@@ -226,8 +197,16 @@ const SessionView = ({
                 callback={backCallback}
                 isDesktop={isDesktop}
                 isTa={isTa}
+                virtualLocation={sessionProfile?.virtualLocation}
+                assignedQuestion={assignedQuestion}
+                isOpen={isOpen(session, course.queueOpenInterval)}
                 myQuestion={myQuestion}
+                onUpdate={(virtualLocation) => {
+                    updateVirtualLocation(firestore, user, session, virtualLocation);
+                    updateSessionProfile(virtualLocation);
+                }}
                 questions={questions.filter((q) => q.status === "unresolved")}
+                isPaused={session.isPaused}
                 selectedDateEpoch={selectedDateEpoch}
             />
 
