@@ -59,8 +59,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         } else {
             setFilteredTAs([])
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [TAName]);
+    }, 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [TAName]);
 
     // Busiest Session Data
     const busiestSessionIndex = questions.reduce(
