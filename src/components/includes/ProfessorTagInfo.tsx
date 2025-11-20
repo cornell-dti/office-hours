@@ -1,10 +1,31 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { createAssignment, editAssignment } from '../../firebasefunctions/tags';
+import FileIcon from '../../media/file.svg';
+import CloseIcon from '../../media/CloseIcon.svg';
+import defaultFileIcon from '../../media/default_file.svg';
+import checkIcon from '../../media/check.svg';
+import fileIconGray from '../../media/file-icon-gray.svg';
+import closeIconGray from '../../media/close-icon-gray.svg';
+import checkBlue from '../../media/check-blue.svg';
 
 interface NewTag {
     id: string;
     name: string;
+}
+
+interface UploadingFile {
+    id: string;
+    file: File;
+    progress: number;
+}
+
+interface UploadedFile {
+    id: string;
+    name: string;
+    size: number;
+    uploadDate: Date;
+    url?: string;
 }
 
 type PropTypes = {
@@ -20,6 +41,8 @@ type State = {
     newTagText: string;
     newTags: NewTag[];
     showWarning: boolean;
+    uploadingFiles: UploadingFile[];
+    uploadedFiles: UploadedFile[];
 };
 
 // This is just a simple way to get unique keys for "new" tags.
@@ -30,6 +53,19 @@ let newTagId = 0;
 function key() {
     return newTagTemplate(newTagId++);
 }
+
+// File upload constants
+const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
+const ALLOWED_FILE_TYPES = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+    'application/vnd.ms-powerpoint', // .ppt
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation' // .pptx
+];
+const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'ppt', 'pptx'];
 
 
 class ProfessorTagInfo extends React.Component<PropTypes, State> {
@@ -46,7 +82,9 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             },
             newTagText: '',
             newTags: [],
-            showWarning: false
+            showWarning: false,
+            uploadingFiles: [],
+            uploadedFiles: []
         };
     }
 
@@ -100,9 +138,140 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     courseId: this.props.courseId
                 },
                 newTagText: '',
-                newTags: []
+                newTags: [],
+                uploadingFiles: [],
+                uploadedFiles: []
             }
         );
+    };
+
+    // File upload handlers
+    validateFile = (file: File): string | null => {
+        const fileExtension = file.name.split('.').pop()?.toLowerCase();
+        
+        if (file.size > MAX_FILE_SIZE) {
+            return 'File size exceeds 30 MB limit';
+        }
+        
+        if (!fileExtension || !ALLOWED_EXTENSIONS.includes(fileExtension)) {
+            return `File type not allowed. Allowed types: ${ALLOWED_EXTENSIONS.join(', ')}`;
+        }
+        
+        return null;
+    };
+
+    handleFileSelect = (files: FileList | null): void => {
+        if (!files || files.length === 0) return;
+
+        Array.from(files).forEach(file => {
+            const error = this.validateFile(file);
+            if (error) {
+                alert(error);
+                return;
+            }
+
+            const fileId = key();
+            const uploadingFile: UploadingFile = {
+                id: fileId,
+                file,
+                progress: 0
+            };
+
+            this.setState(prevState => ({
+                uploadingFiles: [...prevState.uploadingFiles, uploadingFile]
+            }));
+
+            // Simulate file upload progress
+            this.simulateUpload(fileId, file);
+        });
+    };
+
+    simulateUpload = (fileId: string, file: File): void => {
+        // This is a placeholder for actual upload logic
+        // In production, this would be replaced with actual Firebase Storage upload
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                
+                // Move to uploaded files
+                const uploadedFile: UploadedFile = {
+                    id: fileId,
+                    name: file.name,
+                    size: file.size,
+                    uploadDate: new Date()
+                };
+
+                this.setState(prevState => ({
+                    uploadingFiles: prevState.uploadingFiles.filter(f => f.id !== fileId),
+                    uploadedFiles: [...prevState.uploadedFiles, uploadedFile]
+                }));
+            } else {
+                this.setState(prevState => ({
+                    uploadingFiles: prevState.uploadingFiles.map(f =>
+                        f.id === fileId ? { ...f, progress: Math.min(progress, 100) } : f
+                    )
+                }));
+            }
+        }, 200);
+    };
+
+    handleFileDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+        e.stopPropagation();
+        e.preventDefault();
+    };
+
+    handleFileDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.handleFileSelect(e.dataTransfer.files);
+    };
+
+    handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        this.handleFileSelect(e.target.files);
+        // Reset input so same file can be selected again
+        e.target.value = '';
+    };
+
+    handleUploadButtonClick = (): void => {
+        const fileInput = document.getElementById('resourceFileInput') as HTMLInputElement;
+        fileInput?.click();
+    };
+
+    handleCancelUpload = (fileId: string): void => {
+        this.setState(prevState => ({
+            uploadingFiles: prevState.uploadingFiles.filter(f => f.id !== fileId)
+        }));
+    };
+
+    handleRemoveFile = (fileId: string): void => {
+        this.setState(prevState => ({
+            uploadedFiles: prevState.uploadedFiles.filter(f => f.id !== fileId)
+        }));
+    };
+
+    formatFileSize = (bytes: number): string => {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(0) + ' MB';
+    };
+
+    formatDate = (date: Date): string => {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const fileDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const diffTime = today.getTime() - fileDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+            // Same day - show time (e.g., "3:52 PM")
+            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        } else {
+            // Different day - show full date (e.g., "March 27, 2025")
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
     };
 
     handleCreateAssignment = async (): Promise<void> => {
@@ -241,6 +410,94 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     </div>
                                 ))
                             }
+                        </div>
+                    </div>
+                    <div className="Resources InputSection">
+                        <div className="InputHeader">Resources</div>
+                        <input
+                            id="resourceFileInput"
+                            type="file"
+                            multiple
+                            accept=".jpg,.jpeg,.png,.pdf,.docx,.ppt,.pptx"
+                            onChange={this.handleFileInputChange}
+                            style={{ display: 'none' }}
+                        />
+                        <div
+                            className="ResourceUploadZone"
+                            onDrop={this.handleFileDrop}
+                            onDragOver={this.handleFileDragOver}
+                        >
+                            <div className="UploadZoneContent">
+                                <div className="UploadZoneTextContainer">
+                                    <div className="UploadZoneText">
+                                        Drag files here <br />or
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="UploadButton"
+                                        onClick={this.handleUploadButtonClick}
+                                    >
+                                        Upload
+                                    </button>
+                                </div>
+                                <div className="UploadRestrictions">
+                                    Maximum file size: 30 MB.<br />Allowed types: jpg, jpeg, png, pdf, docx, ppt, pptx
+                                </div>
+                            </div>
+                        </div>
+                        <div className="FileList">
+                            {this.state.uploadingFiles.map((uploadingFile) => (
+                                <div key={uploadingFile.id} className="FileItem UploadingFile">
+                                    <div className="UploadingFileContent">
+                                        <div className="UploadingFileLeft">
+                                            <div className="FileIconContainer">
+                                                <img src={fileIconGray} alt="file" className="FileIcon" />
+                                            </div>
+                                            <div className="FileInfo">
+                                                <div className="FileName">{uploadingFile.file.name}</div>
+                                            </div>
+                                        </div>
+                                        <div className="FileProgress">
+                                            <div className="ProgressBar">
+                                                <div
+                                                    className="ProgressBarFill"
+                                                    style={{ width: `${uploadingFile.progress}%` }}
+                                                />
+                                            </div>
+                                            <span className="ProgressText">({Math.round(uploadingFile.progress)}% done)</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="FileCancelButton"
+                                            onClick={() => this.handleCancelUpload(uploadingFile.id)}
+                                        >
+                                            <img src={closeIconGray} alt="cancel" className="FileCancelIcon" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {this.state.uploadedFiles.map((uploadedFile) => (
+                                <div key={uploadedFile.id} className="FileItem UploadedFile">
+                                    <img src={fileIconGray} alt="file" className="FileIcon" />
+                                    <div className="FileInfo">
+                                        <div className="FileNameRow">
+                                            <div className="FileName">{uploadedFile.name}</div>
+                                            <span className="FileDate">{this.formatDate(uploadedFile.uploadDate)}</span>
+                                        </div>
+                                        <div className="FileSize">{this.formatFileSize(uploadedFile.size)}</div>
+                                    </div>
+                                    <div className="FileActions">
+                                        <img src={checkBlue} alt="uploaded" className="FileCheckIcon" />
+                                        <button
+                                            type="button"
+                                            className="FileRemoveButton"
+                                            onClick={() => this.handleRemoveFile(uploadedFile.id)}
+                                        >
+                                            <img src={closeIconGray} alt="remove" className="FileRemoveIcon" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
