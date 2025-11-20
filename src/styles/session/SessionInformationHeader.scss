@@ -393,7 +393,7 @@
         font-size: 14px;
       }
 
-      p {
+      .savedZoomText {
         width: 100%;
         height: 31px;
         background: #f3f5fc;
@@ -405,6 +405,8 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        max-width: 33.33% !important;
+        flex-basis: 33.33% !important;
       }
 
       .CloseZoom {
