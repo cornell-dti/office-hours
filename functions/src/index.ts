@@ -539,12 +539,16 @@ export const promptAndReturn = ai.defineFlow({
     streamSchema: z.string(),
 }, async (promptType = "moderation") => {
     const pendingUsers = await db.collection('users')
-        .where('verified', '==', false)
+        .where('verified', '==', undefined)
         .get();
 
     const responsePromises = pendingUsers.docs.map(async (doc) => {
         const userID = doc.id;
-        return analyzeFeedbackResponses(userID);
+        const llmresponse = await analyzeFeedbackResponses(userID);
+        await db.collection('users').doc(userID).update({
+            verified: true
+        });
+        return llmresponse;
     });
 
     const responses = await Promise.all(responsePromises);
