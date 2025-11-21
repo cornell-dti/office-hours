@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { createAssignment, editAssignment } from '../../firebasefunctions/tags';
+import { uploadFile, deleteFile, generateResourcePath, listAssignmentFiles } from '../../firebasefunctions/storage';
+import { UploadTask } from 'firebase/storage';
+import { auth } from '../../firebase';
 import FileIcon from '../../media/file.svg';
 import CloseIcon from '../../media/CloseIcon.svg';
 import defaultFileIcon from '../../media/default_file.svg';
@@ -18,6 +21,8 @@ interface UploadingFile {
     id: string;
     file: File;
     progress: number;
+    uploadTask?: UploadTask;
+    storagePath?: string;
 }
 
 interface UploadedFile {
@@ -25,7 +30,15 @@ interface UploadedFile {
     name: string;
     size: number;
     uploadDate: Date;
-    url?: string;
+    url: string;
+    storagePath: string;
+}
+
+interface PendingFile {
+    id: string;
+    name: string;
+    size: number;
+    file: File;  // Keep the File object so we can upload it later
 }
 
 type PropTypes = {
@@ -43,6 +56,8 @@ type State = {
     showWarning: boolean;
     uploadingFiles: UploadingFile[];
     uploadedFiles: UploadedFile[];
+    pendingFiles: PendingFile[];
+    filesToDelete: string[];  // Array of file IDs marked for deletion
 };
 
 // This is just a simple way to get unique keys for "new" tags.
@@ -84,7 +99,9 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             newTags: [],
             showWarning: false,
             uploadingFiles: [],
-            uploadedFiles: []
+            uploadedFiles: [],
+            pendingFiles: [],
+            filesToDelete: []
         };
     }
 
@@ -128,6 +145,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     }
 
     clearState = (): void => {
+        // Don't clear uploadingFiles and uploadedFiles - they're managed by the upload process
+        // Only clear form-related state
         this.setState(
             {
                 tag: {
@@ -139,8 +158,10 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 },
                 newTagText: '',
                 newTags: [],
-                uploadingFiles: [],
-                uploadedFiles: []
+                showWarning: false,
+                pendingFiles: [],
+                filesToDelete: []
+                // Keep uploadingFiles and uploadedFiles - they'll be cleared when component unmounts or user cancels
             }
         );
     };
@@ -163,6 +184,13 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     handleFileSelect = (files: FileList | null): void => {
         if (!files || files.length === 0) return;
 
+        // Check if user is authenticated
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+            alert('You must be logged in to upload files. Please refresh the page and try again.');
+            return;
+        }
+
         Array.from(files).forEach(file => {
             const error = this.validateFile(file);
             if (error) {
@@ -171,51 +199,110 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             }
 
             const fileId = key();
-            const uploadingFile: UploadingFile = {
+            const pendingFile: PendingFile = {
                 id: fileId,
-                file,
-                progress: 0
+                name: file.name,
+                size: file.size,
+                file: file  // Keep the File object for later upload
             };
 
             this.setState(prevState => ({
-                uploadingFiles: [...prevState.uploadingFiles, uploadingFile]
+                pendingFiles: [...prevState.pendingFiles, pendingFile]
             }));
-
-            // Simulate file upload progress
-            this.simulateUpload(fileId, file);
         });
     };
 
-    simulateUpload = (fileId: string, file: File): void => {
-        // This is a placeholder for actual upload logic
-        // In production, this would be replaced with actual Firebase Storage upload
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                
-                // Move to uploaded files
-                const uploadedFile: UploadedFile = {
-                    id: fileId,
-                    name: file.name,
-                    size: file.size,
-                    uploadDate: new Date()
-                };
-
-                this.setState(prevState => ({
-                    uploadingFiles: prevState.uploadingFiles.filter(f => f.id !== fileId),
-                    uploadedFiles: [...prevState.uploadedFiles, uploadedFile]
-                }));
-            } else {
+    uploadFileToStorage = (fileId: string, file: File, storagePath: string): void => {
+        const { uploadTask, promise } = uploadFile(
+            file,
+            storagePath,
+            (progress) => {
+                // Update progress
                 this.setState(prevState => ({
                     uploadingFiles: prevState.uploadingFiles.map(f =>
                         f.id === fileId ? { ...f, progress: Math.min(progress, 100) } : f
                     )
                 }));
             }
-        }, 200);
+        );
+        
+        // Store the upload task so we can cancel it if needed
+        this.setState(prevState => ({
+            uploadingFiles: prevState.uploadingFiles.map(f =>
+                f.id === fileId ? { ...f, uploadTask, storagePath } : f
+            )
+        }));
+        
+        promise
+            .then((downloadURL) => {
+                // Upload completed successfully
+                const uploadedFile: UploadedFile = {
+                    id: fileId,
+                    name: file.name,
+                    size: file.size,
+                    uploadDate: new Date(),
+                    url: downloadURL,
+                    storagePath
+                };
+
+                this.setState(prevState => {
+                    const newUploadingFiles = prevState.uploadingFiles.filter(f => f.id !== fileId);
+                    const newUploadedFiles = [...prevState.uploadedFiles, uploadedFile];
+                    
+                    // If this was the last uploading file, close the form after a short delay
+                    if (newUploadingFiles.length === 0) {
+                        // Small delay to let user see the completion
+                        setTimeout(() => {
+                            this.props.cancelCallback();
+                        }, 1000);
+                    }
+                    
+                    return {
+                        uploadingFiles: newUploadingFiles,
+                        uploadedFiles: newUploadedFiles
+                    };
+                });
+            })
+            .catch((error) => {
+                // Handle upload error (but don't show alert if it was cancelled)
+                if (error.code !== 'storage/canceled') {
+                    console.error('Upload failed - full error:', error);
+                    console.error('Error code:', error.code);
+                    console.error('Error message:', error.message);
+                    console.error('Storage path attempted:', storagePath);
+                    
+                    // Provide more helpful error messages
+                    let errorMessage = `Failed to upload ${file.name}`;
+                    if (error.code === 'storage/unauthorized') {
+                        errorMessage += ': You do not have permission to upload files. Please make sure you are logged in as a professor.';
+                    } else if (error.code === 'storage/canceled') {
+                        errorMessage += ': Upload was cancelled.';
+                    } else if (error.code === 'storage/unknown') {
+                        errorMessage += ': An unknown error occurred. Please check the browser console for details.';
+                    } else if (error.message) {
+                        errorMessage += `: ${error.message}`;
+                    }
+                    
+                    alert(errorMessage);
+                }
+                
+                // Remove from uploading files
+                this.setState(prevState => {
+                    const newUploadingFiles = prevState.uploadingFiles.filter(f => f.id !== fileId);
+                    
+                    // If this was the last uploading file (even if it failed), close the form
+                    if (newUploadingFiles.length === 0) {
+                        // Small delay to let user see any error message
+                        setTimeout(() => {
+                            this.props.cancelCallback();
+                        }, 1000);
+                    }
+                    
+                    return {
+                        uploadingFiles: newUploadingFiles
+                    };
+                });
+            });
     };
 
     handleFileDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
@@ -241,15 +328,31 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     };
 
     handleCancelUpload = (fileId: string): void => {
+        // Find the uploading file
+        const uploadingFile = this.state.uploadingFiles.find(f => f.id === fileId);
+        
+        if (uploadingFile?.uploadTask) {
+            // Cancel the upload task
+            uploadingFile.uploadTask.cancel();
+        }
+        
+        // Remove from uploading files
         this.setState(prevState => ({
             uploadingFiles: prevState.uploadingFiles.filter(f => f.id !== fileId)
         }));
     };
 
     handleRemoveFile = (fileId: string): void => {
-        this.setState(prevState => ({
-            uploadedFiles: prevState.uploadedFiles.filter(f => f.id !== fileId)
-        }));
+        // Mark file for deletion (don't delete immediately)
+        // The actual deletion will happen when "Save Changes" or "Create" is clicked
+        this.setState(prevState => {
+            if (!prevState.filesToDelete.includes(fileId)) {
+                return {
+                    filesToDelete: [...prevState.filesToDelete, fileId]
+                };
+            }
+            return prevState;
+        });
     };
 
     formatFileSize = (bytes: number): string => {
@@ -274,6 +377,88 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         }
     };
 
+    deleteMarkedFiles = async (): Promise<void> => {
+        if (this.state.filesToDelete.length === 0) return;
+
+        console.log('Deleting marked files:', this.state.filesToDelete.length, 'files');
+
+        // Delete uploaded files from storage
+        const uploadedFilesToDelete = this.state.uploadedFiles.filter(f => 
+            this.state.filesToDelete.includes(f.id)
+        );
+
+        // Delete each file from storage
+        const deletePromises = uploadedFilesToDelete.map(async (file) => {
+            if (file.storagePath) {
+                try {
+                    await deleteFile(file.storagePath);
+                    console.log('Deleted file from storage:', file.name);
+                } catch (error) {
+                    console.error('Error deleting file from storage:', file.name, error);
+                    // Continue with other deletions even if one fails
+                }
+            }
+        });
+
+        await Promise.all(deletePromises);
+
+        // Remove deleted files from state
+        this.setState(prevState => ({
+            uploadedFiles: prevState.uploadedFiles.filter(f => !prevState.filesToDelete.includes(f.id)),
+            pendingFiles: prevState.pendingFiles.filter(f => !prevState.filesToDelete.includes(f.id)),
+            filesToDelete: []
+        }));
+    };
+
+    uploadPendingFiles = (tagId?: string): void => {
+        // Filter out files marked for deletion
+        const pendingFilesToUpload = this.state.pendingFiles.filter(f => 
+            !this.state.filesToDelete.includes(f.id)
+        );
+
+        if (pendingFilesToUpload.length === 0) {
+            console.log('No pending files to upload');
+            return;
+        }
+
+        // Use provided tagId, or fall back to state tagId
+        const resolvedTagId = tagId || this.state.tag.tagId;
+        if (!resolvedTagId) {
+            console.error('Cannot upload files: tagId is not set');
+            return;
+        }
+
+        console.log('Uploading pending files:', pendingFilesToUpload.length, 'files, tagId:', resolvedTagId);
+
+        const courseId = this.props.courseId;
+
+        // Clear pending files first (excluding ones marked for deletion, which are already handled)
+        this.setState({ pendingFiles: [] });
+
+        // Move pending files to uploading files and start upload
+        pendingFilesToUpload.forEach(pendingFile => {
+            const fileId = pendingFile.id;
+            const storagePath = generateResourcePath(courseId, resolvedTagId, pendingFile.name);
+
+            console.log('Starting upload for file:', pendingFile.name, 'to path:', storagePath);
+
+            // Add to uploading files
+            const uploadingFile: UploadingFile = {
+                id: fileId,
+                file: pendingFile.file,
+                progress: 0,
+                storagePath
+            };
+
+            this.setState(prevState => ({
+                uploadingFiles: [...prevState.uploadingFiles, uploadingFile]
+            }));
+
+            // Start upload
+            this.uploadFileToStorage(fileId, pendingFile.file, storagePath);
+        });
+    };
+
     handleCreateAssignment = async (): Promise<void> => {
         // const batch = firestore.batch();
 
@@ -292,13 +477,49 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         // batch.commit();
         const parentTag = createAssignment(this.state.tag, this.state.newTags);
 
+        // Save pending files before clearing state (excluding ones marked for deletion)
+        const pendingFilesToUpload = [...this.state.pendingFiles].filter(f => 
+            !this.state.filesToDelete.includes(f.id)
+        );
+        const realTagId = parentTag.id;
+
+        // Delete marked files first
+        await this.deleteMarkedFiles();
+
+        // Clear pending files from state (excluding ones marked for deletion, which are already deleted)
+        this.setState({ pendingFiles: [] });
+
+        // Upload pending files now that we have the real tagId
+        if (pendingFilesToUpload.length > 0) {
+            const courseId = this.props.courseId;
+            pendingFilesToUpload.forEach(pendingFile => {
+                const fileId = pendingFile.id;
+                const storagePath = generateResourcePath(courseId, realTagId, pendingFile.name);
+
+                console.log('Starting upload for file:', pendingFile.name, 'to path:', storagePath);
+
+                const uploadingFile: UploadingFile = {
+                    id: fileId,
+                    file: pendingFile.file,
+                    progress: 0,
+                    storagePath
+                };
+
+                this.setState(prevState => ({
+                    uploadingFiles: [...prevState.uploadingFiles, uploadingFile]
+                }));
+
+                this.uploadFileToStorage(fileId, pendingFile.file, storagePath);
+            });
+        }
+
         // converts reference parentTag to the string format stored in state
-        this.setState((prevState) => ({ tag: { ...prevState.tag, tagId: parentTag.id } }));
+        this.setState((prevState) => ({ tag: { ...prevState.tag, tagId: realTagId } }));
 
         this.clearState();
     };
 
-    handleEditAssignment = (): void => {
+    handleEditAssignment = async (): Promise<void> => {
         if (!this.props.tag) return;
 
         const parentTagChanged = this.props.tag ?
@@ -324,7 +545,13 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         const newTags = this.state.newTags
             .filter(tag => !preexistingTags.some(t => tag.name === t.name))
       
-        editAssignment(parentTagChanged, resolvedTag, this.props.childTags, deletedTags, newTags)
+        editAssignment(parentTagChanged, resolvedTag, this.props.childTags, deletedTags, newTags);
+
+        // Delete marked files first
+        await this.deleteMarkedFiles();
+
+        // Upload pending files using the resolved tagId
+        this.uploadPendingFiles(resolvedTag.tagId);
     };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -339,8 +566,40 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 tag: props.tag,
                 newTags: props.childTags.map(firetag => ({ id: firetag.tagId, name: firetag.name }))
             });
+            
+            // Load existing files from Storage when editing an assignment
+            if (props.tag.tagId) {
+                this.loadExistingFiles(props.courseId, props.tag.tagId);
+            }
         }
     }
+
+    componentDidMount() {
+        // Load existing files if editing an existing tag
+        if (this.props.tag?.tagId) {
+            this.loadExistingFiles(this.props.courseId, this.props.tag.tagId);
+        }
+    }
+
+    loadExistingFiles = async (courseId: string, tagId: string): Promise<void> => {
+        try {
+            const files = await listAssignmentFiles(courseId, tagId);
+            
+            // Convert to UploadedFile format
+            const uploadedFiles: UploadedFile[] = files.map((file, index) => ({
+                id: `existing_${index}_${Date.now()}`, // Generate unique ID for existing files
+                name: file.name,
+                size: file.size,
+                uploadDate: file.uploadDate,
+                url: file.url,
+                storagePath: file.storagePath
+            }));
+            
+            this.setState({ uploadedFiles });
+        } catch (error) {
+            console.error('Error loading existing files:', error);
+        }
+    };
 
     render() {
         return (
@@ -446,6 +705,35 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             </div>
                         </div>
                         <div className="FileList">
+                            {this.state.pendingFiles.map((pendingFile) => {
+                                const isMarkedForDeletion = this.state.filesToDelete.includes(pendingFile.id);
+                                return (
+                                    <div 
+                                        key={pendingFile.id} 
+                                        className="FileItem UploadedFile"
+                                        style={isMarkedForDeletion ? { opacity: 0.5, textDecoration: 'line-through' } : {}}
+                                    >
+                                        <img src={fileIconGray} alt="file" className="FileIcon" />
+                                        <div className="FileInfo">
+                                            <div className="FileNameRow">
+                                                <div className="FileName">{pendingFile.name}</div>
+                                                <span className="FileDate">{this.formatDate(new Date())}</span>
+                                            </div>
+                                            <div className="FileSize">{this.formatFileSize(pendingFile.size)}</div>
+                                        </div>
+                                        <div className="FileActions">
+                                            <img src={checkBlue} alt="uploaded" className="FileCheckIcon" />
+                                            <button
+                                                type="button"
+                                                className="FileRemoveButton"
+                                                onClick={() => this.handleRemoveFile(pendingFile.id)}
+                                            >
+                                                <img src={closeIconGray} alt="remove" className="FileRemoveIcon" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                             {this.state.uploadingFiles.map((uploadingFile) => (
                                 <div key={uploadingFile.id} className="FileItem UploadingFile">
                                     <div className="UploadingFileContent">
@@ -476,28 +764,35 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     </div>
                                 </div>
                             ))}
-                            {this.state.uploadedFiles.map((uploadedFile) => (
-                                <div key={uploadedFile.id} className="FileItem UploadedFile">
-                                    <img src={fileIconGray} alt="file" className="FileIcon" />
-                                    <div className="FileInfo">
-                                        <div className="FileNameRow">
-                                            <div className="FileName">{uploadedFile.name}</div>
-                                            <span className="FileDate">{this.formatDate(uploadedFile.uploadDate)}</span>
+                            {this.state.uploadedFiles.map((uploadedFile) => {
+                                const isMarkedForDeletion = this.state.filesToDelete.includes(uploadedFile.id);
+                                return (
+                                    <div 
+                                        key={uploadedFile.id} 
+                                        className="FileItem UploadedFile"
+                                        style={isMarkedForDeletion ? { opacity: 0.5, textDecoration: 'line-through' } : {}}
+                                    >
+                                        <img src={fileIconGray} alt="file" className="FileIcon" />
+                                        <div className="FileInfo">
+                                            <div className="FileNameRow">
+                                                <div className="FileName">{uploadedFile.name}</div>
+                                                <span className="FileDate">{this.formatDate(uploadedFile.uploadDate)}</span>
+                                            </div>
+                                            <div className="FileSize">{this.formatFileSize(uploadedFile.size)}</div>
                                         </div>
-                                        <div className="FileSize">{this.formatFileSize(uploadedFile.size)}</div>
+                                        <div className="FileActions">
+                                            <img src={checkBlue} alt="uploaded" className="FileCheckIcon" />
+                                            <button
+                                                type="button"
+                                                className="FileRemoveButton"
+                                                onClick={() => this.handleRemoveFile(uploadedFile.id)}
+                                            >
+                                                <img src={closeIconGray} alt="remove" className="FileRemoveIcon" />
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="FileActions">
-                                        <img src={checkBlue} alt="uploaded" className="FileCheckIcon" />
-                                        <button
-                                            type="button"
-                                            className="FileRemoveButton"
-                                            onClick={() => this.handleRemoveFile(uploadedFile.id)}
-                                        >
-                                            <img src={closeIconGray} alt="remove" className="FileRemoveIcon" />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -520,8 +815,13 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     return;
                                 }
                                 this.setState({ showWarning: false });
+                                const hasPendingFiles = this.state.pendingFiles.length > 0;
                                 this.handleCreateAssignment();
-                                this.props.cancelCallback();
+                                // Only close immediately if there are no pending files to upload
+                                // Otherwise, the form will close automatically when all uploads finish
+                                if (!hasPendingFiles) {
+                                    this.props.cancelCallback();
+                                }
                             }}
                         >
                             Create
@@ -536,8 +836,13 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     return;
                                 }
                                 this.setState({ showWarning: false });
+                                const hasPendingFiles = this.state.pendingFiles.length > 0;
                                 this.handleEditAssignment();
-                                this.props.cancelCallback();
+                                // Only close immediately if there are no pending files to upload
+                                // Otherwise, the form will close automatically when all uploads finish
+                                if (!hasPendingFiles) {
+                                    this.props.cancelCallback();
+                                }
                             }}
                         >
                             Save Changes
