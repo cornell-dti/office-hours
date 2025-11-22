@@ -39,7 +39,6 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
     // Initialize countdown state using the calculateTimeRemaining function
     const [timeRemaining, setTimeRemaining] = useState<RemainingTime>(calculateTimeRemaining(wrappedDate));
     const [countDownClicked, setCountDownClicked] = useState<boolean>(false);
-    const [confettiShown, setConfettiShown] = useState<boolean>(false);
     const [isZeroCounter, setIsZeroCounter] = useState<boolean>(false);
 
     // Countdown timer effect to update every second
