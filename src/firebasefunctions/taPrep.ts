@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
+import { query, where, doc, getDocs, collection, Timestamp, setDoc} from 'firebase/firestore';
 import { pipeline } from "@huggingface/transformers";
 import { DBSCAN } from "density-clustering";
 import kmeans, { KMeans } from "kmeans-ts";
 import { GoogleGenAI } from "@google/genai";
+import { firestore } from '../firebase';
 import 'dotenv/config'; 
+import { oberlinData } from './oberlinData';
+import { dummyData } from './dummyData';
 
 export type TrendData = {
     title: string, 
@@ -14,77 +18,52 @@ export type TrendData = {
     questions: string[]
 };
 
-// export type QuestionData = {
-//     questions: string[];
-//     tags: FireTag[];
-//     timeStamps: FireTimestamp[];
-// }
+export type TitledCluster = {
+    title: string,
+    questions: string[]
+}
 
-const dummyData = [
-    // Recursion basics / base cases
-    "How do I identify the base case?",
-    "Why do we need a base case in recursion?",
-    "What happens if I forget the base case?",
-    "Can a recursive function have multiple base cases?",
-    
-    // Call stack / memory
-    "What is a call stack?",
-    "How does memory work with recursion?",
-    "Why do I get a stack overflow error?",
-    "How deep can recursion go before crashing?",
-    "What's the difference between stack and heap memory?",
-    
-    // Recursion vs iteration
-    "How do loops differ from recursion?",
-    "When should I use recursion instead of a loop?",
-    "Is recursion slower than iteration?",
-    "Can every recursive function be written as a loop?",
-    
-    // Big O / complexity
-    "What is Big O notation?",
-    "How do I calculate time complexity?",
-    "What's the difference between O(n) and O(n^2)?",
-    "Why does Big O ignore constants?",
-    "What is space complexity?",
-    "How do I analyze recursive time complexity?",
-    
-    // Sorting algorithms
-    "How does merge sort work?",
-    "What is the time complexity of quicksort?",
-    "When is bubble sort actually useful?",
-    "What makes merge sort stable?",
-    "How do I choose between sorting algorithms?",
-    
-    // Data structures
-    "What is a linked list?",
-    "When should I use an array vs a linked list?",
-    "How do hash tables work?",
-    "What is a binary search tree?",
-    "Why are trees useful in programming?",
-    "What's the difference between a stack and a queue?"
-];
-
-// also need to grab like Assignment 1, Assignment 2, etc...
-// async function getAssignments()
-// from the firetags assoc w the questions, find the name of the prim and sec tags, concat. 
-
-async function getEmbeddings(questions: string[]){
+/**
+ * `getEmbeddings` uses a typescript library for SBERT to embed each sentence 
+ * in `questions` into numerical vectors represented as number[][].
+ * @param questions the string list of questions that students ask
+ * @returns the sentence embeddings for the list of questions.
+ */
+async function getEmbeddings(questions: string[]): Promise<number[][]>{
     const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     const output = await extractor(questions, { pooling: 'mean', normalize: true });
     return output.tolist();
 }
 
-async function clusterEmbeddings(embeddings: number[][], k = 2){
+/**
+ * `clusterEmbeddings` uses kMeans algorithm to cluster the embedded questions into `k` clusters.
+ * @param embeddings embedded vectors of question data
+ * @param k number of clusters to group the data into
+ * @returns obj of KMeans type including number of iterations, indexes, centroids, k.
+ */
+async function clusterEmbeddings(embeddings: number[][], k = 2): Promise<KMeans>{
     const clusters: KMeans = kmeans(embeddings, k);
     return clusters;
 }
 
+/**
+ * `dbscanClustering` uses DBSCAN algorithm to cluster the embedded questions.
+ * @param embeddings embedded vectors of question data
+ * @param epsilon the max distance between 2 pts to be considered neighbors
+ * @param minPts min number of points required to become a cluster
+ * @returns 
+ */
 async function dbscanClustering(embeddings: number[][], epsilon: number, minPts: number) {
     const dbscan = new DBSCAN();
     const clusters = dbscan.run(embeddings, epsilon, minPts);
     return { clusters, noise: dbscan.noise };
 }
 
+/**
+ * Creates and returns a prompt to pass into an LLM
+ * @param questions string list of question data
+ * @returns prompt string
+ */
 function createTitlePrompt(questions: string[]){
     return `
         Given these related questions:
@@ -102,13 +81,17 @@ function createTitlePrompt(questions: string[]){
     `;
 }
 
+/**
+ * Calls Gemini's API to create a topic title for a given cluster of related questions.
+ * @param questions list of questions in a single cluster
+ * @returns the topic title belonging to the cluster
+ */
 async function getTitles(questions: string[]) {
     if (!process.env.GEMINI_API_KEY) {
         throw new Error("LLM API KEY not found in environment");
     }
 
     const prompt = createTitlePrompt(questions);
-    // The client gets the API key from the environment variable `GEMINI_API_KEY`.
     const ai = new GoogleGenAI({
         apiKey: process.env.GEMINI_API_KEY,
     });
@@ -128,6 +111,12 @@ async function getTitles(questions: string[]) {
     
 }
 
+/**
+ * Takes the output of kmeans clustering to obtain the list of questions that belong in each cluster. 
+ * @param clusters output of kmeans clustering
+ * @param questions full question data list
+ * @returns record containing the cluster number and its corresponding question list
+ */
 function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<number, string[]> {
     const res: Record<number, string[]> = {};
     for (let i = 0; i < clusters.k; i++){
@@ -141,6 +130,12 @@ function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<
     return res;
 }
 
+/**
+ * Takes the output of dbscan clustering to obtain the list of questions that belong in each cluster. 
+ * @param clusters output of dbscan clustering
+ * @param questions full question data list
+ * @returns record containing the cluster number and its corresponding question list
+ */
 function groupQuestionsDBSCAN(clusters: number[][], questions: string[], noise: number[]): Record<number, string[]> {
     const res: Record<number, string[]> = {};
     
@@ -155,17 +150,25 @@ function groupQuestionsDBSCAN(clusters: number[][], questions: string[], noise: 
     return res;
 }
 
-async function main() {
+/**
+ * Performs sentence embedding, kmeans clustering, and LLM prompting to
+ * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
+ * Returns a list of each cluster and its questions along with a title for the cluster.
+ * @param questions list of question data
+ */
+async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
+    const res: TitledCluster[] = [];
     console.time("Total process");
-    const embeddings = await getEmbeddings(dummyData);
+    const embeddings = await getEmbeddings(questions);
 
-    // const k = Math.ceil(Math.sqrt(dummyData.length));
+    const k = Math.ceil(Math.sqrt(questions.length));
+    console.log("kMeans test, k = ", k);
 
-    const c: KMeans = await clusterEmbeddings(embeddings, 7);
-    console.log(c);
+    const c: KMeans = await clusterEmbeddings(embeddings, k);
+    // console.log(c);
 
-    const groups = groupQuestionsByCluster(c, dummyData);
-    console.log(groups);
+    const groups: Record<number, string[]> = groupQuestionsByCluster(c, questions);
+    // console.log(groups);
 
     for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
         console.log(`\nCluster ${clusterIdx}:`);
@@ -173,25 +176,35 @@ async function main() {
 
         try {
             // eslint-disable-next-line no-await-in-loop
-            const result = await getTitles(questionsInCluster);
+            const result = await getTitles(questionsInCluster) as { title: string };
+            res[Number(clusterIdx)] = { title: result.title, questions: questionsInCluster};
             console.log("Generated title:", result.title);
         } catch (err) {
             console.error("LLM call failed:", err);
-        }
+            res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
+        } 
     }
     console.timeEnd("Total process");
+    return res;
 }
-
-async function dbscanMain() {
+/**
+ * Performs sentence embedding, dbscan clustering, and LLM prompting to
+ * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
+ * Returns a list of each cluster and its questions along with a title for the cluster.
+ * @param questions list of question data
+ */
+async function dbscanMain(questions: string[]): Promise<TitledCluster[]> {
+    const res: TitledCluster[] = [];
+    console.log("dbscan test");
     console.time("Total process");
-    const embeddings = await getEmbeddings(dummyData);
+    const embeddings = await getEmbeddings(questions);
 
     const { clusters, noise } = await dbscanClustering(embeddings, 1.0, 2);
-    console.log("Clusters:", clusters);
-    console.log("Noise:", noise);
+    // console.log("Clusters:", clusters);
+    // console.log("Noise:", noise);
 
     const groups = groupQuestionsDBSCAN(clusters, dummyData, noise);
-    console.log(groups);
+    // console.log(groups);
 
     for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
         console.log(`\nCluster ${clusterIdx}:`);
@@ -206,25 +219,50 @@ async function dbscanMain() {
         try {
             // eslint-disable-next-line no-await-in-loop
             const result = await getTitles(questionsInCluster);
+            res[Number(clusterIdx)] = { title: result, questions: questionsInCluster };
             console.log("Generated title:", result.title);
         } catch (err) {
             console.error("LLM call failed:", err);
+            res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
         }
     }
     console.timeEnd("Total process");
+    return res;
 }
+
+// kmeans vs dbscan below, commenting out one at a time to run specific ones:
+kMeansMain(dummyData);
+// dbscanMain(dummyData);
+// kMeansMain(oberlinData);
+// dbscanMain(oberlinData);
+
+
+// draft work for next portion : D - ignore for now
+
+// export type QuestionData = {
+//     questions: string[];
+//     tags: FireTag[];
+//     timeStamps: FireTimestamp[];
+// }
 
 // export const getStudentTrends = async(
 //     courseId: string,
 // ) : Promise<TrendData[]> => {
 //     return [];
 // };
+
 // each course you get the end and start dates which are question query time?
 // maybe helper func to look through questions collection to find all questions belonging to a course? 
 // (iterate through questions in the time range and then if the sessionid's courseid is the courseid inputted, 
 // then add to the list?)
 
+// also need to grab like Assignment 1, Assignment 2, etc...
+// async function getAssignments()
+// from the firetags assoc w the questions, find the name of the prim and sec tags, concat. 
 
-// kmeans vs dbscan below:
-main();
-// dbscanMain();
+// async function getQuestions( courseId: string ): Promise<QuestionData> {
+//     const coursesRef = collection(firestore, "courses");
+//     const questionRef = collection(firestore, "questions");
+    
+    
+// }
