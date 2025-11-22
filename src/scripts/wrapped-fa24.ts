@@ -331,10 +331,11 @@ const getWrapped = async () => {
         initializeUser(answererId, askerId);
         // Office hour visits
         const sessionDoc = sessionDocs[sessionId];
+        const course = sessionDoc.get('courseId');
         if (TAsessions[answererId].find((TAsession) => TAsession.session === sessionId) === undefined) {
             /* Since TA was active during this session and this is the first 
             time encountering the session, we add it to their timeHelped */
-            if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
+            if (sessionDoc.exists && course && userStats[answererId].timeHelpingStudents !== undefined ) {
                 /* Add a total session time to the min TA helped */
                 const timeHelping = (sessionDoc.get('endTime').toDate().getTime() 
                  - sessionDoc.get('startTime').toDate().getTime())/ 60000;
@@ -350,7 +351,7 @@ const getWrapped = async () => {
         if (!officeHourSessions[askerId].includes(sessionId)) { 
             officeHourSessions[askerId].push(sessionId); }
         
-        const course = sessionDoc.get('courseId');
+        
         if (answererId && timeAddressed && course) {
             TAsessions[answererId]?.push({
                 session: sessionId,

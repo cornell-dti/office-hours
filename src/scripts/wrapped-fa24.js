@@ -348,10 +348,11 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     initializeUser(answererId, askerId);
                     // Office hour visits
                     var sessionDoc = sessionDocs[sessionId];
+                    var course = sessionDoc.get('courseId');
                     if (TAsessions[answererId].find(function (TAsession) { return TAsession.session === sessionId; }) === undefined) {
                         /* Since TA was active during this session and this is the first
                         time encountering the session, we add it to their timeHelped */
-                        if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined) {
+                        if (sessionDoc.exists && course && userStats[answererId].timeHelpingStudents !== undefined) {
                             /* Add a total session time to the min TA helped */
                             var timeHelping = (sessionDoc.get('endTime').toDate().getTime()
                                 - sessionDoc.get('startTime').toDate().getTime()) / 60000;
@@ -366,7 +367,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     if (!officeHourSessions[askerId].includes(sessionId)) {
                         officeHourSessions[askerId].push(sessionId);
                     }
-                    var course = sessionDoc.get('courseId');
                     if (answererId && timeAddressed && course) {
                         (_c = TAsessions[answererId]) === null || _c === void 0 ? void 0 : _c.push({
                             session: sessionId,
