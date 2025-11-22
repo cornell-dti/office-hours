@@ -104,6 +104,7 @@ const TopBarNotifications = (
         if (setDisplayWrapped) {
             // Check if the setter exists
             setDisplayWrapped(true); // Set the state to true
+            toggleDropped(false);
         }
     };
 

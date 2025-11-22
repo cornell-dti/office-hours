@@ -181,7 +181,7 @@ interface FireUser {
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
-    wrapped?: boolean;
+    wrapped?: string;
     recentlyResolvedQuestion?: ResolvedItem;
     feedbackList?: FeedbackRecord[];
 }

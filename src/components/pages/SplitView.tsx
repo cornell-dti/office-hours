@@ -22,7 +22,7 @@ import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
 import Wrapped from "../includes/Wrapped";
 import WrappedCountdown from "../includes/WrappedCountdown";
-import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
+import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE, CURRENT_SEMESTER } from "../../constants";
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -278,7 +278,7 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            {user && user.wrapped ? (
+            {user && user.wrapped && user.wrapped === CURRENT_SEMESTER ? (
                 <WrappedCountdown
                     setDisplayWrapped={setDisplayWrapped}
                     setCountdownZero={setCountdownZero}

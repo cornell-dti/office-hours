@@ -216,7 +216,7 @@ const WaitTimeGraph = (props: Props) => {
         right: vw < 768 ? 10 : 20,
         bottom: 40 * scale, 
         left: 12 * scale
-    }), []);
+    }), [scale, vw]);
     // Visual gap between the bars and the separator line
     // Important to keep for responsiveness! - annie
     const baselineGapPx = (vw < 1418 && vw > 1279) ? -15 : (vw < 700) ? -15 : (vw < 920) ? -17 : -18;
