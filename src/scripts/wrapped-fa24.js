@@ -40,7 +40,7 @@ var admin = require("firebase-admin");
 var constants_1 = require("../constants");
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    databaseURL: 'queue-me-in-oberlin-470213.firebaseapp.com'
 });
 // eslint-disable-next-line no-console
 console.log('Firebase admin initialized!');

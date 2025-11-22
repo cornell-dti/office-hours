@@ -685,15 +685,6 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="taStudentsHelped students">
                 STUDENTS
             </div>
-            <div>
-                {showBanner && (
-                    <>
-                        <div className="banner bottom-ta-helped">
-                            <TimeSpentBanner />
-                        </div>
-                    </>
-                )}
-            </div>
             <img
                 src={smallGirl}
                 className="smallGirl"

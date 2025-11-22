@@ -3,7 +3,7 @@ import admin from 'firebase-admin';
 // Initialize Firebase Admin with credentials and database URL
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    databaseURL: 'queue-me-in-oberlin-470213.firebaseapp.com'
 });
 
 // Initialize Firestore database

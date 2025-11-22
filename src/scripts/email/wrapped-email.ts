@@ -19,7 +19,7 @@ been hit, there will be a console statement that tells you the next input number
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    // databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    // databaseURL: 'queue-me-in-oberlin-470213.firebaseapp.com'
 
 });
 
