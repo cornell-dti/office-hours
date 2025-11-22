@@ -125,8 +125,8 @@ const Wrapped= (props: Props): JSX.Element => {
 
     const [totalStages, setTotalStages] = useState<number>(0);
 
-    // add these to useEffect?
-    const semester =  "SPRING 2025 & FALL 2025";
+    const year = (new Date()).getFullYear();
+    const semester =  "SPRING " + year + " & FALL " + year;
     const months : string[] = [
         "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
         "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
