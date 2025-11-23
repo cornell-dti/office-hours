@@ -8,7 +8,8 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
-import firebase from "firebase/compat/app"
+import { doc, getDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase';
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
@@ -73,7 +74,7 @@ import smallPlus from '../../media/wrapped/plus.svg';
 import bigPlus from '../../media/wrapped/plus2.svg';
 
 
-const firestore = firebase.firestore();
+
 
 type Props = {
     user: FireUser | undefined;
@@ -124,8 +125,8 @@ const Wrapped= (props: Props): JSX.Element => {
 
     const [totalStages, setTotalStages] = useState<number>(0);
 
-    // add these to useEffect?
-    const semester =  "SPRING 2023 & FALL 2024";
+    const year = (new Date()).getFullYear();
+    const semester =  "SPRING " + year + " & FALL " + year;
     const months : string[] = [
         "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
         "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
@@ -202,15 +203,14 @@ const Wrapped= (props: Props): JSX.Element => {
     };
 
     useEffect(() => {
-        const wrappedRef = firestore.collection('wrapped');
         const fetchData = async () => {
             setLoading(true);
             try {
-                const doc = await wrappedRef.doc(props.user?.userId || '').get();
-                const usersRef = firestore.collection('users');
+                const docRef = doc(firestore, 'wrapped', props.user?.userId || '');
+                const docSnap = await getDoc(docRef);
     
-                if (doc.exists) {
-                    const studentData = doc.data() as { 
+                if (docSnap.exists()) {
+                    const studentData = docSnap.data() as { 
                         numVisits: number;
                         personalityType: string; 
                         timeHelpingStudents: number; 
@@ -223,62 +223,71 @@ const Wrapped= (props: Props): JSX.Element => {
                     };
     
                     setWrappedData(studentData);
-    
+                    
+                    // Deciding which role and how many stages to show
                     let numStages = 0;
                     if (studentData.timeHelpingStudents === undefined || studentData.timeHelpingStudents === 0) {
                         numStages = 6;
-                        setRole(0);
-                    } else if (studentData.favTaId === "" || studentData.favTaId === undefined) {
+                        setRole(0); // Only Student
+                    } else if ((studentData.favTaId === "" || studentData.favTaId === undefined) 
+                        && (studentData.numVisits === 0)) {
                         numStages = 4;
-                        setRole(2);
+                        setRole(2); // Only TA
                     } else {
                         numStages = 7;
-                        setRole(1);
+                        setRole(1); // TA + Student
                     }
 
-                    const userDoc = await usersRef.doc(wrappedData.favTaId || '').get();
-    
+                    // Extra checks for if documents actually exist. Adjust stages if needed
                     let taNameExists = false;
-                    if (userDoc.exists) {
-                        setTaName(userDoc.data() as { 
-                            firstName: string;
-                            lastName: string;
-                        });  
-                        taNameExists = true;
-                    } else {
-                        console.log('No such TA document!');
+                    if (studentData.favTaId) {
+                        const userDocRef = doc(firestore, 'users', studentData.favTaId || '');
+                        const userDocSnap = await getDoc(userDocRef);
+                        if (userDocSnap.exists()) {
+                            setTaName(userDocSnap.data() as { 
+                                firstName: string;
+                                lastName: string;
+                            });  
+                            taNameExists = true;
+                        } else {
+                            console.log('No such TA document!');
+                        }
                     }
     
+                    let courseNameExists = false; 
+                    if (studentData.favClass) {
+                        const courseDocRef = doc(firestore, "courses", studentData.favClass);
+                        const coursesDocSnap = await getDoc(courseDocRef);
+                        if (coursesDocSnap.exists()) {
+                            setFavClass(coursesDocSnap.data() as {
+                                code: string;
+                            });
+                            courseNameExists = true;
+                        } else {
+                            console.log('No such course document!');
+                        }
+                    }
+
+                    // We are "skipping" a slide only if user is a Student or StudentTA, NOT a TA
                     if (
-                        studentData.favClass === "" || 
+                        (studentData.favClass === "" || 
                         studentData.favDay === -1 || 
                         studentData.favTaId === "" || 
-                        !taNameExists
+                        !taNameExists ||
+                        !courseNameExists) && 
+                        (studentData.numVisits !== 0)
                     ) {
                         setDisplayFavs(false);
                         numStages--;
                     } 
-    
-                    setTotalStages(numStages);
-                    const coursesRef = firestore.collection("courses");
 
-                    const coursesDoc = await coursesRef.doc(studentData.favClass).get();
-                      
-    
-                    if (coursesDoc.exists) {
-                        setFavClass(coursesDoc.data() as {
-                            code: string;
-                        });
-                    } else {
-                        console.log('No such course document!');
-                    }
+                    setTotalStages(numStages);
+                    
                 } else {
                     console.log('No such wrapped document!');
                 }
             } catch (error) {
                 console.error("Error fetching data: ", error);
-            } finally {
-                setLoading(false);
             }
         };
     
@@ -308,11 +317,12 @@ const Wrapped= (props: Props): JSX.Element => {
         
         <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
-                <Dot active={index === stage} onClick={() => setStage(index)}/>
+                <Dot key={index} active={index === stage} onClick={() => setStage(index)}/>
             ))}
         </div>
     );
 
+    // ----- code for Intro Animation -------
     const handleAnimationEnd = () => {
         const timer = setTimeout(() => {
             setLoading(false);
@@ -329,7 +339,7 @@ const Wrapped= (props: Props): JSX.Element => {
               make note that width and height are basically the box containing the circle,
               so they need to be double the radius
               */}
-                <svg className="red-circle" width="300" height="300">
+                <svg className="red-circle" viewBox="0 0 300 300">
                     {/* this creates the color gradients on the qmi logo */}
                     <defs>
                         <linearGradient 
@@ -349,7 +359,7 @@ const Wrapped= (props: Props): JSX.Element => {
                                     cx and cy are centers so shld be half of height/width. r is radius */}
                     <circle cx='150' cy='150' r='115'> </circle>
                 </svg>
-                <svg className="blue-circle" width="400" height="400">
+                <svg className="blue-circle" viewBox="0 0 400 400">
                     <defs>
                         <linearGradient 
                             id="blue-gradient" 
@@ -363,7 +373,7 @@ const Wrapped= (props: Props): JSX.Element => {
                             <stop offset="1" stopColor="#78B6F4" />
                         </linearGradient>
                     </defs>
-                    <circle cx='200' cy='200' r='180'> </circle>
+                    <circle cx='200' cy='200' r='190'> </circle>
                 </svg>
                 {/* imported way of using svgs, so cant adjust stroke colors */}
                 <img src={arrow} className="arrow-circle" alt="dti arrow" />
@@ -400,15 +410,6 @@ const Wrapped= (props: Props): JSX.Element => {
             {favClass.code} ON {day} <Asterik />
             {favClass.code} ON {day} <Asterik />
             {favClass.code} ON {day} <Asterik />
-        </div>
-    );
-
-    const StudentsHelpedBanner = () => (
-        <div> 
-            <Asterik/>
-            {/* fix month to be ta month not student month */}
-            YOU HAD THE MOST VISITS IN {month} <Asterik/>
-            YOU HAD THE MOST VISITS IN {month} <Asterik/>
         </div>
     );
 
@@ -684,15 +685,6 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="taStudentsHelped students">
                 STUDENTS
             </div>
-            <div>
-                {showBanner && (
-                    <>
-                        <div className="banner bottom-ta-helped">
-                            <StudentsHelpedBanner />
-                        </div>
-                    </>
-                )}
-            </div>
             <img
                 src={smallGirl}
                 className="smallGirl"
@@ -758,8 +750,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     </div>
                 }
 
-                {stage === 0 && <Welcome />}    
-
+                {stage === 0 && <Welcome />}
                 {role === 2 && <RenderTA />}
                 {role === 0 && <RenderStudent/>}
                 {role === 1 && <RenderStudentTA/>}

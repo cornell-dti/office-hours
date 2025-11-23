@@ -35,6 +35,11 @@ $mobile-breakpoint: 920px;
 @import "./session/CommentsContainer";
 @import "./session/NewComment";
 
+// Wrapped
+@import "./Wrapped.scss";
+@import "./WrappedAnimation.scss";
+@import "./WrappedCountdown.scss";
+
 // Login
 @import "./login/LoginView";
 @import "./login/LoginButton";
@@ -82,6 +87,7 @@ $mobile-breakpoint: 920px;
 @import "./blogPosts/BlogPostDisplay.scss";
 @import "./blogPosts/ProductUpdates.scss";
 @import "./blogPosts/Notifications.scss";
+
 
 @import "./Announcements.scss";
 
