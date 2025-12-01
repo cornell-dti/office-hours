@@ -20,7 +20,7 @@ const TAResourcesFile = (props: Props) => {
         } else setFileIcon(defaultFileIcon);
     }, [props.filetype] )
 
-    const handleFileClick = (e: React.MouseEvent) => {
+    const handleFileClick = () => {
         // Open file in new tab/window
         window.open(props.url, '_blank');
     };
