@@ -164,7 +164,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         // Store the upload task so we can cancel it if needed
         this.setState(prevState => ({
             uploadingFiles: prevState.uploadingFiles.map(f =>
-                f.id === fileId ? { ...f, uploadTask, storagePath } : f
+                f.id === fileId ? { ...f, uploadTask: uploadTask || undefined, storagePath } : f
             )
         }));
         
@@ -302,7 +302,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     filesToDelete: [...prevState.filesToDelete, fileId]
                 };
             }
-            return prevState;
+            return null;
         });
     };
 
