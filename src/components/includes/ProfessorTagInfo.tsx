@@ -739,7 +739,12 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                                 <img src={fileIconGray} alt="file" className="FileIcon" />
                                             </div>
                                             <div className="FileInfo">
-                                                <div className="FileName" title={uploadingFile.file.name}>{uploadingFile.file.name}</div>
+                                                <div 
+                                                    className="FileName" 
+                                                    title={uploadingFile.file.name}
+                                                >
+                                                    {uploadingFile.file.name}
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="FileProgress">
@@ -778,7 +783,12 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                         <img src={fileIconGray} alt="file" className="FileIcon" />
                                         <div className="FileInfo">
                                             <div className="FileNameRow">
-                                                <div className="FileName" title={uploadedFile.name}>{uploadedFile.name}</div>
+                                                <div 
+                                                    className="FileName" 
+                                                    title={uploadedFile.name}
+                                                >
+                                                    {uploadedFile.name}
+                                                </div>
                                                 <span className="FileDate">
                                                     {this.formatDate(uploadedFile.uploadDate)}
                                                 </span>

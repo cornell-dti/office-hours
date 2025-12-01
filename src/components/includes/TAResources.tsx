@@ -41,6 +41,7 @@ const TAResources = ({ courseId }: Props) => {
                 // in case course never loads (safety measure)
                 timeoutId = setTimeout(() => {
                     if (isMounted) {
+                        // eslint-disable-next-line no-console
                         console.warn('Course did not load after 3 seconds, showing empty state');
                         setLoading(false);
                         setFiles([]);
@@ -112,6 +113,7 @@ const TAResources = ({ courseId }: Props) => {
                                 };
                             });
                     } catch (error) {
+                        // eslint-disable-next-line no-console
                         console.error(`Error fetching files for tag ${tagId}:`, error);
                         return [];
                     }
@@ -123,6 +125,7 @@ const TAResources = ({ courseId }: Props) => {
                     setLoading(false);
                 }
             } catch (error) {
+                // eslint-disable-next-line no-console
                 console.error('Error fetching files:', error);
                 if (isMounted) {
                     setFiles([]);
