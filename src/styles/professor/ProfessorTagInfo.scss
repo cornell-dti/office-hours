@@ -246,6 +246,7 @@
                             .FileInfo {
                                 flex: 1;
                                 min-width: 0;
+                                overflow: hidden; // Allow truncation
 
                                 .FileName {
                                     color: #4A4A4A;
@@ -253,6 +254,13 @@
                                     font-family: "Roboto", "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
                                     font-weight: 400;
                                     word-wrap: break-word;
+                                    word-break: break-word;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 2; // Show max 2 lines
+                                    line-clamp: 2; // Standard property
+                                    -webkit-box-orient: vertical;
                                     margin: 0;
                                 }
                             }
@@ -338,7 +346,8 @@
                             display: flex;
                             align-items: center;
                             gap: 12px;
-                            position: relative;
+                            // Lay out filename and date side by side without overlap
+                            justify-content: space-between;
                         }
 
                         .FileName {
@@ -347,6 +356,12 @@
                             font-family: "Roboto", "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
                             font-weight: 400;
                             word-break: break-word;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2; // Show max 2 lines
+                            line-clamp: 2; // Standard property
+                            -webkit-box-orient: vertical;
                             margin: 0;
                             flex: 1;
                             min-width: 0;
@@ -365,9 +380,9 @@
                             font-family: "Roboto", "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
                             font-weight: 400;
                             white-space: nowrap;
-                            position: absolute;
-                            left: 70%;
-                            transform: translateX(-50%);
+                            flex-shrink: 0;
+                            margin-left: 8px;
+                            align-self: flex-start;
                         }
                     }
 

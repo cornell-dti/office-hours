@@ -7,6 +7,7 @@ import imgIcon from "../../media/image_file.svg";
 type Props = {
     filename: string;
     filetype: string;
+    url: string;
 }
 
 /* each individual file button */
@@ -19,13 +20,30 @@ const TAResourcesFile = (props: Props) => {
         } else setFileIcon(defaultFileIcon);
     }, [props.filetype] )
 
+    const handleFileClick = (e: React.MouseEvent) => {
+        // Open file in new tab/window
+        window.open(props.url, '_blank');
+    };
+
+    const handleDownloadClick = (e: React.MouseEvent) => {
+        // Stop propagation to prevent triggering parent click
+        e.stopPropagation();
+        // Open file in new tab/window (same as general area)
+        window.open(props.url, '_blank');
+    };
+
     return (
-        <div className="file-button-container">
+        <div className="file-button-container" onClick={handleFileClick}>
             <div className="icon-name">
                 <img src={fileIcon} alt="file-icon" className="file-icon"/>
-                <p className="filename">{props.filename}</p>
+                <p className="filename" title={props.filename}>{props.filename}</p>
             </div>
-            <img src={downloadIcon} alt="download-icon" className="download-icon" />
+            <img 
+                src={downloadIcon} 
+                alt="download-icon" 
+                className="download-icon"
+                onClick={handleDownloadClick}
+            />
         </div>
     );
 };
