@@ -3,7 +3,7 @@ import { CURRENT_SEMESTER } from "../constants";
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://qmi-test.firebaseio.com'
+    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 
 });
 

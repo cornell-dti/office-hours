@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -36,19 +36,27 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var firebase_admin_1 = require("firebase-admin");
-firebase_admin_1["default"].initializeApp({
-    credential: firebase_admin_1["default"].credential.applicationDefault(),
-    databaseURL: 'https://qmi-test.firebaseio.com'
+var admin = require("firebase-admin");
+var constants_1 = require("../constants");
+admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 });
 // eslint-disable-next-line no-console
 console.log('Firebase admin initialized!');
 // Initialize Firestore
-var db = firebase_admin_1["default"].firestore();
+var db = admin.firestore();
 var errorUsers = [];
 // Firestore Timestamps for the query range
-var startDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-01-22'));
-var endDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-11-22'));
+var year = (new Date()).getFullYear();
+// eslint-disable-next-line no-console
+console.log('Current year is: ' + year);
+var startDate = admin.firestore.Timestamp.fromDate(new Date(year + '-01-22'));
+var endDate = admin.firestore.Timestamp.fromDate(new Date(year + '-11-22'));
+// eslint-disable-next-line no-console
+console.log('Querying from ' + startDate.toDate().toDateString() + " to " + endDate.toDate().toDateString());
+// eslint-disable-next-line no-console
+console.log("-------------STARTING-------------");
 var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function () {
     var questionsRef, sessionsRef, wrappedRef, usersRef, questionsSnapshot, userStats, getWrappedUserDocs, getWrappedSessionDocs, taCounts, monthTimeCounts, officeHourSessions, TAsessions, updateWrappedDocs, initializeUser, processStats, sessionDocs, count, _loop_1, _i, _a, doc;
     var _b, _c, _d, _e, _f, _g, _h;
@@ -57,7 +65,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
             case 0:
                 questionsRef = db.collection('questions');
                 sessionsRef = db.collection('sessions');
-                wrappedRef = db.collection('wrapped-fa24');
+                wrappedRef = db.collection('wrapped');
                 usersRef = db.collection('users');
                 return [4 /*yield*/, questionsRef
                         .where('timeEntered', '>=', startDate)
@@ -100,15 +108,13 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                         switch (_a.label) {
                             case 0:
                                 docs = {};
-                                sessionIds = [];
-                                questionsSnapshot.docs.map(function (doc) { return sessionIds.push(doc.get('sessionId')); });
-                                sessionIds.sort();
+                                sessionIds = questionsSnapshot.docs.map(function (doc) { return doc.get('sessionId'); });
                                 return [4 /*yield*/, Promise.all(sessionIds.map(function (id) { return __awaiter(void 0, void 0, void 0, function () {
                                         var _a, _b;
                                         return __generator(this, function (_c) {
                                             switch (_c.label) {
                                                 case 0:
-                                                    if (!id) return [3 /*break*/, 2];
+                                                    if (!(id && !(id in docs))) return [3 /*break*/, 2];
                                                     _a = docs;
                                                     _b = id;
                                                     return [4 /*yield*/, sessionsRef.doc(id).get()];
@@ -130,7 +136,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                 officeHourSessions = {};
                 TAsessions = {};
                 updateWrappedDocs = function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, taHelped, hasMinutes, taStatsMismatched, wrappedDocRef, userDoc;
+                    var batch, userDocuments, _i, _a, _b, userId, stats, taStatsExist, hasVisits, hasMinutes, taStatsMismatched, wrappedDocRef, userDoc;
                     var _c;
                     return __generator(this, function (_d) {
                         switch (_d.label) {
@@ -143,14 +149,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     _b = _a[_i], userId = _b[0], stats = _b[1];
                                     // Only want to make wrapped changes for a user if they have an ID and are active 
                                     if (userId) {
-                                        hasVisits = stats.numVisits > 0;
-                                        isUserActive = stats.timeHelpingStudents === undefined || (((_c = TAsessions[userId]) === null || _c === void 0 ? void 0 : _c.length) > 0);
-                                        taHelped = stats.timeHelpingStudents === undefined ||
-                                            (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
-                                        hasMinutes = stats.favMonth !== -1 && stats.totalMinutes > 0;
+                                        taStatsExist = stats.timeHelpingStudents && stats.numStudentsHelped
+                                            && (((_c = TAsessions[userId]) === null || _c === void 0 ? void 0 : _c.length) > 0);
+                                        hasVisits = stats.numVisits > 0 || taStatsExist;
+                                        hasMinutes = (stats.favMonth !== -1 && stats.favDay !== -1 && stats.totalMinutes > 0)
+                                            || taStatsExist;
                                         taStatsMismatched = (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                                             || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
-                                        if (hasVisits && isUserActive && hasMinutes && taHelped) {
+                                        if (hasVisits && hasMinutes) {
                                             if (taStatsMismatched) {
                                                 errorUsers.push({ user: userId, error: "Mismatch in updating ta specfic values." });
                                             }
@@ -160,7 +166,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                                 userDoc = userDocuments[userId];
                                                 if (userDoc.exists) {
                                                     usersRef.doc(userId).update({
-                                                        wrapped: true
+                                                        wrapped: constants_1.CURRENT_SEMESTER
                                                     });
                                                 }
                                                 else {
@@ -237,12 +243,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     }
                 };
                 processStats = function () {
-                    var _a, _b;
+                    var _a, _b, _c, _d;
                     count = 0;
+                    var weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
+                        / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
                     var _loop_2 = function (userId, stats) {
                         if (count > 0 && count % 100 === 0) {
                             // eslint-disable-next-line no-console
-                            console.log(count + "/" + Object.entries(userStats).length + " users processed.");
+                            console.log("".concat(count, "/").concat(Object.entries(userStats).length, " users processed."));
                         }
                         stats.numVisits = officeHourSessions[userId].length;
                         stats.totalMinutes = Math.ceil(stats.totalMinutes);
@@ -253,8 +261,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             }
                         }
                         // Personality type
-                        var weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
-                            / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
                         var averageSessionsPerWeek = stats.numVisits / weeksInRange;
                         if (averageSessionsPerWeek >= 2) {
                             stats.personalityType = 'Consistent';
@@ -274,7 +280,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                         if (stats.favTaId) {
                             // only looking at the sessions from the favorite TA that match with sessions the user went to
                             var resSession = (_b = TAsessions[stats.favTaId]) === null || _b === void 0 ? void 0 : _b.filter(function (TAsession) {
-                                return officeHourSessions[userId].includes(TAsession.session) && TAsession.asker === userId;
+                                return TAsession.asker === userId && officeHourSessions[userId].includes(TAsession.session);
                             });
                             if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1) {
                                 stats.favClass = resSession[0].courseId;
@@ -287,6 +293,10 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                 */
                                 var classFrequency_1 = {};
                                 var dayFrequency_1 = {};
+                                for (var _g = 0, resSession_1 = resSession; _g < resSession_1.length; _g++) {
+                                    var TAsession = resSession_1[_g];
+                                    classFrequency_1[TAsession.courseId] = ((_c = classFrequency_1[TAsession.courseId]) !== null && _c !== void 0 ? _c : 0) + 1;
+                                }
                                 resSession.forEach(function (TAsession) {
                                     if (!classFrequency_1[TAsession.courseId]) {
                                         classFrequency_1[TAsession.courseId] = 1;
@@ -298,30 +308,28 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                 var modeCourseId_1 = Object.keys(classFrequency_1).reduce((function (courseId1, courseId2) {
                                     return classFrequency_1[courseId1] > classFrequency_1[courseId2] ? courseId1 : courseId2;
                                 }), "");
-                                resSession.forEach(function (TAsession) {
+                                // Calculating day counts ONLY for mode course
+                                for (var _h = 0, resSession_2 = resSession; _h < resSession_2.length; _h++) {
+                                    var TAsession = resSession_2[_h];
                                     if (TAsession.courseId === modeCourseId_1) {
-                                        if (!dayFrequency_1[TAsession.day]) {
-                                            dayFrequency_1[TAsession.day] = 1;
-                                        }
-                                        else {
-                                            dayFrequency_1[TAsession.day] += 1;
-                                        }
+                                        dayFrequency_1[TAsession.day] = ((_d = dayFrequency_1[TAsession.day]) !== null && _d !== void 0 ? _d : 0) + 1;
                                     }
-                                });
+                                }
                                 var modeDay_1 = Object.keys(dayFrequency_1).reduce((function (day1, day2) {
                                     return dayFrequency_1[parseInt(day1, 10)] > dayFrequency_1[parseInt(day2, 10)] ? day1 : day2;
                                 }), "");
-                                var modeSessions = resSession.filter(function (TAsession) { return TAsession.courseId === modeCourseId_1
-                                    && TAsession.day === parseInt(modeDay_1, 10); });
                                 // There could be multiple ties, so just picking the first one
-                                stats.favClass = modeSessions[0].courseId;
-                                stats.favDay = modeSessions[0].day;
+                                var modeSession = resSession.find(function (TAsession) { return TAsession.courseId === modeCourseId_1 && TAsession.day === parseInt(modeDay_1, 10); });
+                                if (modeSession) {
+                                    stats.favClass = modeSession.courseId;
+                                    stats.favDay = modeSession.day;
+                                }
                             }
                         }
                         count++;
                     };
-                    for (var _i = 0, _c = Object.entries(userStats); _i < _c.length; _i++) {
-                        var _d = _c[_i], userId = _d[0], stats = _d[1];
+                    for (var _i = 0, _e = Object.entries(userStats); _i < _e.length; _i++) {
+                        var _f = _e[_i], userId = _f[0], stats = _f[1];
                         _loop_2(userId, stats);
                     }
                 };
@@ -333,7 +341,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     // Console statement for debugging
                     if (count > 0 && count % 100 === 0) {
                         // eslint-disable-next-line no-console
-                        console.log(count + "/" + questionsSnapshot.docs.length + " questions processed.");
+                        console.log("".concat(count, "/").concat(questionsSnapshot.docs.length, " questions processed."));
                     }
                     var question = doc.data();
                     var answererId = question.answererId, askerId = question.askerId, sessionId = question.sessionId, timeEntered = question.timeEntered, timeAddressed = question.timeAddressed;
