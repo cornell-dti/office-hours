@@ -1,4 +1,14 @@
-import { ref, uploadBytesResumable, uploadBytes, getDownloadURL, deleteObject, UploadTaskSnapshot, UploadTask, listAll, getMetadata } from 'firebase/storage';
+import {
+    ref,
+    uploadBytesResumable,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject,
+    UploadTaskSnapshot,
+    UploadTask,
+    listAll,
+    getMetadata
+} from 'firebase/storage';
 import { storage } from '../firebase';
 
 /**
@@ -48,12 +58,11 @@ export const uploadFile = (
     if (file.size < 5 * 1024 * 1024 && !onProgress) {
         // Small file, no progress needed - use simple upload
         const promise = uploadBytes(storageRef, file, {
-            contentType: contentType
+            contentType
         }).then(async (snapshot) => {
             const downloadURL = await getDownloadURL(snapshot.ref);
             return downloadURL;
         }).catch((error) => {
-            console.error('Upload error (uploadBytes):', error);
             throw error;
         });
         
@@ -62,7 +71,7 @@ export const uploadFile = (
     
     // Create resumable upload task with metadata
     const uploadTask = uploadBytesResumable(storageRef, file, {
-        contentType: contentType
+        contentType
     });
     
     const promise = new Promise<string>((resolve, reject) => {
@@ -78,7 +87,6 @@ export const uploadFile = (
             },
             (error) => {
                 // Handle errors
-                console.error('Upload error:', error.code, error.message);
                 reject(error);
             },
             async () => {
@@ -87,7 +95,6 @@ export const uploadFile = (
                     const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
                     resolve(downloadURL);
                 } catch (error) {
-                    console.error('Error getting download URL:', error);
                     reject(error);
                 }
             }
@@ -103,13 +110,8 @@ export const uploadFile = (
  * @returns Promise that resolves when deletion completes
  */
 export const deleteFile = async (path: string): Promise<void> => {
-    try {
-        const storageRef = ref(storage, path);
-        await deleteObject(storageRef);
-    } catch (error) {
-        console.error('Error deleting file:', error);
-        throw error;
-    }
+    const storageRef = ref(storage, path);
+    await deleteObject(storageRef);
 };
 
 /**
@@ -167,7 +169,6 @@ export const listAssignmentFiles = async (courseId: string, tagId: string): Prom
         
         return await Promise.all(filePromises);
     } catch (error) {
-        console.error('Error listing assignment files:', error);
         // Return empty array if folder doesn't exist or there's an error
         return [];
     }
