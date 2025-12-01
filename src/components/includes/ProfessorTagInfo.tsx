@@ -71,9 +71,11 @@ const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'ppt', 'pptx'];
 
 
 class ProfessorTagInfo extends React.Component<PropTypes, State> {
+    private fileInputRef: React.RefObject<HTMLInputElement>;
 
     constructor(props: PropTypes) {
         super(props);
+        this.fileInputRef = React.createRef<HTMLInputElement>();
         this.state = {
             tag: {
                 active: true,
@@ -247,18 +249,32 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     };
 
     handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            this.handleFileSelect(files);
+        const input = e.currentTarget;
+        const files = input.files;
+        
+        // Check if files were actually selected
+        if (!files || files.length === 0) {
+            // User cancelled the file dialog - do nothing
+            return;
         }
+        
+        // Process the files immediately before resetting
+        this.handleFileSelect(files);
+        
         // Reset input so same file can be selected again
-        e.target.value = '';
+        // Use setTimeout to ensure the event has fully processed
+        setTimeout(() => {
+            if (input) {
+                input.value = '';
+            }
+        }, 0);
     };
 
-    handleUploadButtonClick = (): void => {
-        const fileInput = document.getElementById('resourceFileInput') as HTMLInputElement;
-        if (fileInput) {
-            fileInput.click();
+    handleUploadButtonClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.fileInputRef.current) {
+            this.fileInputRef.current.click();
         }
     };
 
@@ -650,6 +666,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     <div className="Resources InputSection">
                         <div className="InputHeader">Resources</div>
                         <input
+                            ref={this.fileInputRef}
                             id="resourceFileInput"
                             type="file"
                             multiple
