@@ -642,7 +642,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             id="resourceFileInput"
                             type="file"
                             multiple
-                            accept=".jpg,.jpeg,.png,.pdf,.docx,.ppt,.pptx"
+                            accept={ALLOWED_EXTENSIONS.map(ext => `.${ext}`).join(',')}
                             onChange={this.handleFileInputChange}
                             style={{ display: 'none' }}
                         />
@@ -665,7 +665,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     </button>
                                 </div>
                                 <div className="UploadRestrictions">
-                                    Maximum file size: 30 MB.<br />Allowed types: jpg, jpeg, png, pdf, docx, ppt, pptx
+                                    Maximum file size: 30 MB.<br />Allowed types: {ALLOWED_EXTENSIONS.join(', ')}
                                 </div>
                             </div>
                         </div>
