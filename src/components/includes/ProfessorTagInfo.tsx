@@ -13,30 +13,6 @@ interface NewTag {
     name: string;
 }
 
-interface UploadingFile {
-    id: string;
-    file: File;
-    progress: number;
-    uploadTask?: UploadTask;
-    storagePath?: string;
-}
-
-interface UploadedFile {
-    id: string;
-    name: string;
-    size: number;
-    uploadDate: Date;
-    url: string;
-    storagePath: string;
-}
-
-interface PendingFile {
-    id: string;
-    name: string;
-    size: number;
-    file: File;  // Keep the File object so we can upload it later
-}
-
 type PropTypes = {
     isNew: boolean;
     cancelCallback: () => void;
