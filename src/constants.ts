@@ -23,4 +23,4 @@ export const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
  * List of allowed file extensions for file uploads.
  * These extensions are case-insensitive when validated.
  */
-export const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'ppt', 'pptx'] as const;
+export const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'ppt', 'pptx'];
