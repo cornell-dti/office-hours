@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import { UploadTask } from 'firebase/storage';
 import { auth } from '../../firebase';
 import { createAssignment, editAssignment } from '../../firebasefunctions/tags';
 import { uploadFile, deleteFile, generateResourcePath, listAssignmentFiles } from '../../firebasefunctions/storage';
