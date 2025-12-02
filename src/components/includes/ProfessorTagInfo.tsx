@@ -4,6 +4,7 @@ import { UploadTask } from 'firebase/storage';
 import { auth } from '../../firebase';
 import { createAssignment, editAssignment } from '../../firebasefunctions/tags';
 import { uploadFile, deleteFile, generateResourcePath, listAssignmentFiles } from '../../firebasefunctions/storage';
+import { MAX_FILE_SIZE, ALLOWED_EXTENSIONS } from '../../constants';
 import fileIconGray from '../../media/file-icon-gray.svg';
 import closeIconGray from '../../media/close-icon-gray.svg';
 import checkBlue from '../../media/check-blue.svg';
@@ -40,11 +41,6 @@ let newTagId = 0;
 function key() {
     return newTagTemplate(newTagId++);
 }
-
-// File upload constants
-const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
-const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'ppt', 'pptx'];
-
 
 class ProfessorTagInfo extends React.Component<PropTypes, State> {
     private fileInputRef: React.RefObject<HTMLInputElement>;
