@@ -175,6 +175,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             .catch((error) => {
                 // Handle upload error (but don't show alert if it was cancelled)
                 if (error.code !== 'storage/canceled') {
+                    // eslint-disable-next-line no-console
+                    console.error('Upload failed - full error:', error);
                     // Provide more helpful error messages
                     let errorMessage = `Failed to upload ${file.name}`;
                     if (error.code === 'storage/unauthorized') {
