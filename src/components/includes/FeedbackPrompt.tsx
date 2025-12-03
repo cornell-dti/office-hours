@@ -117,8 +117,8 @@ const FeedbackPrompt = (props: Props) => {
                     id="outlined-multiline-static"
                     variant="outlined"
                     multiline
-                    minRows={4}
-                    maxRows={5}
+                    //minRows={4}
+                    //maxRows={5}
                     fullWidth
                     style={{ marginBottom: "4rem" }}
                     placeholder="Please describe your experience..."

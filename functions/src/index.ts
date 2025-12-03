@@ -6,7 +6,9 @@ import {genkit, z} from "genkit"
 import {googleAI} from "@genkit-ai/google-genai"
 import analyzeFeedbackResponses from "../../src/scripts/prompt"
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { flows } from "@genkit-ai/firebase";
+
+
+
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -533,29 +535,28 @@ const ai = genkit({
 /**Defines a flow for prompting and returning feedback. Returns an array where each element of the array
  * is an array containing the LLM responses for each feedback record.
  */
-export const promptAndReturn = ai.defineFlow({
-    name: "Prompt",
+export const verificationFlow = ai.defineFlow({
+    name: "verificationFlow",
+    inputSchema: z.object({}),
     outputSchema: z.string(),
     streamSchema: z.string(),
-}, async (promptType = "moderation") => {
+}, async ({}) => {
     const pendingUsers = await db.collection('users')
-        .where('verified', '==', undefined)
+        .where('verified', '==', false)
         .get();
 
     const responsePromises = pendingUsers.docs.map(async (doc) => {
         const userID = doc.id;
         const llmresponse = await analyzeFeedbackResponses(userID);
-        await db.collection('users').doc(userID).update({
-            verified: true
-        });
         return llmresponse;
     });
 
-    const responses = await Promise.all(responsePromises);
+    await Promise.all(responsePromises);
          
     // Return the full generative AI response
     // to clients that may not support streaming.
-    return JSON.stringify(responses);
+    //return JSON.stringify(responses);
+    return "done"
     },
 );
 
@@ -566,7 +567,7 @@ export const promptAndReturn = ai.defineFlow({
 export const weeklyPromptRun = onSchedule(
     { schedule: "0 9 * * 1", timeZone: "America/New_York" },
     async () => {
-        await flows.runFlow("Prompt", {}); // invokes your Genkit flow
+        await verificationFlow({}); // invokes your Genkit flow
     }
 );
 

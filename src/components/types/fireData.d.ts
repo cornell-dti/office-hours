@@ -178,6 +178,7 @@ interface FireUser {
     wrapped?: boolean;
     recentlyResolvedQuestion?: ResolvedItem;
     feedbackList?: FeedbackRecord[];
+    verified?: boolean
 }
 
 interface FirePendingUser {

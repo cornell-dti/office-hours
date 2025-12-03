@@ -278,14 +278,11 @@ export const submitFeedback =
                 const existingFeedbackList = userDoc.data()?.feedbackList || [];
                 existingFeedbackList.push(feedbackRecord);
 
-                const updateData: any = {
-                    feedbackList: existingFeedbackList,
+                const updateData: Partial<FireUser>= {
+                    feedbackList: existingFeedbackList, verified: false
                 };
 
                 // Only set verified if it doesn’t exist yet
-                if (userDoc.data().verified === undefined && verified !== undefined) {
-                    updateData.verified = verified;
-                }
 
                 await updateDoc(usersRef, updateData);
             } catch (error) {

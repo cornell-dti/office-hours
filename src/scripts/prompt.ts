@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { doc, getDoc } from "firebase/firestore";
+import { updateDoc } from "firebase/firestore";
 import { firestore } from '../firebase';
 
 /**Inteface for written feedback being sent to LLM*/
@@ -21,8 +22,8 @@ function createAnalysisPrompt(feedback: FeedbackData) {
             "appropriateness": "[0-5 | 6-10 | 11-15 | 16-25 | 26+]",
             "inappropriate language": "[yes | no]",
         }
-        Return yes if the appropriateness is 10 or higher and innapropriate language is no. 
-        Return no otherwise.
+        Return "yes" if the appropriateness is 10 or higher and innapropriate language is no. 
+        Return "no" otherwise.
     `;
 }
 
@@ -70,13 +71,27 @@ async function analyzeFeedbackResponses(userId : string) {
 
         if (feedbackSnap.exists()) {
             const data = feedbackSnap.data() as FireUser;
-            for (const record of data.feedbackList!) {
-                // eslint-disable-next-line 
-                const analysis = await analyzeFeedback(record);
+            if (data.feedbackList === undefined) {
+                console.log("Undefined feedback list")
+                return analyses;
+            }
+            const list = data.feedbackList!
+            for (const record of list) {
+                // eslint-disable-next-line  
+                if (record.verification === undefined) {
+                    const analysis = await analyzeFeedback(record);
+                if (analysis === "yes") {
+                    record.verification = true
+                } else {
+                    record.verification = false
+                }
                 analyses.push(analysis);
                 // eslint-disable-next-line no-console
                 console.log(`Analysis for ${userId}:`, analysis);
+                } 
             }
+            const updatedData: Partial<FireUser> = {feedbackList: list, verified: true}
+            await updateDoc(feedbackRef, updatedData)
             return analyses;
         } else {
             // eslint-disable-next-line no-console
@@ -86,6 +101,7 @@ async function analyzeFeedbackResponses(userId : string) {
         // eslint-disable-next-line no-console
         console.error("Error analyzing feedback:", error);
     }
+    
     
 }
 
