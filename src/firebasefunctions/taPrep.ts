@@ -1,15 +1,117 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
-import { query, where, doc, getDocs, collection, Timestamp, setDoc} from 'firebase/firestore';
+import { query, where, getDocs, collection, Timestamp, addDoc} from 'firebase/firestore';
 import { pipeline } from "@huggingface/transformers";
-import { DBSCAN } from "density-clustering";
+// import { DBSCAN } from "density-clustering";
 import kmeans, { KMeans } from "kmeans-ts";
 import { GoogleGenAI } from "@google/genai";
 import { firestore } from '../firebase';
 import 'dotenv/config'; 
-import { oberlinData } from './oberlinData';
-import { dummyData } from './dummyData';
+// import { oberlinData } from './oberlinData';
+// import { dummyData } from './dummyData';
+import { getQuestionsQuery } from '../firehooks';
 
+export type TrendData = {
+    title: string;
+    volume: number; 
+    mention: string;
+    assignment: string;
+    questions: string[];
+    firstMentioned : Date;
+};
+
+export type TrendDocument = {
+    title: string;
+    questions: QuestionDetail[];
+    volume: number;
+    firstMentioned: Timestamp;
+    lastUpdated: Timestamp;
+    assignmentName: string;
+    primaryTag: string;
+    secondaryTag: string;
+}
+
+export type QuestionDetail = {
+    content: string;
+    timestamp: Timestamp;
+    questionId: string;
+};
+
+export type QuestionData = {
+    content: string;
+    primaryTag: string;
+    secondaryTag: string;
+    timestamp: Timestamp;
+    questionId: string;
+}
+
+export type TitledCluster = {
+    title: string,
+    questions: string[]
+}
+
+async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
+    const tagMap = new Map<string, string>();
+    const tagRef = collection(firestore, "tags");
+
+    const uniqueTagIds = Array.from(new Set(tagIds.filter(id => id)));
+
+    const tagPromises = uniqueTagIds.map(async (tagId) => {
+        try {
+            const tagQuery = query(
+                tagRef,
+                where("__name__", "==", tagId)
+            );
+            const tagSnapshot = await getDocs(tagQuery);
+            
+            if (!tagSnapshot.empty){
+                const tagDoc = tagSnapshot.docs[0];
+                const data = tagDoc.data();
+                return { id: tagId, name: data.name || tagId };
+            }
+            return { id : tagId, name: tagId };
+        } catch (error) {
+            console.error(`Error fetching tag ${tagId}:`, error);
+            return { id: tagId, name: tagId };
+        }
+    });
+
+    const tags = await Promise.all(tagPromises);
+    tags.forEach(tag => tagMap.set(tag.id, tag.name));
+
+    return tagMap;
+}
+
+
+async function getQuestions( courseId: string ): Promise<QuestionData[]> {
+    const questions : Array<QuestionData> = [];
+    const tagIds: string[] = [];
+
+    const q = getQuestionsQuery(courseId);
+    const questionSnapshot = await getDocs(q);
+    questionSnapshot.forEach(doc => {
+        const data = doc.data();
+        tagIds.push(data.primaryTag, data.secondaryTag);
+        questions.push({
+            content: data.content,
+            primaryTag: data.primaryTag,
+            secondaryTag: data.secondaryTag,
+            timestamp: data.timeEntered,
+            questionId: doc.id
+        });
+    });
+
+    const tagMap = await getTagNames(tagIds);
+
+    const result : QuestionData[] = questions.map(q => ({
+        content: q.content,
+        primaryTag: tagMap.get(q.primaryTag) || q.primaryTag,
+        secondaryTag: tagMap.get(q.secondaryTag) || q.secondaryTag,
+        timestamp: q.timestamp,
+        questionId: q.questionId
+    }));
+
+    return result;
+}
 /**
  * `getEmbeddings` uses a typescript library for SBERT to embed each sentence 
  * in `questions` into numerical vectors represented as number[][].
@@ -40,11 +142,11 @@ async function clusterEmbeddings(embeddings: number[][], k = 2): Promise<KMeans>
  * @param minPts min number of points required to become a cluster
  * @returns 
  */
-async function dbscanClustering(embeddings: number[][], epsilon: number, minPts: number) {
-    const dbscan = new DBSCAN();
-    const clusters = dbscan.run(embeddings, epsilon, minPts);
-    return { clusters, noise: dbscan.noise };
-}
+// async function dbscanClustering(embeddings: number[][], epsilon: number, minPts: number) {
+//     const dbscan = new DBSCAN();
+//     const clusters = dbscan.run(embeddings, epsilon, minPts);
+//     return { clusters, noise: dbscan.noise };
+// }
 
 /**
  * Creates and returns a prompt to pass into an LLM
@@ -123,18 +225,33 @@ function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<
  * @param questions full question data list
  * @returns record containing the cluster number and its corresponding question list
  */
-function groupQuestionsDBSCAN(clusters: number[][], questions: string[], noise: number[]): Record<number, string[]> {
-    const res: Record<number, string[]> = {};
+// function groupQuestionsDBSCAN(clusters: number[][], questions: string[], noise: number[]): Record<number, string[]> {
+//     const res: Record<number, string[]> = {};
     
-    clusters.forEach((clusterIndices, clusterIdx) => {
-        res[clusterIdx] = clusterIndices.map(qIdx => questions[qIdx]);
-    });
+//     clusters.forEach((clusterIndices, clusterIdx) => {
+//         res[clusterIdx] = clusterIndices.map(qIdx => questions[qIdx]);
+//     });
 
-    if (noise.length > 0) {
-        res[-1] = noise.map(qIdx => questions[qIdx]);
-    }
+//     if (noise.length > 0) {
+//         res[-1] = noise.map(qIdx => questions[qIdx]);
+//     }
 
-    return res;
+//     return res;
+// }
+
+function clustersToQuestionData(
+    clusters: TitledCluster[],
+    allQuestions: QuestionData[]
+): Array<{ title: string; questions: QuestionData[] }> {
+    const questionMap = new Map<string, QuestionData>();
+    allQuestions.forEach(q => questionMap.set(q.content, q));
+
+    return clusters.map(cluster => ({
+        title: cluster.title,
+        questions: cluster.questions
+            .map(content => questionMap.get(content))
+            .filter((q) : q is QuestionData => q !== undefined)
+    }));
 }
 
 /**
@@ -198,77 +315,140 @@ async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
  * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
  * Returns a list of each cluster and its questions along with a title for the cluster.
  * @param questions list of question data
- */
-async function dbscanMain(questions: string[]): Promise<TitledCluster[]> {
-    const res: TitledCluster[] = [];
-    console.log("dbscan test");
-    console.time("Total process");
-    const embeddings = await getEmbeddings(questions);
+//  */
+// async function dbscanMain(questions: string[]): Promise<TitledCluster[]> {
+//     const res: TitledCluster[] = [];
+//     console.log("dbscan test");
+//     console.time("Total process");
+//     const embeddings = await getEmbeddings(questions);
 
-    const { clusters, noise } = await dbscanClustering(embeddings, 1.0, 2);
-    // console.log("Clusters:", clusters);
-    // console.log("Noise:", noise);
+//     const { clusters, noise } = await dbscanClustering(embeddings, 1.0, 2);
+//     // console.log("Clusters:", clusters);
+//     // console.log("Noise:", noise);
 
-    const groups = groupQuestionsDBSCAN(clusters, dummyData, noise);
-    // console.log(groups);
+//     const groups = groupQuestionsDBSCAN(clusters, dummyData, noise);
+//     // console.log(groups);
 
-    for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
-        console.log(`\nCluster ${clusterIdx}:`);
-        console.log("Questions:", questionsInCluster);
+//     for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
+//         console.log(`\nCluster ${clusterIdx}:`);
+//         console.log("Questions:", questionsInCluster);
 
-        if (clusterIdx === '-1') {
-            console.log("(Unclustered/outlier questions)");
-            // eslint-disable-next-line no-continue
-            continue;
+//         if (clusterIdx === '-1') {
+//             console.log("(Unclustered/outlier questions)");
+//             // eslint-disable-next-line no-continue
+//             continue;
+//         }
+
+//         try {
+//             // eslint-disable-next-line no-await-in-loop
+//             const result = await getTitles(questionsInCluster);
+//             res[Number(clusterIdx)] = { title: result, questions: questionsInCluster };
+//             console.log("Generated title:", result.title);
+//         } catch (err) {
+//             console.error("LLM call failed:", err);
+//             res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
+//         }
+//     }
+//     console.timeEnd("Total process");
+//     return res;
+// }
+
+function trendsByAssignment (
+    clusters: Array<{ title: string; questions: QuestionData[] }>
+) : TrendDocument[] {
+    const trends : TrendDocument[] = [];
+    
+    for (const c of clusters){
+        const byAssignment = new Map<string, QuestionData[]>();
+
+        for (const q of c.questions){
+            const assignmentName = `${q.primaryTag} ${q.secondaryTag}`;
+            if (!byAssignment.has(assignmentName)){
+                byAssignment.set(assignmentName, []);
+            }
+            byAssignment.get(assignmentName)?.push(q);
         }
+        const entries = Array.from(byAssignment.entries());
+        entries.forEach(([assignmentName, questions]) => {
+            const timestamps = questions.map(q => q.timestamp.toMillis());
+            const firstMentioned = Timestamp.fromMillis(Math.min(...timestamps));
+            const lastUpdated = Timestamp.fromMillis(Math.max(...timestamps));
 
-        try {
-            // eslint-disable-next-line no-await-in-loop
-            const result = await getTitles(questionsInCluster);
-            res[Number(clusterIdx)] = { title: result, questions: questionsInCluster };
-            console.log("Generated title:", result.title);
-        } catch (err) {
-            console.error("LLM call failed:", err);
-            res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
-        }
+            trends.push({
+                title: c.title,
+                questions: questions.map(q => ({
+                    content: q.content,
+                    timestamp: q.timestamp,
+                    questionId: q.questionId
+                })),
+                volume: questions.length,
+                firstMentioned,
+                lastUpdated,
+                assignmentName, 
+                primaryTag: questions[0].primaryTag,
+                secondaryTag: questions[0].secondaryTag
+            });
+        });
     }
-    console.timeEnd("Total process");
-    return res;
+
+    return trends;
 }
 
-// kmeans vs dbscan below, commenting out one at a time to run specific ones:
-kMeansMain(dummyData);
-// dbscanMain(dummyData);
-// kMeansMain(oberlinData);
-// dbscanMain(oberlinData);
+async function saveTrends( courseId: string, trends: TrendDocument[]): Promise<void>{
+    const trendsRef = collection(firestore, `courses/${courseId}/trends`);
 
+    const p = trends.map(async (trend) => {
+        try {
+            await addDoc(trendsRef, trend);
+        } catch (error){
+            console.error(`Error adding trend ${trend.title}:`, error);
+        }
+    });
 
-// draft work for next portion : D - ignore for now
+    await Promise.all(p);
+}
 
-// export type QuestionData = {
-//     questions: string[];
-//     tags: FireTag[];
-//     timeStamps: FireTimestamp[];
-// }
+function getRelativeTime(timestamp: Timestamp) : string {
+    const now = Date.now();
+    const then = timestamp.toMillis();
+    const diffMs = now - then;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-// export const getStudentTrends = async(
-//     courseId: string,
-// ) : Promise<TrendData[]> => {
-//     return [];
-// };
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "1 day ago";
+    return `${diffDays} days ago`;
+}
 
-// each course you get the end and start dates which are question query time?
-// maybe helper func to look through questions collection to find all questions belonging to a course? 
-// (iterate through questions in the time range and then if the sessionid's courseid is the courseid inputted, 
-// then add to the list?)
+export async function generateStudentTrends(
+    courseId: string,
+) : Promise<void>{
+    const questions = await getQuestions(courseId);
+    const questionStrings = questions.map(q => q.content);
+    const clusters = await kMeansMain(questionStrings);
 
-// also need to grab like Assignment 1, Assignment 2, etc...
-// async function getAssignments()
-// from the firetags assoc w the questions, find the name of the prim and sec tags, concat. 
+    const processedClusters = clustersToQuestionData(clusters, questions);
 
-// async function getQuestions( courseId: string ): Promise<QuestionData> {
-//     const coursesRef = collection(firestore, "courses");
-//     const questionRef = collection(firestore, "questions");
-    
-    
-// }
+    const trends = trendsByAssignment(processedClusters);
+
+    await saveTrends(courseId, trends);
+}
+
+export async function getStudentTrends(courseId: string) : Promise<TrendData[]>{
+    const trendsRef = collection(firestore, `courses/${courseId}/trends`);
+    const snapshot = await getDocs(trendsRef);
+
+    const trends : TrendData[] = [];
+    snapshot.forEach(doc => {
+        const data = doc.data() as TrendDocument;
+        trends.push({
+            title: data.title,
+            volume: data.volume,
+            mention: getRelativeTime(data.firstMentioned),
+            assignment: data.assignmentName,
+            questions: data.questions.map(q => q.content),
+            firstMentioned: data.firstMentioned.toDate()
+        });
+    });
+
+    return trends;
+}
