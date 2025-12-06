@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 // import { DropdownItemProps } from 'semantic-ui-react';
@@ -38,8 +39,8 @@ const TAView = ({ match: { params: { courseId } } }: RouteComponentProps<{ cours
             />
             <section className="rightOfSidebar">
                 <div className="main">
-                    <TAStudentTrends/>
-                    <TAResources courseId={courseId} />
+                    <TAStudentTrends courseId={courseId}/>
+                    <TAResources courseId={courseId}/>
                 </div>
             </section>
         </div>

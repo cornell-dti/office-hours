@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { query, where, getDocs, collection, Timestamp, addDoc} from 'firebase/firestore';
-import { pipeline } from "@huggingface/transformers";
+// import { pipeline } from "@huggingface/transformers";
+import * as use from "@tensorflow-models/universal-sentence-encoder";
 // import { DBSCAN } from "density-clustering";
 import kmeans, { KMeans } from "kmeans-ts";
 import { GoogleGenAI } from "@google/genai";
@@ -119,9 +120,9 @@ async function getQuestions( courseId: string ): Promise<QuestionData[]> {
  * @returns the sentence embeddings for the list of questions.
  */
 async function getEmbeddings(questions: string[]): Promise<number[][]>{
-    const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
-    const output = await extractor(questions, { pooling: 'mean', normalize: true });
-    return output.tolist();
+    const model = await use.load();
+    const embeddings = await model.embed(questions);
+    return embeddings.array();
 }
 
 /**
@@ -176,13 +177,13 @@ function createTitlePrompt(questions: string[]){
  * @returns the topic title belonging to the cluster
  */
 async function getTitles(questions: string[]) {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.REACT_APP_GEMINI_API_KEY) {
         throw new Error("LLM API KEY not found in environment");
     }
 
     const prompt = createTitlePrompt(questions);
     const ai = new GoogleGenAI({
-        apiKey: process.env.GEMINI_API_KEY,
+        apiKey: process.env.REACT_APP_GEMINI_API_KEY,
     });
 
     const response = await ai.models.generateContent({
@@ -430,6 +431,8 @@ export async function generateStudentTrends(
 
     const trends = trendsByAssignment(processedClusters);
 
+    console.log(trends);
+
     await saveTrends(courseId, trends);
 }
 
@@ -441,7 +444,7 @@ export async function getStudentTrends(courseId: string) : Promise<TrendData[]>{
     snapshot.forEach(doc => {
         const data = doc.data() as TrendDocument;
         trends.push({
-            title: data.title,
+            title: data.title.toLowerCase(),
             volume: data.volume,
             mention: getRelativeTime(data.firstMentioned),
             assignment: data.assignmentName,

@@ -438,5 +438,5 @@ export const getTagsQuery = (courseId: string) => query(
     ,where('courseId', '==', courseId));
 
 export const getQuestionsQuery = (courseId: string) => query(
-    collection(firestore,'questions')
+    collection(firestore,'questions-test-prep')
     ,where('courseId', '==', courseId));
