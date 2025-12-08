@@ -1,16 +1,13 @@
 /* eslint-disable no-console */
 import { query, where, getDocs, collection, Timestamp, addDoc} from 'firebase/firestore';
-// import { pipeline } from "@huggingface/transformers";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
-// import { DBSCAN } from "density-clustering";
 import kmeans, { KMeans } from "kmeans-ts";
 import { GoogleGenAI } from "@google/genai";
 import { firestore } from '../firebase';
 import 'dotenv/config'; 
-// import { oberlinData } from './oberlinData';
-// import { dummyData } from './dummyData';
 import { getQuestionsQuery } from '../firehooks';
 
+// Type for frontend TAStudentTrends component
 export type TrendData = {
     title: string;
     volume: number; 
@@ -20,6 +17,7 @@ export type TrendData = {
     firstMentioned : Date;
 };
 
+// Type for Firebase
 export type TrendDocument = {
     title: string;
     questions: QuestionDetail[];
@@ -30,6 +28,7 @@ export type TrendDocument = {
     primaryTag: string;
     secondaryTag: string;
 }
+
 
 export type QuestionDetail = {
     content: string;
@@ -50,6 +49,11 @@ export type TitledCluster = {
     questions: string[]
 }
 
+/**
+ * Given a list of tag ids, return a map of their id to their name.
+ * @param tagIds string list of firetag ids
+ * @returns 
+ */
 async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
     const tagMap = new Map<string, string>();
     const tagRef = collection(firestore, "tags");
@@ -82,7 +86,13 @@ async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
     return tagMap;
 }
 
-
+/**
+ * Given a course id, fetch the questions belonging to the course, 
+ * the tags associated with the course, and return a list of the content, 
+ * tag information, timestamps, and ids.
+ * @param courseId id for the course
+ * @returns 
+ */
 async function getQuestions( courseId: string ): Promise<QuestionData[]> {
     const questions : Array<QuestionData> = [];
     const tagIds: string[] = [];
@@ -135,19 +145,6 @@ async function clusterEmbeddings(embeddings: number[][], k = 2): Promise<KMeans>
     const clusters: KMeans = kmeans(embeddings, k);
     return clusters;
 }
-
-/**
- * `dbscanClustering` uses DBSCAN algorithm to cluster the embedded questions.
- * @param embeddings embedded vectors of question data
- * @param epsilon the max distance between 2 pts to be considered neighbors
- * @param minPts min number of points required to become a cluster
- * @returns 
- */
-// async function dbscanClustering(embeddings: number[][], epsilon: number, minPts: number) {
-//     const dbscan = new DBSCAN();
-//     const clusters = dbscan.run(embeddings, epsilon, minPts);
-//     return { clusters, noise: dbscan.noise };
-// }
 
 /**
  * Creates and returns a prompt to pass into an LLM
@@ -221,25 +218,9 @@ function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<
 }
 
 /**
- * Takes the output of dbscan clustering to obtain the list of questions that belong in each cluster. 
- * @param clusters output of dbscan clustering
- * @param questions full question data list
- * @returns record containing the cluster number and its corresponding question list
+ * Helper function to convert between titled clusters and question data objects.
+ * @returns an array of the title and its corresponding question data object. 
  */
-// function groupQuestionsDBSCAN(clusters: number[][], questions: string[], noise: number[]): Record<number, string[]> {
-//     const res: Record<number, string[]> = {};
-    
-//     clusters.forEach((clusterIndices, clusterIdx) => {
-//         res[clusterIdx] = clusterIndices.map(qIdx => questions[qIdx]);
-//     });
-
-//     if (noise.length > 0) {
-//         res[-1] = noise.map(qIdx => questions[qIdx]);
-//     }
-
-//     return res;
-// }
-
 function clustersToQuestionData(
     clusters: TitledCluster[],
     allQuestions: QuestionData[]
@@ -263,78 +244,45 @@ function clustersToQuestionData(
  */
 async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
     const res: TitledCluster[] = [];
-    console.time("Total process");
     const embeddings = await getEmbeddings(questions);
 
     const k = Math.ceil(Math.sqrt(questions.length));
-    console.log("kMeans test, k = ", k);
 
     const c: KMeans = await clusterEmbeddings(embeddings, k);
-    // console.log(c);
 
     const groups: Record<number, string[]> = groupQuestionsByCluster(c, questions);
-    // console.log(groups);
 
-    for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
-        console.log(`\nCluster ${clusterIdx}:`);
-        console.log("Questions:", questionsInCluster);
-
+    const clusterPromises = Object.entries(groups).map(async ([clusterIdx, questionsInCluster ]) => {
         try {
-            // eslint-disable-next-line no-await-in-loop
             const result = await getTitles(questionsInCluster) as { title: string };
-            res[Number(clusterIdx)] = { title: result.title, questions: questionsInCluster};
-            console.log("Generated title:", result.title);
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: result.title, questions: questionsInCluster },
+            };
         } catch (err) {
             console.error("LLM call failed:", err);
-            res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: "Untitled", questions: questionsInCluster },
+            };
         } 
+    });
+
+    const clusterResults = await Promise.all(clusterPromises);
+
+    for (const { clusterIdx, data } of clusterResults ){
+        res[clusterIdx] = data;
     }
-    console.timeEnd("Total process");
+
     return res;
 }
+
 /**
- * Performs sentence embedding, dbscan clustering, and LLM prompting to
- * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
- * Returns a list of each cluster and its questions along with a title for the cluster.
- * @param questions list of question data
-//  */
-// async function dbscanMain(questions: string[]): Promise<TitledCluster[]> {
-//     const res: TitledCluster[] = [];
-//     console.log("dbscan test");
-//     console.time("Total process");
-//     const embeddings = await getEmbeddings(questions);
-
-//     const { clusters, noise } = await dbscanClustering(embeddings, 1.0, 2);
-//     // console.log("Clusters:", clusters);
-//     // console.log("Noise:", noise);
-
-//     const groups = groupQuestionsDBSCAN(clusters, dummyData, noise);
-//     // console.log(groups);
-
-//     for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
-//         console.log(`\nCluster ${clusterIdx}:`);
-//         console.log("Questions:", questionsInCluster);
-
-//         if (clusterIdx === '-1') {
-//             console.log("(Unclustered/outlier questions)");
-//             // eslint-disable-next-line no-continue
-//             continue;
-//         }
-
-//         try {
-//             // eslint-disable-next-line no-await-in-loop
-//             const result = await getTitles(questionsInCluster);
-//             res[Number(clusterIdx)] = { title: result, questions: questionsInCluster };
-//             console.log("Generated title:", result.title);
-//         } catch (err) {
-//             console.error("LLM call failed:", err);
-//             res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
-//         }
-//     }
-//     console.timeEnd("Total process");
-//     return res;
-// }
-
+ * Given a list of clusters, create the TrendDocument object for each cluster. 
+ * Also grabs the assignment name corresponding the the tags for that question.
+ * @param clusters the list of clusters (title and question information)
+ * @returns the TrendDocument[] corresponding to each cluster. 
+ */
 function trendsByAssignment (
     clusters: Array<{ title: string; questions: QuestionData[] }>
 ) : TrendDocument[] {
@@ -376,6 +324,11 @@ function trendsByAssignment (
     return trends;
 }
 
+/**
+ * Saves list of trends to a subcollection within the course document corresopnding to the courseId. 
+ * @param courseId id of the course
+ * @param trends list of TrendDocuments
+ */
 async function saveTrends( courseId: string, trends: TrendDocument[]): Promise<void>{
     const trendsRef = collection(firestore, `courses/${courseId}/trends`);
 
@@ -390,6 +343,9 @@ async function saveTrends( courseId: string, trends: TrendDocument[]): Promise<v
     await Promise.all(p);
 }
 
+/**
+ * Helper function to convert a timestamp to a string describing the relative time to "now".
+ */
 function getRelativeTime(timestamp: Timestamp) : string {
     const now = Date.now();
     const then = timestamp.toMillis();
@@ -401,6 +357,12 @@ function getRelativeTime(timestamp: Timestamp) : string {
     return `${diffDays} days ago`;
 }
 
+/**
+ * Full workflow, grabs the questions from firebase, sends the content into the 
+ * kMeansMain clustering algorithm + LLM titling, processes the clusters to be formatted into a 
+ * TrendDocument[] and stores the TrendDocument[] to firebase. 
+ * @param courseId id for the course
+ */
 export async function generateStudentTrends(
     courseId: string,
 ) : Promise<void>{
@@ -412,11 +374,16 @@ export async function generateStudentTrends(
 
     const trends = trendsByAssignment(processedClusters);
 
-    console.log(trends);
-
     await saveTrends(courseId, trends);
 }
 
+/**
+ * Hook for frontend component. Fetches the trend documents from firebase from the trends subcollection
+ * associated with the course document corresponding to `courseId`. Formats it into a TrendData[] object for 
+ * frontend use. 
+ * @param courseId id for the course
+ * @returns 
+ */
 export async function getStudentTrends(courseId: string) : Promise<TrendData[]>{
     const trendsRef = collection(firestore, `courses/${courseId}/trends`);
     const snapshot = await getDocs(trendsRef);
