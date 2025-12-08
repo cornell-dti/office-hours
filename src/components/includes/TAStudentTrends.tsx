@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { Dropdown } from 'semantic-ui-react';
@@ -10,16 +9,7 @@ type TAStudentTrendsProps = {
     courseId: string;
 }
 
-// params? for backend fetching maybe?
-const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
-    const timeOptions = ["Today", "This week", "This month", "This semester"];
-    const timeOptionsArray = timeOptions.map(( label: string ) =>
-        ({ key: label, text: label, value: label })
-    );
-
-    const filter = ["First Mentioned", "Query Volume"];
-    const filtersArray = filter.map((label: string) => ({key: label, text: label, value: label}));
-   
+const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {  
     const [filteredData, setFilteredData] = useState<TrendData[]>([]);
 
     const[allTrends, setAllTrends] = useState<TrendData[]>([]);
@@ -31,14 +21,21 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
         return ["All Tasks", ...uniqueTasks.sort()];
     }, [allTrends]);
     const tasksArray = tasks.map((label: string) => ({key: label, text: label, value: label }));
+    
+    const timeOptions = ["Today", "This week", "This month", "This semester"];
+    const timeOptionsArray = timeOptions.map(( label: string ) =>
+        ({ key: label, text: label, value: label })
+    );
+
+    const filter = ["First Mentioned", "Query Volume"];
+    const filtersArray = filter.map((label: string) => ({key: label, text: label, value: label}));
 
     // useStates to track filter selection
     const [timeFilter, setTimeFilter] = useState("This week");
     const [taskFilter, setTaskFilter] = useState("All Tasks");
-    // set tasks default to most recent assignment
     const [sortFilter, setSortFilter] = useState("Query Volume");
 
-    // for running generateStudentTrends once for testing (will be scheduled)
+    // for running generateStudentTrends once. for testing, (will be scheduled)
     // useEffect(() => {
     //     const initTrends = async () => {
     //         try {
@@ -208,9 +205,9 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
                         No trends found for the selected filters
                     </p>
                 ) : (
-                    filteredData.map((topic, index) => (
+                    filteredData.map((topic) => (
                         <TAQuery
-                            key={`${topic.title}-${topic.assignment}-${index}`}
+                            key={`${topic.title}-${topic.assignment}`}
                             title={topic.title}
                             volume={topic.volume}
                             mention={topic.mention}
