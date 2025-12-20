@@ -86,8 +86,8 @@ const WaitTimeGraph = (props: Props) => {
     const today = new Date();
     // Memoizing this is important to avoid re-renders, since each Date object would be considered "new"
     const selectedDate = React.useMemo(
-    () => new Date(props.selectedDateEpoch),
-    [props.selectedDateEpoch]
+        () => new Date(props.selectedDateEpoch),
+        [props.selectedDateEpoch]
     );
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const selectedDay = dayNames[(selectedDate.getDay() + 6) % 7]; // Adjust for Sunday=0
