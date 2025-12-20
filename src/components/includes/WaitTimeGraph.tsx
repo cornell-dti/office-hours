@@ -84,7 +84,11 @@ const WaitTimeGraph = (props: Props) => {
 
     const scale = Math.min(1, vw / 1024);
     const today = new Date();
-    const selectedDate = new Date(props.selectedDateEpoch);
+    // Memoizing this is important to avoid re-renders, since each Date object would be considered "new"
+    const selectedDate = React.useMemo(
+    () => new Date(props.selectedDateEpoch),
+    [props.selectedDateEpoch]
+    );
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const selectedDay = dayNames[(selectedDate.getDay() + 6) % 7]; // Adjust for Sunday=0
     
@@ -114,6 +118,7 @@ const WaitTimeGraph = (props: Props) => {
     React.useEffect(() => {
         let ignore = false;
         async function loadSessionTimeRange() {
+
             // Check if there are office hours (using the prop directly for stability)
             const hasOfficeHoursCheck = typeof props.hasSessionsForSelectedDay === 'boolean' 
                 ? props.hasSessionsForSelectedDay 
