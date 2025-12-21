@@ -20,6 +20,7 @@
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.2",
     "firebase-tools": "^13.6.0",
+    "moment-timezone": "^0.5.45",
     "twilio": "^3.71.3"
   },
   "devDependencies": {

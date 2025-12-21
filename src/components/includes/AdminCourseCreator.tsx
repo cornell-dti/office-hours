@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { doc, setDoc, Timestamp} from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
+import { generateInitialWaitTimeMap } from '../../firebasefunctions/waitTimeMap';
 
 const startDate = new Date(START_DATE);
 const endDate = new Date(END_DATE);
@@ -45,7 +46,13 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             professors: [],
             tas: []
         };
-        setDoc(doc(firestore, 'courses', courseId), course).then(onSubmit);
+        // Add waitTimeMap field separately to ensure it's included in Firestore
+        // Initialize with all time slots (12 AM - 11:30 PM) for all days of the week
+        const courseWithWaitTimeMap = {
+            ...course,
+            waitTimeMap: generateInitialWaitTimeMap()
+        };
+        setDoc(doc(firestore, 'courses', courseId), courseWithWaitTimeMap).then(onSubmit);
     };
 
     return (

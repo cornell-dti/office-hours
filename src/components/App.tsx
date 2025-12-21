@@ -36,7 +36,9 @@ import { Analytics } from "./includes/Analytics";
 import { userUpload } from "../firebasefunctions/user";
 import { useMyUser, useAllCourses } from "../firehooks";
 import { CURRENT_SEMESTER } from "../constants";
-import ProfessorStudentView from "./pages/ProfessorStudentView";
+import AdminStudentView from "./pages/AdminStudentView";
+import TAView from "./pages/TAView";
+import TAAnalyticsView from "./pages/TAAnalyticsView";
 
 ReactGA.initialize("UA-123790900-1");
 
@@ -138,6 +140,7 @@ const useRouteActionWithPermissionCheck = (
 type PrivateRouteProps<P extends { [K in keyof P]?: any }> = {
     component: React.ComponentType<RouteComponentProps<P>>;
     requireProfessor: boolean;
+    requireTA: boolean;
     path: string;
     exact?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -147,6 +150,7 @@ type PrivateRouteProps<P extends { [K in keyof P]?: any }> = {
 const PrivateRoute = <P extends { [K in keyof P]?: any }>({
     component,
     requireProfessor,
+    requireTA,
     ...rest
 }: PrivateRouteProps<P>) => {
     const courseId: string | null | undefined = rest.computedMatch.params.courseId;
@@ -213,58 +217,119 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                     <Route path="/" component={Analytics} />
                     <Switch>
                         <Route path="/login" component={LoginView} />
-                        <PrivateRoute path="/admin" component={AdminView} requireProfessor={false} />
-                        <PrivateRoute path="/blog" component={BlogCMS} requireProfessor={false} />
-                        <PrivateRoute path="/edit" component={CourseEditView} requireProfessor={false} />
-                        <PrivateRoute path="/home" component={CourseSelectionView} requireProfessor={false} />
+                        <PrivateRoute 
+                            path="/admin" 
+                            component={AdminView} 
+                            requireProfessor={false} 
+                            requireTA={false}
+                        />
+                        <PrivateRoute 
+                            path="/blog" 
+                            component={BlogCMS} 
+                            requireProfessor={false} 
+                            requireTA={false}
+                        />
+                        <PrivateRoute 
+                            path="/edit" 
+                            component={CourseEditView} 
+                            requireProfessor={false} 
+                            requireTA={false}
+                        />
+                        <PrivateRoute 
+                            path="/home"
+                            component={CourseSelectionView} 
+                            requireProfessor={false} 
+                            requireTA={false}
+                        />
                         <PrivateRoute
                             path="/professor-tags/course/:courseId"
                             component={ProfessorTagsView}
                             exact={true}
                             requireProfessor
+                            requireTA={false}
                         />
                         <PrivateRoute
                             path="/professor-people/course/:courseId"
                             component={ProfessorPeopleView}
                             exact={true}
                             requireProfessor
+                            requireTA={false}
                         />
                         <PrivateRoute
                             path="/professor-dashboard/course/:courseId"
                             component={ProfessorDashboardView}
                             exact={true}
                             requireProfessor
+                            requireTA={false}
                         />
                         <PrivateRoute
                             path="/professor-roles/course/:courseId"
                             component={ProfessorRoles}
                             exact={true}
                             requireProfessor
+                            requireTA={false}
                         />
                         <PrivateRoute
                             path="/professor-student-view/course/:courseId/session/:sessionId/:page?"
-                            component={ProfessorStudentView}
+                            component={AdminStudentView}
                             exact={true}
                             requireProfessor
+                            requireTA={true}
                         />
                         <PrivateRoute
                             path="/professor-student-view/course/:courseId"
-                            component={ProfessorStudentView}
+                            component={AdminStudentView}
                             exact={true}
                             requireProfessor
+                            requireTA={true}
                         />
                         <PrivateRoute
                             path="/professor/course/:courseId"
                             component={ProfessorView}
                             exact={true}
                             requireProfessor
+                            requireTA={false}
+                        />
+                        <PrivateRoute 
+                            path="/ta-analytics/course/:courseId"
+                            component={TAAnalyticsView}
+                            exact={true}
+                            requireProfessor={false}
+                            requireTA={true}
+                        />
+                        <PrivateRoute
+                            path="/ta/course/:courseId"
+                            component={TAView}
+                            exact={true}
+                            requireProfessor={false}
+                            requireTA={true}
+                        />
+                        <PrivateRoute
+                            path="/ta-student-view/course/:courseId"
+                            component={AdminStudentView}
+                            exact={true}
+                            requireProfessor={false}
+                            requireTA={true}
+                        />
+                        <PrivateRoute
+                            path="/ta-student-view/course/:courseId/session/:sessionId/:page?"
+                            component={AdminStudentView}
+                            exact={true}
+                            requireProfessor={false}
+                            requireTA={true}
                         />
                         <PrivateRoute
                             path="/course/:courseId/session/:sessionId/:page?"
                             component={SplitView}
                             requireProfessor={false}
+                            requireTA={false}
                         />
-                        <PrivateRoute path="/course/:courseId" component={SplitView} requireProfessor={false} />
+                        <PrivateRoute 
+                            path="/course/:courseId" 
+                            component={SplitView} 
+                            requireProfessor={false} 
+                            requireTA={false}
+                        />
                         <DefaultRoute />
                     </Switch>
                 </div>
