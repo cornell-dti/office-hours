@@ -6,9 +6,14 @@ import { CURRENT_SEMESTER, START_DATE, END_DATE } from "../../constants";
 import { addPendingCourse } from "../../firebasefunctions/courses";
 import CreateCourseImg from "../../media/createCourseImage.png";
 import RequestSentImg from "../../media/createCourseRequestSent.svg";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
+const nextYear = (Number.parseInt(currentYear, 10) + 1).toString();
 
 type Props = {
     setCourseCreatePopup: any;
@@ -41,12 +46,11 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
         setErrorStateFunction(false);
     };
 
-    const handleSelect = (
-        event: React.ChangeEvent<HTMLElement>,
-        setStateFunction: React.Dispatch<React.SetStateAction<string>>
-    ) => {
-        const target = event.target as HTMLSelectElement;
-        setStateFunction(target.value);
+    const handleSelectYear = (event: SelectChangeEvent) => {
+        setYear(event.target.value as string);
+    };
+    const handleSelectTerm = (event: SelectChangeEvent) => {
+        setTerm(event.target.value as string);
     };
 
     /**
@@ -102,7 +106,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
             setCourseCreatePopupEnding(true);
             setCourseCreatePopupContinue(false);
         } catch (error) {
-            setcourseIdError(code + ", " + semester + " is already a course or pending course.");
+            setcourseIdError(code + " is already a course or pending course for " + semester + ".");
             setShowCourseIdError(true);
         }
     };
@@ -116,7 +120,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                     <h1>Create a New Class</h1>
                     <div className="role_input">
                         <p className="input_label">
-                            I'm a... <span className="required">*</span>
+                            I'm a...
                         </p>
                         <p>Professor</p>
                         <input
@@ -135,11 +139,15 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                             value="HTML"
                             defaultChecked={!isProf}
                             onClick={() => setIsProf(false)}
+                            
                         />
                     </div>
                     <label htmlFor="course_code" className="input_component">
                         <p className="input_label">
-                            Course Code <span className="required">*</span>
+                            Course Code
+                        </p>
+                        <p className="input_label_valid">
+                            A valid course code is a series of characters, followed by a space, followed by numbers.
                         </p>
                         <input
                             id="course_code"
@@ -151,12 +159,15 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         <p />
                     </label>
                     {showCodeError && (
-                        <p className="errorMessage"> Please enter a valid course code to create a new class. </p>
+                        <p className="errorMessage"> Please enter a course code in the correct format: MAJOR 1234 (e.g. CS 1110). </p>
                     )}
                     {showCourseIdError && <p className="errorMessage">{courseIdError}</p>}
                     <label htmlFor="course_code" className="input_component">
                         <p className="input_label">
-                            Course Name <span className="required">*</span>
+                            Course Name
+                        </p>
+                        <p className="input_label_valid">
+                            A valid course name is not empty.
                         </p>
                         <input
                             id="course_name"
@@ -170,28 +181,38 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         <p className="errorMessage"> Please enter a valid course name to create a new class. </p>
                     )}
                     <div className="dropdownSection">
-                        <label htmlFor="year" className="input_component">
-                            <p className="input_label">
-                                Year <span className="required">*</span>
-                            </p>
-                            <select id="year" value={year} onChange={(e) => handleSelect(e, setYear)}>
-                                <option value="23">2023</option>
-                                <option value="24">2024</option>
-                                <option value="25">2025</option>
-                            </select>
-                        </label>
-                        <label htmlFor="term" className="input_component">
-                            <p className="input_label">
-                                Term <span className="required">*</span>
-                            </p>
-                            <select id="term" value={term} onChange={(e) => handleSelect(e, setTerm)}>
-                                <option value="SP">Spring</option>
-                                <option value="FA">Fall</option>
-                            </select>
-                        </label>
+
+                        <FormControl fullWidth sx={{ m: 1 }}>
+                            <InputLabel id="term-label">Term</InputLabel>
+                            <Select
+                            labelId="term-select-label"
+                            id="term-select"
+                            value={term}
+                            label="Term"
+                            onChange={handleSelectTerm}
+                            >
+                            <MenuItem value="SP">Spring</MenuItem>
+                            <MenuItem value="FA">Fall</MenuItem>
+                            </Select>
+                        </FormControl>
+                     
+                        <FormControl fullWidth sx={{ m: 1 }}>
+                            <InputLabel id="year-label">Year</InputLabel>
+                            <Select
+                            labelId="year-select-label"
+                            id="year-select"
+                            value={year}
+                            label="Year"
+                            onChange={handleSelectYear}
+                            >
+                            <MenuItem value={currentYear}>{currentYear}</MenuItem>
+                            <MenuItem value={nextYear}>{nextYear}</MenuItem>
+                            </Select>
+                        </FormControl>
+                  
                     </div>
                 </form>
-                <button type="button" className="submit" onClick={createPendingCourse}>
+                <button type="button" className={"submit " + (code && name && term && year ? "":"invalid")} onClick={createPendingCourse}>
                     Submit
                 </button>
             </div>
@@ -206,8 +227,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         <h1>Create a New Class</h1>
                     </div>
                     <p>
-                        Please proceed only if you are a professor or authorized TA. The QMI team will verify your
-                        submission.
+                        Please proceed only if you are a professor or authorized TA. The QMI team will verify your submission.
                     </p>
                     <div className="buttons">
                         <button type="button" className="cancel" onClick={() => setCourseCreatePopup(false)}>
@@ -230,7 +250,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         <h1>Request Sent</h1>
                     </div>
                     <p>
-                        The QMI team will notify you through e-mail and notification. Please wait patiently until then.
+                        The QMI team will notify you through e-mail and notification. Thank you for your patience!
                     </p>
                     <div className="buttons">
                         <button type="button" className="continue" onClick={() => setCourseCreatePopup(false)}>

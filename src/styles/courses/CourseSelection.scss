@@ -103,6 +103,7 @@
 
     hr {
         border: 2px solid #F0F0F0;
+        width:auto;
     }
 
     .EnrolledClasses {
@@ -135,7 +136,6 @@
 
 .EnrollBar {
     font-family: 'Roboto';
-    float: right;
     position: fixed;
     padding: 0px 30px;
     left: 0;
@@ -146,12 +146,12 @@
     height: 100px;
     font-size: 18px;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     flex-wrap: wrap;
 
     .EnrolledCourses.web {
         display: block;
+        margin-right: auto;
 
         .createNewCourseButton {
             text-decoration: none;
@@ -165,6 +165,11 @@
             color: white;
             background-color: #5DA9F2;
             margin: 5px;
+        }
+
+        .createNewCourseButton:hover {
+            background-color: #4E769C;
+            transition:0.3s;
         }
 
         .disabled {

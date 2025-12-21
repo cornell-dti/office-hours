@@ -30,14 +30,12 @@
     justify-content: center;
 
     img {
-      position: absolute;
-      top: 50px;
       width: 30px;
       height: 30px;
+      margin-bottom: 15px;
     }
 
     h1 {
-      translate: 0px -15px;
       color: #484848;
       font-family: 'Roboto';
       font-size: 16px;
@@ -53,8 +51,6 @@
     .submit {
         border: none;
         padding: 8px 21px;
-        position: absolute;
-        bottom: 45px;
         gap: 10px;
         width: 160px;
         height: 40px;
@@ -62,6 +58,12 @@
         color: white;
         border-radius: 4px;
         cursor: pointer;
+        margin-top:15px;
+    }
+
+    .submit.invalid {
+        background: #B6DAFC;
+
     }
 
     .role_input {
@@ -70,6 +72,7 @@
         gap: 20px;
         input {
           translate: -10px -8px;
+          accent-color: #5599DB;
         }
         margin-bottom: -10px;
     }
@@ -77,6 +80,7 @@
     .inputs {
         display: flex;
         flex-direction: column;
+        font-family: 'Roboto';
 
         .input_component {
             margin-top: 20px;
@@ -89,12 +93,19 @@
               margin: 5px 0px;
             }
 
+            .input_label_valid {
+              margin-bottom: 5px;
+              width: 320px; 
+              font-size:12px;
+            }
+
             input {
                 width: 320px;
                 height: 36px;
                 border: 1px solid #6F6F6F;
                 border-radius: 4px;
                 padding: 5px;
+                font-family: 'Roboto';
             }
             
         }
@@ -102,27 +113,15 @@
         .dropdownSection {
             display: flex;
             flex-direction: row;
-            gap: 20px;
-
-
-            select {
-                height: 36px;
-                cursor: pointer;
-                width: 150px;
-                padding: 0px 12px;
-                border: 1px solid #6F6F6F;
-                border-radius: 4px;
-                /* needed */
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                appearance: none;
-            }
+            padding-top:35px;
         }
 
         .errorMessage {
           margin: 5px 0px -10px;
           color: red;
           font-size: small;
+          width: 320px; 
+          text-align:left;
         }
     }
 
@@ -170,6 +169,7 @@
         font-size: 14px;
         line-height: 20px;
         color: #484848;
+        text-align: left;
     }
 
     .createNewClassHeader {
@@ -213,6 +213,12 @@
         background-color: white;
         border-radius: 4px;
         cursor: pointer;
+        transition:0.3s;
+      }
+
+      .cancel:hover{
+        background-color: #5598db16;
+        transition:0.3s;
       }
   
       .continue {
@@ -229,6 +235,12 @@
         color: white;
         border-radius: 4px;
         cursor: pointer;
+        transition:0.3s;
+      }
+
+      .continue:hover{
+        background-color: #4E769C;
+        transition:0.3s;
       }
   }
 }
