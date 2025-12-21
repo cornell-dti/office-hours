@@ -388,7 +388,7 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                                 <p>Your submission is pending to be reviewed by the team.</p>
                             </div>
                         )}
-                        <button
+                        {Object.keys(user.roles).length > 0 && (<button
                             type="button"
                             className={
                                 "createNewCourseButton" + (hasCurrentCourse || hasCurrentPendingCourse ? " disabled" : "")
@@ -402,6 +402,7 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                         >
                         Create a Class
                         </button>
+                        )}
                     </div>
                     <div className="buttons">
                         {!isEdit && (
