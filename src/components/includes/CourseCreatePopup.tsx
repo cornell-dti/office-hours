@@ -1,15 +1,16 @@
 import * as React from "react";
 import { useState } from "react";
 import { Icon } from "semantic-ui-react";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Timestamp } from "../../firebase"
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from "../../constants";
 import { addPendingCourse } from "../../firebasefunctions/courses";
 import CreateCourseImg from "../../media/createCourseImage.png";
 import RequestSentImg from "../../media/createCourseRequestSent.svg";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { generateInitialWaitTimeMap } from "../../firebasefunctions/waitTimeMap";
 
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
@@ -83,8 +84,8 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
 
         const courseId = (code + "-" + term + "-" + year).replace(/\s/g, "").toLowerCase();
         const semester = term + year;
-        const professors = isProf ? [userId] : [];
-        const tas = !isProf ? [userId] : [];
+        const professors = [userId];
+        const tas:string[]= [];
 
         const startMonth = term === "FA" ? "08" : "01";
         const endMonth = term === "FA" ? "12" : "05";
@@ -104,6 +105,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
             charLimit: 140,
             term,
             year,
+            waitTimeMap: generateInitialWaitTimeMap()
         };
 
         try {
@@ -165,7 +167,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                         <p />
                     </label>
                     {showCodeError && (
-                        <p className="errorMessage"> Please enter a course code in the correct format: MAJOR 1234 (e.g. CS 1110). </p>
+                        <p className="errorMessage"> 
+                        Please enter a course code in the correct format: MAJOR 1234 (e.g. CS 1110). 
+                        </p>
                     )}
                     {showCourseIdError && <p className="errorMessage">{courseIdError}</p>}
                     <label htmlFor="course_code" className="input_component">
@@ -191,34 +195,38 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                         <FormControl fullWidth sx={{ m: 1 }}>
                             <InputLabel id="term-label">Term</InputLabel>
                             <Select
-                            labelId="term-select-label"
-                            id="term-select"
-                            value={term}
-                            label="Term"
-                            onChange={handleSelectTerm}
+                                labelId="term-select-label"
+                                id="term-select"
+                                value={term}
+                                label="Term"
+                                onChange={handleSelectTerm}
                             >
-                            <MenuItem value="SP">Spring</MenuItem>
-                            <MenuItem value="FA">Fall</MenuItem>
+                                <MenuItem value="SP">Spring</MenuItem>
+                                <MenuItem value="FA">Fall</MenuItem>
                             </Select>
                         </FormControl>
                      
                         <FormControl fullWidth sx={{ m: 1 }}>
                             <InputLabel id="year-label">Year</InputLabel>
                             <Select
-                            labelId="year-select-label"
-                            id="year-select"
-                            value={year}
-                            label="Year"
-                            onChange={handleSelectYear}
+                                labelId="year-select-label"
+                                id="year-select"
+                                value={year}
+                                label="Year"
+                                onChange={handleSelectYear}
                             >
-                            <MenuItem value={currentYear}>{currentYear}</MenuItem>
-                            <MenuItem value={nextYear}>{nextYear}</MenuItem>
+                                <MenuItem value={currentYear}>{currentYear}</MenuItem>
+                                <MenuItem value={nextYear}>{nextYear}</MenuItem>
                             </Select>
                         </FormControl>
                   
                     </div>
                 </form>
-                <button type="button" className={"submit " + (code && name && term && year ? "":"invalid")} onClick={createPendingCourse}>
+                <button 
+                    type="button" 
+                    className={"submit " + (code && name && term && year ? "":"invalid")} 
+                    onClick={createPendingCourse}
+                >
                     Submit
                 </button>
             </div>
@@ -233,7 +241,8 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                         <h1>Create a New Class</h1>
                     </div>
                     <p>
-                        Please proceed only if you are a professor or authorized TA. The QMI team will verify your submission.
+                        Please proceed only if you are a professor or authorized TA. 
+                        The QMI team will verify your submission.
                     </p>
                     <div className="buttons">
                         <button type="button" className="cancel" onClick={() => setCourseCreatePopup(false)}>
