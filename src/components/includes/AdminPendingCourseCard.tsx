@@ -36,8 +36,8 @@ const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCours
         if (user) {
             const notification = {
                 title: "Class Request Rejected",
-                subtitle: "Your new class request has been rejected",
-                message: "Your new class has been removed from the pending classes",
+                subtitle: "New Class Rejected",
+                message: "Your submission for " + course.code + "’s course creation has been rejected.",
             };
             addDBNotification(user, notification);
 
@@ -46,13 +46,12 @@ const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCours
     };
 
     const confirm = () => {
-        confirmPendingCourse(course);
-
         if (user) {
+            confirmPendingCourse(course, user);
             const notification = {
                 title: "Class Request Approved",
-                subtitle: "Your new class request has been approved",
-                message: "Your new class has been added to the current classes",
+                subtitle: "New Class Approved",
+                message: "Your submission for " + course.code + "’s course creation has been approved and the course is now live.",
             };
             addDBNotification(user, notification);
 

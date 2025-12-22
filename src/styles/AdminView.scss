@@ -44,6 +44,7 @@
         margin: 1em auto;
         padding: 1em;
         min-height: 100%;
+        box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15);
 
         .course-section {
             margin: 1em;
@@ -88,6 +89,11 @@
 
         .pending-button {
             display: inline-block;
+            font-family: Roboto;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
             background-color: white;
             border: solid 1px #484848;
             border-radius: 4px;
@@ -97,50 +103,25 @@
             cursor: pointer;
 
             &.reject {
-                border-color: #F67D7D;
-                color: #F67D7D;
+                border-color: #C80B00;
+                color: #C80B00;
+                transition:0.3s;
             }
 
             &.reject:hover {
-                background-color: #FFEEEE;
+                background-color: rgba(200, 11, 0, 0.15);
+                transition:0.3s;
             }
 
             &.confirm {
-                border-color: #19B861;
-                color: #19B861;
+                border-color: #007735;
+                color: #007735;
+                transition:0.3s;
             }
 
             &.confirm:hover {
-                background-color: #EEFFF6;
-            }
-        }
-
-        .pending-button {
-            display: inline-block;
-            background-color: white;
-            border: solid 1px #484848;
-            border-radius: 4px;
-            text-decoration: none;
-            padding: .5em 2em;
-            margin: .25em;
-            cursor: pointer;
-
-            &.reject {
-                border-color: #F67D7D;
-                color: #F67D7D;
-            }
-
-            &.reject:hover {
-                background-color: #FFEEEE;
-            }
-
-            &.confirm {
-                border-color: #19B861;
-                color: #19B861;
-            }
-
-            &.confirm:hover {
-                background-color: #EEFFF6;
+                background-color:rgba(0, 119, 53, 0.25);
+                transition:0.3s;
             }
         }
     }
