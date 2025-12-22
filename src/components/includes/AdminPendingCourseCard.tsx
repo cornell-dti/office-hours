@@ -51,7 +51,8 @@ const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCours
             const notification = {
                 title: "Class Request Approved",
                 subtitle: "New Class Approved",
-                message: "Your submission for " + course.code + "’s course creation has been approved and the course is now live.",
+                message: "Your submission for " +course.code+ 
+                "’s course creation has been approved and the course is now live.",
             };
             addDBNotification(user, notification);
 

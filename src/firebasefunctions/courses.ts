@@ -41,17 +41,25 @@ export const rejectPendingCourse = (
 
 /**
  * This function removes a course from the pendingCourses collection and adds it to the courses collection
- * (i.e. accepts the request to add the course)
+ * (i.e. accepts the request to add the course). It also updates the 'courses' and 'roles' fields for a user.
  * @param course: course to be removed from pendingCourses and added to courses
+ * @param user: user to become a professor of the course
  * @requires course exists in pendingCourses and does not exist in courses
  */
 export const confirmPendingCourse = (
     course: FireCourse,
+    user: FireUser
 ): Promise<void> => {
     const courseId = course.courseId;
 
     const batch = firestore.batch();
     batch.delete(firestore.collection('pendingCourses').doc(courseId));
     batch.set(firestore.collection('courses').doc(courseId), course);
+    // Sets the user to be professor even if they are technically a TA) since a requrester
+    // will likely want to create OH
+    batch.update(firestore.doc(`users/${user.userId}`), {
+        courses: firebase.firestore.FieldValue.arrayUnion(courseId),
+        [`roles.${courseId}`]: "professor"
+    })
     return batch.commit();
 }
