@@ -10,7 +10,6 @@ import { CURRENT_SEMESTER } from "../../constants";
 import { updateCourses } from "../../firebasefunctions/courses";
 import { RootState } from "../../redux/store";
 import CourseCreatePopup from "./CourseCreatePopup";
-import CreateCourseHoverMessage from "../../media/createCourseHoverMessage.svg";
 
 
 type Props = {
@@ -379,15 +378,19 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                         </div>
                     </div>
                 </div>
+
+                {/* Course creation submitted popup shows after submitting request or when hovering on disabled button. */}
+                {(createCourseHover && hasCurrentPendingCourse && 
+                            <div className="createCourseHover">
+                                <Icon link name="close" className="close" onClick={() => setCreateCourseHover(false)} />
+                                <h1>New Class Sent</h1>
+                                <p>Your submission is pending to be reviewed by the team.</p>
+                            </div>
+                )}
                 
                 <div className="EnrollBar">
                     <div className="EnrolledCourses web">
-                        {createCourseHover && (
-                            <div className="createCourseHover">
-                                <img className="createCourseHoverImg" src={CreateCourseHoverMessage} alt="hoverImg" />
-                                <p>Your submission is pending to be reviewed by the team.</p>
-                            </div>
-                        )}
+                       
                         {Object.keys(user.roles).length > 0 && (<button
                             type="button"
                             className={
@@ -395,9 +398,7 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                             }
                             disabled={hasCurrentCourse || hasCurrentPendingCourse}
                             onMouseOver={() => setCreateCourseHover(hasCurrentPendingCourse)}
-                            onFocus={() => setCreateCourseHover(hasCurrentPendingCourse)}
                             onMouseOut={() => setCreateCourseHover(false)}
-                            onBlur={() => setCreateCourseHover(false)}
                             onClick={() => setCourseCreatePopup(true)}
                         >
                         Create a Class
@@ -435,7 +436,7 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                 </div>
             </div>
             {courseCreatePopup && (
-                <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} userId={user.userId} />
+                <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} setCourseCreateHover={setCreateCourseHover} userId={user.userId} />
             )}
         </div>
     );

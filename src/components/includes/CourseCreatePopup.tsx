@@ -17,10 +17,11 @@ const nextYear = (Number.parseInt(currentYear, 10) + 1).toString();
 
 type Props = {
     setCourseCreatePopup: any;
+    setCourseCreateHover: any;
     userId: string;
 };
 
-const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
+const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId }: Props) => {
     const [courseCreatePopupContinue, setCourseCreatePopupContinue] = useState(false);
     const [courseCreatePopupEnding, setCourseCreatePopupEnding] = useState(false);
 
@@ -51,6 +52,11 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
     };
     const handleSelectTerm = (event: SelectChangeEvent) => {
         setTerm(event.target.value as string);
+    };
+
+    const handleClick = () => {
+        setCourseCreatePopup(false);
+        setCourseCreateHover(true);
     };
 
     /**
@@ -253,7 +259,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         The QMI team will notify you through e-mail and notification. Thank you for your patience!
                     </p>
                     <div className="buttons">
-                        <button type="button" className="continue" onClick={() => setCourseCreatePopup(false)}>
+                        <button type="button" className="continue" onClick={handleClick}>
                             Close
                         </button>
                     </div>

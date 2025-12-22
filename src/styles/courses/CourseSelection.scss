@@ -134,6 +134,49 @@
 }
 
 
+    .createCourseHover {
+            position: fixed;
+            bottom: 135px;
+            right: 30px;
+            display: grid;
+            padding: 16px;
+            align-items: flex-start;
+            text-align:left;
+            gap: 15px;
+            align-self: stretch;
+            border-radius: 16px;
+            background: #EFF7FF;
+            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+
+            .close{
+                position: absolute;
+                right: 10px;
+                top: 10px;
+            }
+           
+            h1 {
+                color: #000;
+                font-family: "Roboto";
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                display: block;
+                margin:0;
+            }
+
+            p {
+                color: #807B7B;
+                font-family: "Roboto";
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                display: block;
+            }
+        }
+
+
 .EnrollBar {
     font-family: 'Roboto';
     position: fixed;
@@ -175,24 +218,6 @@
         .disabled {
             background-color: #7E7E7E;
             cursor: default;
-        }
-
-        .createCourseHover {
-            position: absolute;
-            top: -80px;
-            left: 10px;
-           
-            img {
-                width: 250px;
-            }
-
-            p {
-                position: absolute;
-                top: 10px;
-                margin: 10px 25px;
-                width: 200px;
-                font-size: 16px;
-            }
         }
     }
 
