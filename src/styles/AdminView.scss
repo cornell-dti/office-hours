@@ -101,6 +101,7 @@
             padding: .5em 2em;
             margin: .25em;
             cursor: pointer;
+            width:40%;
 
             &.reject {
                 border-color: #C80B00;
@@ -123,6 +124,62 @@
                 background-color:rgba(0, 119, 53, 0.25);
                 transition:0.3s;
             }
+        }
+
+        .grayText {
+            text-align:left;
+            color: #807B7B;
+            font-family: 'Roboto';
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            margin-top:7px;
+        }
+
+        .courseInfo {
+            text-align:left;
+            display: flex;
+            padding-bottom: 16px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 24px;
+            align-self: stretch;
+            margin:16px;
+        }
+
+        .courseInfoRow{
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            column-gap: 16px;
+            align-items: start;
+            margin-top:24px;
+
+            .field{
+                color: #5599DB;
+                font-family: Roboto;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 20px; 
+            }
+            .value{
+                display: grid;
+            }
+            p, span{
+                color: #000;
+                font-family: Roboto;
+                font-size: 18px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                margin:0;
+            }
+        }
+
+        .buttonRow {
+            justify-content: space-evenly;
+            display: flex;
         }
     }
 }

@@ -5,6 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
 import { Timestamp } from "../../firebase"
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from "../../constants";
 import { addPendingCourse } from "../../firebasefunctions/courses";
@@ -31,9 +32,13 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
     const [name, setName] = useState("");
     const [year, setYear] = useState(currentYear);
     const [term, setTerm] = useState(currentTerm);
+    const [interval, setInterval] = useState("30");
+    const [charLimit, setCharLimit] = useState("140");
 
     const [showCodeError, setShowCodeError] = useState(false);
     const [showNameError, setShowNameError] = useState(false);
+    const [showIntervalError, setShowIntervalError] = useState(false);
+    const [showCharError, setShowCharError] = useState(false);
 
     const [courseIdError, setcourseIdError] = useState("");
     const [showCourseIdError, setShowCourseIdError] = useState(false);
@@ -55,6 +60,30 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
         setTerm(event.target.value as string);
     };
 
+    const handleNumberField = (
+        event: React.ChangeEvent<HTMLElement>,
+        setStateFunction: React.Dispatch<React.SetStateAction<string>>,
+        setErrorStateFunction: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+        const target = event.target as HTMLTextAreaElement;
+        const value = target.value;
+        // Allow empty input (user deleting)
+        if (value === "") {
+            setStateFunction("");
+            setErrorStateFunction(false);
+            return;
+        }
+
+        // Allow only digits
+        if (!/^\d+$/.test(value) || Number.isNaN(Number.parseInt(value,10))) {
+            return;
+        }
+
+        setStateFunction(value);
+        setErrorStateFunction(false);
+        
+    };
+
     const handleClick = () => {
         setCourseCreatePopup(false);
         setCourseCreateHover(true);
@@ -70,11 +99,16 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
         const codeArray = code.split(" ");
         const codeError = codeArray.length !== 2 || !/^[a-zA-Z]+$/.test(codeArray[0]) || !/^\d+$/.test(codeArray[1]);
         const nameError = name === "";
+        const charError = Number.isNaN(Number.parseInt(charLimit, 10)) || Number.parseInt(charLimit, 10) < 50;
+        const intervalError = Number.isNaN(Number.parseInt(interval, 10))
+        || Number.parseInt(interval, 10) < 0 || Number.parseInt(interval, 10) > 60;
 
         setShowCodeError(codeError);
         setShowNameError(nameError);
+        setShowCharError(charError);
+        setShowIntervalError(intervalError);
 
-        return !codeError && !nameError;
+        return !codeError && !nameError && !charError && !intervalError;
     };
 
     const createPendingCourse = async () => {
@@ -92,17 +126,23 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
         const startDate = semester === CURRENT_SEMESTER ? START_DATE : "20" + year + "-" + startMonth + "-01";
         const endDate = semester === CURRENT_SEMESTER ? END_DATE : "20" + year + "-" + endMonth + "-31";
 
+        if (Number.isNaN(Number.parseInt(interval,10)) || Number.isNaN(Number.parseInt(charLimit,10))) {
+            setShowCharError(true);
+            setShowIntervalError(true);
+            return;
+        }
+
         const course = {
             code,
             endDate: Timestamp.fromDate(new Date(endDate)),
             name,
-            queueOpenInterval: 30,
+            queueOpenInterval: Number.parseInt(interval,10),
             semester,
             startDate: Timestamp.fromDate(new Date(startDate)),
             professors,
             tas,
             courseId,
-            charLimit: 140,
+            charLimit: Number.parseInt(charLimit,10),
             term,
             year,
             waitTimeMap: generateInitialWaitTimeMap()
@@ -190,6 +230,54 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                     {showNameError && (
                         <p className="errorMessage"> Please enter a valid course name to create a new class. </p>
                     )}
+
+                    <label className="input_component">
+                        <p className="input_label">
+                            Settings
+                        </p>
+                        <p className="input_label_valid">
+                            <b>Queue Open Interval</b> determines how long before OH starts that the queue opens. (0-60 min)
+                            <br></br>
+                            <b>Character Limit</b> determines how long of a question that students can input. (at least 50 characters)
+                        </p>
+                    </label>
+                     {showIntervalError && (
+                        <p className="errorMessage"> Please enter a interval number between 0-60 minutes. </p>
+                    )}
+                     {showCharError && (
+                        <p className="errorMessage"> Please enter a character limit amount that is at least 50. </p>
+                    )}
+                    <div className="numberSection">
+                        <FormControl fullWidth sx={{m:1}}>
+                            <TextField 
+                                id="queue-interval" 
+                                label="Queue Opening Interval" 
+                                variant="outlined"
+                                value={interval} 
+                                inputProps={{
+                                    inputMode: "numeric",
+                                    pattern: "[0-9]*"
+                                }}
+                                onChange={(value) => handleNumberField(value, setInterval, setShowIntervalError)}
+                            />
+                        </FormControl>
+                        <FormControl fullWidth sx={{m:1}}>
+                            <TextField 
+                                id="char-limit"
+                                label="Character Limit" 
+                                variant="outlined"
+                                value={charLimit}
+                                inputProps={{
+                                    inputMode: "numeric",
+                                    pattern: "[0-9]*"
+                                }}
+                                onChange={(value) => handleNumberField(value, setCharLimit, setShowCharError)}
+                            />
+                        </FormControl>
+                        
+                    </div>
+
+
                     <div className="dropdownSection">
 
                         <FormControl fullWidth sx={{ m: 1 }}>
@@ -200,6 +288,8 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                                 value={term}
                                 label="Term"
                                 onChange={handleSelectTerm}
+                                style={{textAlign: 'left'}}
+                                
                             >
                                 <MenuItem value="SP">Spring</MenuItem>
                                 <MenuItem value="FA">Fall</MenuItem>
@@ -214,6 +304,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                                 value={year}
                                 label="Year"
                                 onChange={handleSelectYear}
+                                style={{textAlign: 'left'}}
                             >
                                 <MenuItem value={currentYear}>{currentYear}</MenuItem>
                                 <MenuItem value={nextYear}>{nextYear}</MenuItem>
