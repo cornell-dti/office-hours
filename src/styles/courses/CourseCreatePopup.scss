@@ -18,16 +18,14 @@
 
 .createCoursePopupContinueContainer {
     border-radius: 8px;
-    position: fixed;
     display: flex;
     flex-direction: column;
     position: absolute;
     margin: auto;
-    width: 440px;
-    height: 570px;
     background: white;
     align-items: center;
     justify-content: center;
+    padding:24px;
 
     img {
       width: 30px;
@@ -59,10 +57,12 @@
         border-radius: 4px;
         cursor: pointer;
         margin-top:15px;
+        transition:0.3s;
     }
 
     .submit.invalid {
         background: #B6DAFC;
+        transition:0.3s;
 
     }
 
@@ -110,10 +110,21 @@
             
         }
 
-        .dropdownSection {
+        .dropdownSection, .numberSection {
             display: flex;
             flex-direction: row;
-            padding-top:35px;
+            .input_label {
+              margin: 5px 0px;
+            }
+
+            .input_label_valid {
+              margin-bottom: 5px;
+              width: 320px; 
+              font-size:12px;
+            }
+        }
+        .numberSection{
+          margin-top:15px;
         }
 
         .errorMessage {
