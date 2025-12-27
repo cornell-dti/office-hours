@@ -11,12 +11,8 @@ export default ({ courseId, context }: Props): React.ReactElement => {
     const ref = React.useRef<HTMLDivElement>(null);
     const history = useHistory();
 
-    const courseClicked = (courseId: string) => {
-        history.push('/course/' + courseId);
-    }
-
-    const taCourseClicked = (courseId: string) => {
-        history.push('/ta/course/' + courseId);
+    const courseClicked = (path: string, courseId: string) => {
+        history.push(path + courseId);
     }
 
     return (
@@ -25,14 +21,14 @@ export default ({ courseId, context }: Props): React.ReactElement => {
                 <div className={(!isTA ? "SelectedTAView" : "UnselectedTAView") + "Queue"}>
                     <div
                         className={isTA ? "" : "thisCourse"}
-                        onClick={() => courseClicked(courseId)}
+                        onClick={() => courseClicked('/course/', courseId)}
                     > QUEUE {!isTA && <>&#10003;</>}
                     </div>
                 </div>
                 <div className={(isTA ? "SelectedTAView" : "UnselectedTAView") + "Dashboard"}>
                     <div
-                        onClick={() => taCourseClicked(courseId)}
-                    > DASHBOARD
+                        onClick={() => courseClicked('/ta/course/', courseId)}
+                    > DASHBOARD {isTA && <>&#10003;</>}
                     </div>
                 </div>
             </div>

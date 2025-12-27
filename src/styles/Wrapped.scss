@@ -1,3 +1,4 @@
+@import "./system.scss";
 .wrappedBackground {
   background-color: rgba(112, 112, 112, 0.8);;
   top: 0;
@@ -23,10 +24,12 @@
   // position: fixed;
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: relative;
   margin: auto;
-  width: 825px;
-  height: 475px;
+  max-width: 825px;
+  max-height: 475px;
+  width: 80vw;
+  height: 50vw;
   color: #FFFFFF;
   align-items: center;
   justify-content: center;
@@ -128,10 +131,11 @@
   &.top-text{
     position: absolute;
     top: 3rem;
-    left: 0rem;
+    left: -3.5rem;
     font-size: 35px;
     font-weight: 600;
     color: #080680;
+    animation: fadeIn 0.5s ease-in both;
   }
 
   &.mid-text{
@@ -139,9 +143,11 @@
     top: 6.7rem;
     left: -18.67rem;
     font-size: 27px;
+    animation: fadeIn 0.5s 0.25s ease-in both;
   }
 
   &.num-visits{
+    animation: fadeIn 1s 0.75s ease-in both;
     position: absolute;
     bottom: 13rem;
     left: -6rem;
@@ -166,6 +172,7 @@
   }
 
   &.bottom-text{
+    animation: fadeIn 0.5s 1.5s ease-in both;
     position: absolute;
     bottom: 5rem;
     right: 4rem;
@@ -177,6 +184,7 @@
 
 .timeSpent{
   &.top-text{
+    animation: fadeIn 0.5s ease-in both;
     position: absolute;
     top: 3rem;
     left: 3rem;
@@ -185,6 +193,7 @@
   }
 
   &.nums-container{
+    animation: fadeIn 1s 0.75s ease-in both;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -202,6 +211,7 @@
   }
 
   &.minutes-text{
+    animation: fadeIn 0.5s 1.5s ease-in both;
     position: absolute;
     bottom: 7.5rem;
     right: 3rem;
@@ -212,6 +222,7 @@
   }
 
   &.bottom-text{
+    animation: fadeIn 0.5s 1.5s ease-in both;
     position: absolute;
     bottom: 5rem;
     right: 3rem;
@@ -240,6 +251,7 @@
     align-items: baseline;
   }
   &.text{
+    animation: fadeIn 0.5s ease-in both;
     font-weight: bold;
     margin-bottom: 2rem;
     line-height: 2.5rem;
@@ -247,12 +259,14 @@
     font-size: 35px;
   }
   &.personalityType {
+    animation: fadeIn 1s 1s ease-in both;
     font-family: "Roboto";
     font-weight: 700;
     color: #080680;
     text-transform: uppercase;
   }
   &.personalityIcon {
+    animation: fadeIn 1s 1s ease-in both;
     width: 242px;
   }
 }
@@ -274,6 +288,7 @@
   }
 
   &.top-text{
+    animation: fadeIn 0.5s ease-in both;
     font-weight: bold;
     font-size: 35px;
     margin-bottom: 2rem;
@@ -282,6 +297,7 @@
   
   }
   &.taName {
+    animation: fadeIn 1s 0.75s ease-in both;
     font-family: "Roboto";
     font-weight: 700;
     color: #080680;
@@ -307,6 +323,7 @@
   }
 
   &.top-text{
+    animation: fadeIn 0.5s ease-in both;
     position: absolute;
     top: 3rem;
     left: 3rem;
@@ -315,6 +332,7 @@
   }
 
   &.mid-text{
+    animation: fadeIn 0.5s 0.25s ease-in both;
     position: absolute;
     top: 9rem;
     left:3rem;
@@ -322,6 +340,7 @@
     font-size: 29px;
   }
   &.num{
+    animation: fadeIn 1s 0.75s ease-in both;
     position: absolute;
     top: 52%;
     left: 48.5%;
@@ -340,6 +359,7 @@
   }
 
   &.bottom-text{
+    animation: fadeIn 0.5s 1.5s ease-in both;
     position: absolute;
     top: 26rem;
     right: 2rem;
@@ -490,6 +510,7 @@
 }
 
 .conclusionText {
+  animation: fadeIn 1s ease-in both;
   &.top-text{
     color: #080680; 
     font-weight: 600;
@@ -575,4 +596,10 @@
   height: 59px;
   bottom: 1.7rem;
   left: 8rem;
+}
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .wrappedContainer {
+      height: 50vw;
+    }
 }

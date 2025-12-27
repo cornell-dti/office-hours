@@ -2,6 +2,7 @@
 import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
+import moment from "moment-timezone";
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -187,6 +188,10 @@ exports.onCommentCreate = functions.firestore
     });
 
 exports.onSessionUpdate = functions.firestore.document("sessions/{sessionId}").onUpdate(async (change) => {
+    // NOTE: This function only handles notifications. WaitTimeMap updates are handled by onQuestionUpdate
+    // to ensure we use the question's entry time (not session start time) for slotting.
+    // When onQuestionUpdate updates totalWaitTime, it triggers this function, but we don't touch waitTime here.
+    
     // retrieve session id and ordered queue of active questions
     const afterSessionId = change.after.id;
     const afterQuestions = (
@@ -499,13 +504,71 @@ exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}"
     }
 
     // Update relevant statistics in database
-    return db.doc(`sessions/${sessionId}`).update({
+    const sessionRef = db.doc(`sessions/${sessionId}`);
+    
+    // Update session statistics - return the promise to match original behavior
+    const sessionUpdatePromise = sessionRef.update({
         totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
         assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
         resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
         totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
         totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
     });
+    
+    // Additionally update waitTimeMap using the question's timeEntered to choose the slot (America/New_York)
+    // This is a non-blocking side effect - errors are caught and logged but don't affect the main operation
+    if (waitTimeChange !== 0) {
+        // Fire-and-forget: run waitTimeMap update in background, don't block session update
+        // eslint-disable-next-line no-void
+        void (async () => {
+            try {
+                const tz = 'America/New_York';
+                const sessionSnap = await db.doc(`sessions/${sessionId}`).get();
+                const sessionForCourse = sessionSnap.data() as FireSession;
+                if (!sessionForCourse) {
+                    functions.logger.warn('onQuestionUpdate: Session not found for waitTimeMap update', { sessionId });
+                    return;
+                }
+                const courseId = sessionForCourse.courseId;
+
+                // Choose the student's entry time for slotting; fall back to previous if undefined
+                const entryTs = (newQuestion.timeEntered ?? prevQuestion.timeEntered);
+                if (entryTs) {
+                    const entryDate = entryTs.toDate();
+                    const m = moment.tz(entryDate, tz);
+                    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    const weekday = dayNames[(m.day() + 6) % 7];
+                    const minute = Math.floor(m.minute() / 30) * 30;
+                    const slot = m.clone().minute(minute).second(0).millisecond(0);
+                    const timeSlotStr = slot.format('h:mm A');
+
+                    // Load course waitTimeMap
+                    const courseRef = db.doc(`courses/${courseId}`);
+                    const courseDoc = await courseRef.get();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const courseData = courseDoc.data() as any;
+                    const waitTimeMap = courseData?.waitTimeMap || {};
+                    if (!waitTimeMap[weekday]) waitTimeMap[weekday] = {};
+
+                    const prevSec: number = waitTimeMap[weekday][timeSlotStr] || 0;
+                    const deltaSec = Math.abs(waitTimeChange); // ensure positive contribution
+                    const newAvg = prevSec === 0 ? deltaSec : Math.round(prevSec * 0.8 + deltaSec * 0.2);
+                    waitTimeMap[weekday][timeSlotStr] = newAvg;
+
+                    await courseRef.update({ waitTimeMap });
+                    functions.logger.info(
+                        `✓ Updated waitTimeMap via onQuestionUpdate: ${weekday} ${timeSlotStr} = ${deltaSec}s, ` +
+                        `new avg = ${waitTimeMap[weekday][timeSlotStr]}s`
+                    );
+                }
+            } catch (err) {
+                functions.logger.error('Error updating waitTimeMap from onQuestionUpdate', err as Error);
+            }
+        })();
+    }
+
+    // Return the session update promise to match original behavior and ensure proper error handling
+    return sessionUpdatePromise;
 });
 
 exports.onQuestionStatusUpdate = functions.firestore

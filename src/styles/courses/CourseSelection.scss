@@ -126,7 +126,7 @@
         padding: 0px 35px 0 35px;
         flex-shrink: 1;
         flex-wrap: wrap;
-        justify-content: center;
+        justify-content: left;
         border-radius: 15px;
         border-color: black;
     }
@@ -209,14 +209,6 @@
 
     .CourseSelection {
         background-color: white;
-
-        .QMeLogo.course {
-            display: none;
-        }
-
-        .topBar {
-            display: none;
-        }
 
         .GreyBackground {
             padding: 20px;
