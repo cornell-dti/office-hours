@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-// add eric changes for percentage bar animation from his branch later
 
 type StudentReviewCardProps = {
     overall: number | undefined;
