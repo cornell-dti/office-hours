@@ -104,6 +104,7 @@ const TopBarNotifications = (
         if (setDisplayWrapped) {
             // Check if the setter exists
             setDisplayWrapped(true); // Set the state to true
+            toggleDropped(false);
         }
     };
 
@@ -119,6 +120,7 @@ const TopBarNotifications = (
             </div>
             <div
                 className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
+                style={{backgroundColor: "#ffffff"}}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Additional notification when countdownZero is true */}

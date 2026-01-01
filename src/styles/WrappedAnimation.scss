@@ -39,7 +39,7 @@ dashoffset is percentage to draw of the path
 }
 
 .blue-circle circle {
-  stroke-dasharray: 1135px;
+  stroke-dasharray: 1200px;
   fill: transparent;
   transform-origin: 50% 50%;
   transform-box: fill-box;
@@ -55,6 +55,9 @@ dashoffset is percentage to draw of the path
   transform-origin: 50% 50%;
   transform-box: fill-box;
   top: 40%;
+  width: 10vw; 
+  max-width:100px;
+  height: auto;
   animation: spin 2.5s 0.8s ease-in-out both, 
   fadeArrow 0.5s 3s ease-in both;
   will-change: transform;
@@ -69,8 +72,9 @@ second plus is used for the expanding transition into background. */
   position: absolute;
   top: 50%;
   left: 50%;
-  margin-left: 7em;
-  margin-top: 7em;
+  transform: translate(25%, 25%); // responsive offset relative to its own size
+  margin-left: 8em;
+  margin-top: 8em;
 }
 
 /* controls when the pluses appear/disappear. in sync with each others delays*/

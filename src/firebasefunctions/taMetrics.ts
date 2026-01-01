@@ -38,7 +38,7 @@ function setBarDetail(d : BarData, suffix: string) : BarData{
  * a given TA within a specified date range. The resulting object includes
  * weekly averages/sums, daily averages per student.
  * 
- * Wait time is defined as: minutes between `timeEntered` - `timeAssigned`
+ * Wait time is defined as: minutes between `timeAssigned` - `timeEntered`
  * Time spent is defined as: minutes between `timeAddressed` - `timeAssigned`
  * Students helped is defined as: count of resolved questions
  * 
@@ -95,8 +95,8 @@ export const calcTAMetrics = async(
             const waitMin = (assigned.getTime() - entered.getTime()) / 1000 / 60;
             totalWait += waitMin;
             waitCount++;
-            dailyWaitTotals[dayName] = (dailyWaitTotals[dayName] || 0) + waitMin;
-            dailyWaitCounts[dayName] = (dailyWaitCounts[dayName] || 0) + 1;
+            dailyWaitTotals[dayName] = (dailyWaitTotals[dayName] ?? 0) + waitMin;
+            dailyWaitCounts[dayName] = (dailyWaitCounts[dayName] ?? 0) + 1;
             
         }
 
@@ -104,8 +104,8 @@ export const calcTAMetrics = async(
             const timeMin = (addressed.getTime() - assigned.getTime()) / 1000 / 60;
             totalTimeSpent += timeMin;
             timeSpentCount++;
-            dailyTimeTotals[dayName] = (dailyTimeTotals[dayName] || 0) + timeMin;
-            dailyTimeCounts[dayName] = (dailyTimeCounts[dayName] || 0) + 1;
+            dailyTimeTotals[dayName] = (dailyTimeTotals[dayName] ?? 0) + timeMin;
+            dailyTimeCounts[dayName] = (dailyTimeCounts[dayName] ?? 0) + 1;
         }
 
         if (addressed) {

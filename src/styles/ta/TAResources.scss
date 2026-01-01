@@ -16,8 +16,18 @@
     }
 }
 
-
 .files{
     display: flex;
     gap: 24px;
+    flex-wrap: wrap;
+}
+
+.files-loading,
+.files-empty {
+    color: #484848;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    margin-top: 16px;
 }
