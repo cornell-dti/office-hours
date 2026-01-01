@@ -12,6 +12,7 @@ type Props = {
     subtitle?: string | React.ReactNode;
 };
 
+// Bar graph used in TA Dashboard
 const ReusableBarGraph = (props: Props) => {
     const today = useMemo(() => {
         const date = new Date();
