@@ -32,9 +32,6 @@
     "source": "functions",
     "runtime": "nodejs20"
   },
-  "storage": {
-    "rules": "storage.rules"
-  },
   "emulators": {
     "functions": {
       "port": 5001

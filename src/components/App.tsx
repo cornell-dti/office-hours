@@ -305,13 +305,6 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                             requireTA={true}
                         />
                         <PrivateRoute
-                            path="/ta-student-view/course/:courseId/session/:sessionId/:page?"
-                            component={TAStudentView}
-                            exact={true}
-                            requireProfessor={false}
-                            requireTA={true}
-                        />
-                        <PrivateRoute
                             path="/ta-student-view/course/:courseId"
                             component={AdminStudentView}
                             exact={true}
