@@ -29,7 +29,7 @@ const TAMetrics = ({ user } : TAMetricsProps) => {
         const monday = new Date(today);
         monday.setDate(today.getDate() - diff);
 
-    return { monday, today };
+        return { monday, today };
     }, []);
   
 
