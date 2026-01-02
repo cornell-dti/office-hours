@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MetricData, MetricsResult, calcTAMetrics } from "../../firebasefunctions/taMetrics";
 import ReusableBarGraph from "./ReusableBarGraph";
 
@@ -22,11 +22,16 @@ const TAMetrics = ({ user } : TAMetricsProps) => {
 
     // Calculates the date of the most recent Monday that's passed, that way data can be displayed
     // from `monday` to `today` which are then the `startDate` and `endDate` parameters for `calcTAMetrics`
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diff = (dayOfWeek + 6) % 7;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - diff);
+    const { monday, today } = useMemo(() => {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const diff = (dayOfWeek + 6) % 7;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - diff);
+
+    return { monday, today };
+    }, []);
+  
 
     // Currently uses the returned output from `calcTAMetrics` instead of fetching from firebase.
     // Can consider to change this depending on efficiency?

@@ -55,7 +55,7 @@ export const calcTAMetrics = async(
     endDate: Date,
 ) : Promise<MetricsResult> => {
     // replace collections after testing
-    const questionsRef = collection(firestore, "questions-analytics-test");
+    const questionsRef = collection(firestore, "questions");
 
     const q = query(
         questionsRef, 
