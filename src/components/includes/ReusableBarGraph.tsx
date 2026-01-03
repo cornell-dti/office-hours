@@ -1,17 +1,15 @@
 import * as React from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import { useMemo } from "react";
+import { BarData } from "../../firebasefunctions/taMetrics";
 
 type Props = {
-    barData: {
-        dayOfWeek: string;
-        value: string;
-        detail: string;
-    }[];
+    barData: BarData[];
     title?: string;
     subtitle?: string | React.ReactNode;
 };
 
+// Bar graph used in TA Dashboard
 const ReusableBarGraph = (props: Props) => {
     const today = useMemo(() => {
         const date = new Date();
@@ -21,7 +19,7 @@ const ReusableBarGraph = (props: Props) => {
     }, []);
     const transformData = () => {
         return props.barData.map((data) => ({
-            dayOfWeek: data.dayOfWeek.substring(0, 3),
+            dayOfWeek: data.daysOfWeek.substring(0, 3),
             value: Number(data.value),
             detail: data.detail,
         }));

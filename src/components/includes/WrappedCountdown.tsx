@@ -39,7 +39,6 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
     // Initialize countdown state using the calculateTimeRemaining function
     const [timeRemaining, setTimeRemaining] = useState<RemainingTime>(calculateTimeRemaining(wrappedDate));
     const [countDownClicked, setCountDownClicked] = useState<boolean>(false);
-    const [confettiShown, setConfettiShown] = useState<boolean>(false);
     const [isZeroCounter, setIsZeroCounter] = useState<boolean>(false);
 
     // Countdown timer effect to update every second
@@ -60,15 +59,6 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
 
         return () => clearInterval(timer);
     }, [wrappedDate, setCountdownZero]);
-
-    // Trigger confetti with a delay only the first time `isZeroCounter` becomes true
-    useEffect(() => {
-        if (isZeroCounter && !confettiShown) {
-            setTimeout(() => {
-                setConfettiShown(true); // Show confetti after a delay
-            }, 1000); // Delay of 1 second
-        }
-    }, [isZeroCounter, confettiShown]);
 
     // Prepend the days, hours, and minutes if they're single digits
     const prependZero = (num: number): string => (num < 10 ? `0${num}` : `${num}`);
@@ -114,7 +104,7 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
                                     View Now
                                 </div>
                             </div>
-                            {!confettiShown && <ConfettiExplosion duration={2800} force={0.6} particleCount={200} />}
+                            {isZeroCounter && <ConfettiExplosion duration={3000} force={0.6} particleCount={200} />}
                             <img className="cone" src={cone} alt="icon" />
                         </div>
                     )}

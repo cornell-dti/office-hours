@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import * as admin from "firebase-admin"
 import 'dotenv/config'
 import { HTML } from "./wrapped-html";
-import { MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
+import { CURRENT_SEMESTER, MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
 
 /*
 
@@ -19,7 +19,7 @@ been hit, there will be a console statement that tells you the next input number
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    // databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 
 });
 
@@ -33,7 +33,10 @@ const indexStopped = process.argv[2];
 /** Returns an array of email objects to send - should be at most 100 per day. 
  * totalEmails is a list of all the user emails to send to. 
  * batchSize should be 49 or less to maintain free emailing.
- * Throws an error if this pre-condition is violated. */
+ * Throws an error if this pre-condition is violated.
+ * NOTE - FA25: Resend seems to have updated their checks, so each bcc'ed email still counts to the 100.
+ * In this case, batch size doesn't really matter.
+ *  */
 const createBatches =  (totalEmails: string[], batchSize: number, subj: string, content: string, startInd: string) => {
     let i = parseInt(startInd, 10);
     // eslint-disable-next-line no-console
@@ -81,7 +84,7 @@ Continue from this user the next day by typing "node ${process.argv[1]} ${i}"`)
     console.log('firebase worked');
     // using orderBy for email field to filter out users that don't have an email
     const usersSnapshot = await usersRef
-        .where('wrapped', '==',true)
+        .where('wrapped', '==', CURRENT_SEMESTER)
         .where('email', '!=', null)
         .orderBy('email')
         .get();
