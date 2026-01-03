@@ -10,19 +10,6 @@ import 'dotenv/config';
 import { oberlinData } from './oberlinData';
 import { dummyData } from './dummyData';
 
-export type TrendData = {
-    title: string, 
-    volume: number, 
-    mention: FireTimestamp,
-    assignment: FireTag,
-    questions: string[]
-};
-
-export type TitledCluster = {
-    title: string,
-    questions: string[]
-}
-
 /**
  * `getEmbeddings` uses a typescript library for SBERT to embed each sentence 
  * in `questions` into numerical vectors represented as number[][].
@@ -170,19 +157,38 @@ async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
     const groups: Record<number, string[]> = groupQuestionsByCluster(c, questions);
     // console.log(groups);
 
-    for (const [clusterIdx, questionsInCluster] of Object.entries(groups)) {
-        console.log(`\nCluster ${clusterIdx}:`);
-        console.log("Questions:", questionsInCluster);
+    const entries = Object.entries(groups);
 
-        try {
-            // eslint-disable-next-line no-await-in-loop
-            const result = await getTitles(questionsInCluster) as { title: string };
-            res[Number(clusterIdx)] = { title: result.title, questions: questionsInCluster};
-            console.log("Generated title:", result.title);
-        } catch (err) {
-            console.error("LLM call failed:", err);
-            res[Number(clusterIdx)] = { title: "Untitled", questions: questionsInCluster };
-        } 
+    const results = await Promise.all(
+        entries.map(async ([clusterIdx, questionsInCluster]) => {
+            console.log(`\nCluster ${clusterIdx}:`);
+            console.log("Questions:", questionsInCluster);
+
+            try {
+                const result = await getTitles(questionsInCluster) as { title: string };
+                console.log("Generated title:", result.title);
+                return {
+                    idx: Number(clusterIdx),
+                    data: {
+                        title: result.title,
+                        questions: questionsInCluster
+                    }
+                };
+            } catch (err) {
+                console.error("LLM call failed:", err);
+                return {
+                    idx: Number(clusterIdx),
+                    data: {
+                        title: "Untitled",
+                        questions: questionsInCluster
+                    }
+                };
+            }  
+        })
+    )
+
+    for (const r of results) {
+        res[r.idx] = r.data;
     }
     console.timeEnd("Total process");
     return res;
