@@ -130,6 +130,20 @@ type FeedbackRecord = {
     writtenFeedback: string?;
 };
 
+type TrendData = {
+    title: string, 
+    volume: number, 
+    mention: FireTimestamp,
+    assignment: FireTag,
+    questions: string[]
+};
+
+type TitledCluster = {
+    title: string,
+    questions: string[]
+}
+
+
 /** @see FireUser for the enrollment invariant. */
 interface FireCourse {
     code: string;
@@ -333,3 +347,5 @@ interface Announcement {
     global?: boolean;
     noshow?: boolean;
 }
+
+
