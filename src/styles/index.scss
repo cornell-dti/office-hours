@@ -94,6 +94,7 @@ $mobile-breakpoint: 920px;
 // Courses
 @import "./courses/CourseCard";
 @import "./courses/CourseSelection";
+@import "./courses/CourseCreatePopup.scss";
 
 // Blog Posts
 @import "./blogPosts/AddBlogPost.scss";
