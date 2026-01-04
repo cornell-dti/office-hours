@@ -7,48 +7,6 @@ import { firestore } from '../firebase';
 import 'dotenv/config'; 
 import { getQuestionsQuery } from '../firehooks';
 
-// Type for frontend TAStudentTrends component
-export type TrendData = {
-    title: string;
-    volume: number; 
-    mention: string;
-    assignment: string;
-    questions: string[];
-    firstMentioned : Date;
-};
-
-// Type for Firebase
-export type TrendDocument = {
-    title: string;
-    questions: QuestionDetail[];
-    volume: number;
-    firstMentioned: Timestamp;
-    lastUpdated: Timestamp;
-    assignmentName: string;
-    primaryTag: string;
-    secondaryTag: string;
-}
-
-
-export type QuestionDetail = {
-    content: string;
-    timestamp: Timestamp;
-    questionId: string;
-};
-
-export type QuestionData = {
-    content: string;
-    primaryTag: string;
-    secondaryTag: string;
-    timestamp: Timestamp;
-    questionId: string;
-}
-
-export type TitledCluster = {
-    title: string,
-    questions: string[]
-}
-
 /**
  * Given a list of tag ids, return a map of their id to their name.
  * @param tagIds string list of firetag ids

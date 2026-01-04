@@ -28,7 +28,7 @@ export default ({ courseId, context }: Props): React.ReactElement => {
                 <div className={(isTA ? "SelectedTAView" : "UnselectedTAView") + "Dashboard"}>
                     <div
                         onClick={() => courseClicked('/ta/course/', courseId)}
-                    > DASHBOARD
+                    > DASHBOARD {isTA && <>&#10003;</>}
                     </div>
                 </div>
             </div>

@@ -40,7 +40,7 @@ const TAView = ({ match: { params: { courseId } } }: RouteComponentProps<{ cours
             <section className="rightOfSidebar">
                 <div className="main">
                     <TAStudentTrends courseId={courseId}/>
-                    <TAResources />
+                    <TAResources courseId={courseId} />
                 </div>
             </section>
         </div>

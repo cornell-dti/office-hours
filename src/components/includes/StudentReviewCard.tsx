@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-// add eric changes for percentage bar animation from his branch later
 
 type StudentReviewCardProps = {
     overall: number | undefined;
@@ -44,7 +43,7 @@ const PercentageBar = ({ label, score }: PercentageBarProps) => {
                 />
             </div>
             <div className="score-text">
-                {score !== undefined ? score.toFixed(1) : "N/A"}
+                {score !== undefined ? Math.round(score) : "N/A"}
             </div>
         </div>      
     );

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { Dropdown } from 'semantic-ui-react';
 import TAQuery from "./TAQuery";
-import { getStudentTrends, TrendData } from "../../firebasefunctions/taPrep";
+import { getStudentTrends } from "../../firebasefunctions/taPrep";
 
 
 type TAStudentTrendsProps = {

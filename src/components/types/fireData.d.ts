@@ -130,6 +130,50 @@ type FeedbackRecord = {
     writtenFeedback: string?;
 };
 
+// Types for TA Dashboard Preparation
+// Type for frontend TAStudentTrends component
+type TrendData = {
+    title: string;
+    volume: number; 
+    mention: string;
+    assignment: string;
+    questions: string[];
+    firstMentioned : Date;
+};
+
+// Type for Firebase
+type TrendDocument = {
+    title: string;
+    questions: QuestionDetail[];
+    volume: number;
+    firstMentioned: Timestamp;
+    lastUpdated: Timestamp;
+    assignmentName: string;
+    primaryTag: string;
+    secondaryTag: string;
+}
+
+
+type QuestionDetail = {
+    content: string;
+    timestamp: Timestamp;
+    questionId: string;
+};
+
+type QuestionData = {
+    content: string;
+    primaryTag: string;
+    secondaryTag: string;
+    timestamp: Timestamp;
+    questionId: string;
+}
+
+type TitledCluster = {
+    title: string,
+    questions: string[]
+}
+
+
 /** @see FireUser for the enrollment invariant. */
 interface FireCourse {
     code: string;
@@ -181,7 +225,7 @@ interface FireUser {
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
-    wrapped?: boolean;
+    wrapped?: string;
     recentlyResolvedQuestion?: ResolvedItem;
     feedbackList?: FeedbackRecord[];
 }
@@ -244,6 +288,60 @@ interface NewTag {
     name: string;
 }
 
+/**
+ * Represents a file that is currently being uploaded to Firebase Storage.
+ * Used to track upload progress and manage the upload task lifecycle.
+ * 
+ * @property id - Unique identifier for the file in the upload queue
+ * @property file - The File object being uploaded
+ * @property progress - Upload progress percentage (0-100)
+ * @property uploadTask - Optional Firebase UploadTask for canceling/uploads
+ * @property storagePath - Optional Firebase Storage path where the file will be stored
+ */
+interface UploadingFile {
+    id: string;
+    file: File;
+    progress: number;
+    uploadTask?: import('firebase/storage').UploadTask;
+    storagePath?: string;
+}
+
+/**
+ * Represents a file that has been successfully uploaded to Firebase Storage.
+ * Contains metadata about the uploaded file and its download URL.
+ * 
+ * @property id - Unique identifier for the file
+ * @property name - Original filename
+ * @property size - File size in bytes
+ * @property uploadDate - Date and time when the file was uploaded
+ * @property url - Firebase Storage download URL for accessing the file
+ * @property storagePath - Firebase Storage path where the file is stored
+ */
+interface UploadedFile {
+    id: string;
+    name: string;
+    size: number;
+    uploadDate: Date;
+    url: string;
+    storagePath: string;
+}
+
+/**
+ * Represents a file that has been selected for upload but not yet started.
+ * The File object is kept in memory so it can be uploaded later when needed.
+ * 
+ * @property id - Unique identifier for the file in the pending queue
+ * @property name - Original filename
+ * @property size - File size in bytes
+ * @property file - The File object to be uploaded (kept for later upload)
+ */
+interface PendingFile {
+    id: string;
+    name: string;
+    size: number;
+    file: File;  // Keep the File object so we can upload it later
+}
+
 interface FireDiscussionQuestion extends FireQuestion {
     upvotedUsers: string[];
 }
@@ -279,3 +377,5 @@ interface Announcement {
     global?: boolean;
     noshow?: boolean;
 }
+
+
