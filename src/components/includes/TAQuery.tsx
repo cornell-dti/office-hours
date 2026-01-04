@@ -6,18 +6,7 @@ type Props = {
     title: string;
     volume: number;
     mention: string;
-    // eslint-disable-next-line react/require-default-props
-    questions?: QuestionTopic[];
-};
-
-type Question = {
-    text: string; // the question itself
-    frequency: number; // how often the question was asked
-};
-
-type QuestionTopic = {
-    topic: string; // the category ex. recursion
-    questions: Question[]; // the list of questions in the category
+    questions: string[];
 };
 
 /**
@@ -57,24 +46,14 @@ const TAQuery = ({
                 <div className="questions-container">
                     <p className="text" >Questions Asked:</p>
                     <div className="questions">
-                        {questions.length > 0 && (
-                            <div className="topic-container">
-                                {questions.map((topic) => (
-                                    <div className="topic">
-                                        <p className="text">{`${topic.topic} - `}</p>
-                                        <div className="common-questions">
-                                            {topic.questions.map((question, qIndex) => (
-                                                <p className="question-text">
-                                                    {` "${question.text}" `}
-                                                    <span className="freq-text">{`(${question.frequency})`}</span>
-                                                    {qIndex < topic.questions.length - 1 && ' • '}
-                                                </p>                                         
-                                            ))
-                                            }
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                        {questions.length > 0 ? (
+                            questions.map((question) => (
+                                <p className="text">
+                                     • {question}
+                                </p>
+                            ))
+                        ): (
+                            <p className="text">No questions recorded</p>
                         )}
                     </div>
                 </div>

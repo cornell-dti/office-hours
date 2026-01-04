@@ -22,10 +22,11 @@
     line-height: 7.5px; /* 41.667% */
     letter-spacing: -0.36px;
     .title{
-        width: 105px;
-        height: 11px;
-        margin-right: 592px;
+        width: 697px;
+        height: fit-content;
+        margin-right: 0px;
         margin-top: 23px;
+        white-space: nowrap;
     }
     .volume{
         width: 73px;
@@ -67,6 +68,24 @@
         letter-spacing: -0.24px;
     }
     .questions{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .text{
+            display: flex;
+            align-items: flex-start;
+            color: #474747;
+            font-family: Roboto;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 7.5px;
+            letter-spacing: -0.24px;
+            margin: 0;
+            padding: 4px 0;
+        }
+
         .topic-container{
             margin-top: 12px;
             .topic{

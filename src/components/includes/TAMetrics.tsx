@@ -48,7 +48,9 @@ const TAMetrics = ({ user } : TAMetricsProps) => {
     }
     useEffect(() => {
         fetchData();
-    }, [user.userId])
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user.userId])
 
     return (
         <div className="ta-metrics-container">

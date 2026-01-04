@@ -130,13 +130,43 @@ type FeedbackRecord = {
     writtenFeedback: string?;
 };
 
+// Types for TA Dashboard Preparation
+// Type for frontend TAStudentTrends component
 type TrendData = {
-    title: string, 
-    volume: number, 
-    mention: FireTimestamp,
-    assignment: FireTag,
-    questions: string[]
+    title: string;
+    volume: number; 
+    mention: string;
+    assignment: string;
+    questions: string[];
+    firstMentioned : Date;
 };
+
+// Type for Firebase
+type TrendDocument = {
+    title: string;
+    questions: QuestionDetail[];
+    volume: number;
+    firstMentioned: Timestamp;
+    lastUpdated: Timestamp;
+    assignmentName: string;
+    primaryTag: string;
+    secondaryTag: string;
+}
+
+
+type QuestionDetail = {
+    content: string;
+    timestamp: Timestamp;
+    questionId: string;
+};
+
+type QuestionData = {
+    content: string;
+    primaryTag: string;
+    secondaryTag: string;
+    timestamp: Timestamp;
+    questionId: string;
+}
 
 type TitledCluster = {
     title: string,

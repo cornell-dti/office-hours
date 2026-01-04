@@ -2,43 +2,107 @@ import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { Dropdown } from 'semantic-ui-react';
 import TAQuery from "./TAQuery";
-import { dummyData } from "./dummyData";
+import { getStudentTrends } from "../../firebasefunctions/taPrep";
 
-// params? for backend fetching maybe?
-const TAStudentTrends = () => {
+
+type TAStudentTrendsProps = {
+    courseId: string;
+}
+
+const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {  
+    const [filteredData, setFilteredData] = useState<TrendData[]>([]);
+
+    const[allTrends, setAllTrends] = useState<TrendData[]>([]);
+    const[loading, setLoading] = useState(true);
+    const[error, setError] = useState<string | null>(null);
+
+    const tasks = React.useMemo(() => {
+        const uniqueTasks = Array.from(new Set(allTrends.map(t => t.assignment)));
+        return ["All Tasks", ...uniqueTasks.sort()];
+    }, [allTrends]);
+    const tasksArray = tasks.map((label: string) => ({key: label, text: label, value: label }));
+    
     const timeOptions = ["Today", "This week", "This month", "This semester"];
     const timeOptionsArray = timeOptions.map(( label: string ) =>
         ({ key: label, text: label, value: label })
     );
-    const tasks = ["Assignment 1", "Assignment 2", "All Tasks"];
-    const tasksArray = tasks.map((label: string) => ({key: label, text: label, value: label }));
+
     const filter = ["First Mentioned", "Query Volume"];
     const filtersArray = filter.map((label: string) => ({key: label, text: label, value: label}));
 
     // useStates to track filter selection
     const [timeFilter, setTimeFilter] = useState("This week");
-    const [taskFilter, setTaskFilter] = useState(tasks[tasks.length - 2]);
-    // set tasks default to most recent assignment
+    const [taskFilter, setTaskFilter] = useState("All Tasks");
     const [sortFilter, setSortFilter] = useState("Query Volume");
-    const [filteredData, setFilteredData] = useState(dummyData);
+
+    // for running generateStudentTrends once. for testing, (will be scheduled)
+    // useEffect(() => {
+    //     const initTrends = async () => {
+    //         try {
+    //             setLoading(true);
+
+    //             await tf.setBackend('cpu');
+    //             await tf.ready();
+
+    //             const trendsRef = collection(firestore, `courses/${courseId}/trends`);
+    //             const snapshot = await getDocs(trendsRef);
+
+    //             if (snapshot.empty) {
+    //                 console.log("No trends found, generating...");
+    //                 await generateStudentTrends(courseId);
+    //             }
+
+    //             const trends = await getStudentTrends(courseId);
+    //             setAllTrends(trends);
+    //             setError(null);
+    //         } catch (err) {
+    //             console.error("Error fetching trends:", err);
+    //             setError("Failed to load trends data");
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+
+    //     initTrends();
+    // }, [courseId]);
+
+    useEffect(() => {
+        const fetchTrends = async () => {
+            try {
+                setLoading(true);
+                const trends = await getStudentTrends(courseId);
+                setAllTrends(trends);
+                setError(null);
+            } catch (err) {
+                // eslint-disable-next-line no-console
+                console.error("Error fetching trends:", err);
+                setError("Failed to load trends data");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTrends();
+    }, [courseId]);
 
     const getFilteredData = useCallback(() => {
-        /* TODO: adjust filters after backend implementation to fully match figma. */
-        let result = [...dummyData];
+        let result = [...allTrends];
 
         // logic for the time dropdown filter
         result = result.filter(item => {
-            const mention = item.mention.toLowerCase();
-            const num = parseInt(mention, 10) || 0;
+            const now = new Date();
+            const mentionDate = item.firstMentioned;
+            const diffMs = now.getTime() - mentionDate.getTime();
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
             
             if (timeFilter === "Today") {
-                return mention.includes("day") && num <= 1;
+                return diffDays === 0;
             }
             if (timeFilter === "This week") {
-                return (mention.includes("day") && num <= 7) 
+                return diffDays <= 7; 
             }
             if (timeFilter === "This month") {
-                return (mention.includes("day") && num <= 31);
+                return diffDays <= 31;
             }
             return true; 
         });
@@ -55,44 +119,47 @@ const TAStudentTrends = () => {
             if (sortFilter === "Query Volume") {
                 if (b.volume !== a.volume) return b.volume - a.volume;
 
-                const mentionDiff = compareMentionTimes(a.mention, b.mention);
-                if (mentionDiff !== 0) return mentionDiff;
+                const dateDiff = a.firstMentioned.getTime() - b.firstMentioned.getTime();
+                if (dateDiff !== 0) return dateDiff;
 
                 return a.title.localeCompare(b.title);
             }  
-            const mentionDiff = compareMentionTimes(a.mention, b.mention);
-            if (mentionDiff !== 0 ) return mentionDiff;
+            const dateDiff = a.firstMentioned.getTime() - b.firstMentioned.getTime();
+            if (dateDiff !== 0 ) return dateDiff;
             if (b.volume !== a.volume) return b.volume - a.volume;
             return a.title.localeCompare(b.title);
             
         });
 
         return result;
-    }, [timeFilter, taskFilter, sortFilter])
+    }, [allTrends, timeFilter, taskFilter, sortFilter])
 
     useEffect(() => {
         setFilteredData(getFilteredData);
     }, [getFilteredData]);
 
-    // function to compare two mentions to sort in ascending order
-    const compareMentionTimes = (a: string, b: string) => {
-        const getDayValue = (m: string) => {
-            m = m.toLowerCase();
-            const num = parseInt(m, 10) || 0;
-            if (m.includes("day")) return num ;
-            if (m.includes("week")) return num * 7;
-            if (m.includes("month")) return num * 30;
-            return 0;
-        };
-    
-        return getDayValue(a) - getDayValue(b); 
-    };
+    if (loading) {
+        return (
+            <div className="trends-container">
+                <h2 className="trends-header">Student Query Trends</h2>
+                <p>Loading trends...</p>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="trends-container">
+                <h2 className="trends-header">Student Query Trends</h2>
+                <p style={{color: 'red'}}>{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="trends-container">
             <h2 className="trends-header">Student Query Trends</h2>
             <div className="dropdowns-container">
-                {/* TODO: no scroll bars */}
                 <div className="time-task-dropdown-container">
                     <Dropdown
                         style={{ marginRight: 16}}
@@ -133,14 +200,22 @@ const TAStudentTrends = () => {
                 </div>
             </div>
             <div className="table-contents-container">
-                {filteredData.map((topic) => 
-                    <TAQuery
-                        title={topic.title}
-                        volume={topic.volume}
-                        mention={topic.mention}
-                        questions={topic.questions}
-                    />
-                )}
+                {filteredData.length === 0 ? (
+                    <p style={{ padding: '20px', textAlign: 'center' }}>
+                        No trends found for the selected filters
+                    </p>
+                ) : (
+                    filteredData.map((topic) => (
+                        <TAQuery
+                            key={`${topic.title}-${topic.assignment}`}
+                            title={topic.title}
+                            volume={topic.volume}
+                            mention={topic.mention}
+                            questions={topic.questions}
+                        />
+                    ))
+                )
+                }
             </div>
             
         </div>
