@@ -59,7 +59,7 @@ const RatingRow: React.FC<RatingRowProps> = ({ title, label, value, setValue }) 
 
 type Props = {
     onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string, 
-        verified?: boolean, sessionId?: string) => void;
+        sessionId?: string) => void;
     closeFeedbackPrompt: () => void;
     
 };
@@ -71,7 +71,6 @@ const FeedbackPrompt = (props: Props) => {
     const [efficiency, setEfficiency] = useState<number>(0);
     const [overall, setOverall] = useState<number>(0);
     const [feedback, setFeedback] = useState<string>("");
-    const [verified, setVerified] = useState<boolean>(false);
     const [sessionId, setSessionId] = useState<string>("");
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -192,8 +191,7 @@ const FeedbackPrompt = (props: Props) => {
                     onClick={() => {
                         if ((organization && efficiency && overall) || feedback) {
                             setSessionId(sessionId);
-                            setVerified(verified);
-                            props.onClose(organization, efficiency, overall, feedback, verified, sessionId);
+                            props.onClose(organization, efficiency, overall, feedback, sessionId);
                         }
                         props.closeFeedbackPrompt();
                     }}

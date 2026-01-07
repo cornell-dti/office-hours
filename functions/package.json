@@ -16,10 +16,12 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@genkit-ai/google-genai": "^1.27.0",
     "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.2",
     "firebase-tools": "^13.6.0",
+    "genkit": "^1.27.0",
     "moment-timezone": "^0.5.45",
     "resend": "^6.7.0",
     "twilio": "^3.71.3"

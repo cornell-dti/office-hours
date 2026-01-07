@@ -239,12 +239,18 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
 /* Adds three new ratings (organization, efficiency, overallExperience) 
 to the firebase under the users tab for each question asked. Also adds a verification field
 to determine whether or not a review was checked. */
-export const submitFeedback = (removedQuestionId: string | undefined, sessionId: string) => 
-    async (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
-        
-        if (!removedQuestionId) {
-            return;
-        }
+export const submitFeedback =
+    (removedQuestionId: string | undefined, sessionId: string) =>
+        async (
+            rating1?: number,
+            rating2?: number,
+            rating3?: number,
+            feedback?: string,
+        ) => {
+
+            if (!removedQuestionId) {
+                return;
+            }
 
         try {
             const questionRef = firestore.collection("questions").doc(removedQuestionId);
@@ -257,41 +263,27 @@ export const submitFeedback = (removedQuestionId: string | undefined, sessionId:
             const taID = questionDoc.data()?.answererId || undefined;
             const timeStamp = questionDoc.data()?.timeAddressed || undefined;
 
-            if (!taID) {
-                return;
+                if (!taID) {
+                    return;
+                }
+
+                const feedbackRecord = {
+                    organization: rating1,
+                    efficiency: rating2,
+                    overallExperience: rating3,
+                    timeStamp,
+                    writtenFeedback: feedback,
+                    session: sessionId
+                };
+
+                const batch = firestore.batch();
+                batch.set(firestore.doc(`users/${taID}`).collection('feedback').doc(), feedbackRecord);
+                await batch.commit();
+
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log("Error adding feedback")
+                // eslint-disable-next-line no-console
+                console.log(error);
             }
-
-            const feedbackRecord = {
-                organization: rating1, 
-                efficiency: rating2,
-                overallExperience: rating3,
-                timeStamp,
-                writtenFeedback: feedback,
-                session: sessionId,
-                verification: verified,
-            };
-
-            const usersRef = firestore.collection("users").doc(taID);
-            const userDoc = await usersRef.get();
-
-            if (!userDoc.exists) {
-                return;
-            }
-
-            const existingFeedbackList = userDoc.data()?.feedbackList || [];
-            existingFeedbackList.push(feedbackRecord);
-
-            const updateData: any = {
-                feedbackList: existingFeedbackList,
-            };
-                // Only set verified if it doesn’t exist yet
-            if (userDoc.data()?.verified === undefined && verified !== undefined) {
-                updateData.verified = verified;
-            }
-            await usersRef.update(updateData);
-        }       
-        catch (error) {
-            // eslint-disable-next-line no-console
-            console.log("Error updating")
-        }
-    };
+        };

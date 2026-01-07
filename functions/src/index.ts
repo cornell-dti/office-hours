@@ -2,9 +2,15 @@
 import * as functions from "firebase-functions/v1";
 // eslint-disable-next-line import/no-unresolved
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+// eslint-disable-next-line import/no-unresolved
+// import { onSchedule } from "firebase-functions/v2/scheduler";
+// eslint-disable-next-line import/no-unresolved
+import { vertexAI } from '@genkit-ai/google-genai';
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
 import moment from "moment-timezone";
+// eslint-disable-next-line import/no-unresolved
+import {genkit, z} from "genkit";
 // eslint-disable-next-line import/no-unresolved
 import { defineString } from "firebase-functions/params";
 import {Resend} from "resend";
@@ -14,11 +20,71 @@ const TWILIO_TWILIONUMBER = defineString('TWILIO_TWILIONUMBER');
 const TWILIO_TWILIO_AUTH_TOKEN = defineString('TWILIO_TWILIO_AUTH_TOKEN');
 const RESEND_API_KEY = defineString('RESEND_API_KEY');
 
-// Use admin SDK to enable writing to other parts of database
-// const admin = require('firebase-admin');
 admin.initializeApp();
 
 const db = admin.firestore();
+
+// Initialize Genkit with Vertex AI
+const ai = genkit({
+    plugins: [
+        vertexAI({
+            projectId: process.env.GCLOUD_PROJECT, // auto-set in Cloud Functions
+            location: "us-central1",
+        }),
+    ],
+    model: vertexAI.model('gemini-2.5-flash', {
+        temperature: 0.8,
+    }),
+});
+
+// Define input schema
+const feedbackInputSchema = z.object({
+    content: z.string().describe('Student written feedback about TA office hour session')
+});
+
+// Define output schema
+const feedbackOutputSchema = z.object({
+    verification: z.string(),
+});
+
+// Define a flow for verifying student feedback
+export const feedbackVerificationFlow = ai.defineFlow(
+    {
+        name: 'feedbackVerificationFlow',
+        inputSchema: feedbackInputSchema,
+        outputSchema: feedbackOutputSchema,
+    },
+    async (input) => {
+        // Create a prompt based on the input
+        const prompt = `
+        Analyze the following feedback and determine whether 
+        it is appropriate or not based on the following criteria.
+        Feedback Content: "${input.content}"
+        Please analyze this request and ONLY return a "yes" or "no" for whether the feedback
+         is acceptable or not based on the criteria below:
+        {           
+            "appropriateness": "[0-5 | 6-10 | 11-15 | 16-25 | 26+]",
+            "inappropriate language": "[yes | no]",
+        }
+        Return "yes" if the appropriateness is 10 or higher and inappropriate language is no. 
+        If the feedback content is empty, also return "yes".
+        Return "no" otherwise.
+    `;
+
+        // Generate structured output data using the same schema
+        const { output } = await ai.generate({
+            model: vertexAI.model('gemini-2.5-flash'),
+            prompt,
+            output: { schema: feedbackOutputSchema },
+        });
+
+        if (!output) {
+            functions.logger.log("Failed to run verification flow.");
+            throw new Error('Failed to run verification flow.');
+        } 
+        return output;
+    },
+);
 
 /**
  * Function that handles data and sends a text message to a requested phone number
@@ -130,6 +196,40 @@ exports.onUserCreate = functions.firestore.document("users/{userId}").onCreate(a
         await batch.commit();
     });
 });
+
+exports.onFeedbackCreate = functions.firestore
+    .document(`users/{userId}/feedback/{feedbackId}`)
+    .onCreate(async (snap) => {
+        functions.logger.info("onFeedbackCreate triggered");
+        const data = snap.data();
+        const feedbackId = snap.id;
+        if (!process.env.GCLOUD_PROJECT) {
+            functions.logger.error("Gcloud project not found in environment");
+        }
+
+        try {
+            const {verification} = await feedbackVerificationFlow({
+                content: data.writtenFeedback ?? "",
+            });
+
+            /* If "yes" is returned, we don't need to modify anything. 
+            For anything else, this FeedbackRecord is deleted from the user's feedback subcollection. */
+            if (verification !== "yes") {
+                functions.logger.info("Feedback determined to be inappropriate.");
+                await snap.ref.delete();
+            }
+        } catch (err) {
+            // If there is an error, delete the feedback to be safe.
+            functions.logger.error("Feedback verification failed", {
+                feedbackId,
+                error: err instanceof Error ? err.message : err,
+            });
+
+            await snap.ref.delete();
+
+        }
+    });
+
 
 exports.onCommentCreate = functions.firestore
     .document(`questions/{questionId}/comments/{commentId}`)

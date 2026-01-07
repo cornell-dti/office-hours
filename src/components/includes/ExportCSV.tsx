@@ -7,7 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateValidationError } from "@mui/x-date-pickers/models";
-import { useCourse, useCourseTAMap, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
+import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
@@ -117,49 +117,8 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     // analytics calculations
     // Added courseTAs for the course which holds a map of userIDs of TAs
     const { sessions } = useCoursesBetweenDates(startDate, endDate, courseId);
-    const course = useCourse(courseId);
+    // const course = useCourse(courseId);
     const courseUsers = useCourseUsersMap(courseId, true)
-    const courseTAs = useCourseTAMap(course!)
-
-    // This component now iterates through user documents of TAs in a 
-    // particular course and gets each of their feedback lists.
-    const getFeedbackForSession = (sessionId: string) => {
-        const feedback: FeedbackRecord[] = [];
-
-        Object.values(courseTAs).forEach((ta) => {
-            if (ta.feedbackList && Array.isArray(ta.feedbackList)) {
-                ta.feedbackList.forEach((feedbackRecord) => {
-                    if (feedbackRecord.session === sessionId) {
-                        feedback.push(feedbackRecord);
-                    }
-                });
-            }
-
-        });
-
-        return feedback;
-    };
-
-    const averageRatingString = (feedback: FeedbackRecord[]) => {
-        if (feedback.length === 0) {
-            return "";
-        }
-
-        let totalRating = 0;
-        feedback.forEach((feedbackRecord) => {
-            totalRating += feedbackRecord.overallExperience ?? 0;
-        });
-
-        return (totalRating / feedback.length).toFixed(2);
-    };
-
-    const writtenFeedbackString = (feedback: FeedbackRecord[]) => {
-        if (feedback.length === 0) {
-            return "";
-        }
-
-        return '"' + feedback.map((feedbackRecord) => feedbackRecord.writtenFeedback).join(", ") + '"';
-    };
 
     // calculates session data
     const generateSessionData = () => {
@@ -221,12 +180,13 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                 sessionWaitTime: includeWaitTime ? sessionWaitTime : undefined,
                 sessionNumQuestions: includeQuestion ? sessionNumQuestions.toString() : undefined,
                 sessionPercentResolved: includeQuestion ? sessionPercentResolved : undefined,
-                sessionRating: includeRating
-                    ? averageRatingString(getFeedbackForSession(session.sessionId))
-                    : undefined,
-                sessionWrittenFeedback: includeRating
-                    ? writtenFeedbackString(getFeedbackForSession(session.sessionId))
-                    : undefined,
+                // TODO: instead of ratings, return actual question content
+                // sessionRating: includeRating
+                //     ? averageRatingString(getFeedbackForSession(session.sessionId))
+                //     : undefined,
+                // sessionWrittenFeedback: includeRating
+                //     ? writtenFeedbackString(getFeedbackForSession(session.sessionId))
+                //     : undefined,
             };
             // filters out undefined values from row
             const sessionDataElementCleaned = pickBy(sessionDataElement, (v) => v !== undefined) as sessionRowData;
@@ -468,7 +428,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                                     className="checkbox"
                                                 />
                                             }
-                                            label="Question"
+                                            label="Question Statistics"
                                             className="checkboxFormLabel"
                                         />
                                     </Grid>
