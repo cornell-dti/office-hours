@@ -1,11 +1,11 @@
 import React from "react";
 import { Card } from "@material-ui/core";
-import emailjs from "@emailjs/browser";
-import { Resend } from 'resend';
+//import emailjs from "@emailjs/browser";
+//import { Resend } from 'resend';
 import { rejectPendingCourse, confirmPendingCourse } from "../../firebasefunctions/courses";
 import { addDBNotification } from "../../firebasefunctions/notifications";
 import { useUser } from "../../firehooks";
-import 'dotenv/config'
+//import 'dotenv/config'
 
 const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCourse; userId: string | undefined }) => {
     const user = useUser(userId);
@@ -49,17 +49,14 @@ const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCours
     };
 
     const reject = () => {
-        rejectPendingCourse(course.courseId);
-
         if (user) {
+            rejectPendingCourse(course, user);
             const notification = {
                 title: "Class Request Rejected",
                 subtitle: "New Class Rejected",
                 message: "Your submission for " + course.code + "’s course creation has been rejected.",
             };
             addDBNotification(user, notification);
-
-            sendEmail(user, "rejected");
         }
     };
 
@@ -73,8 +70,6 @@ const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCours
                 "’s course creation has been approved and the course is now live.",
             };
             addDBNotification(user, notification);
-
-            sendEmail(user, "approved");
         }
     };
 
