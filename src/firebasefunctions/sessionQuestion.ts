@@ -238,7 +238,6 @@ export const submitFeedback =
             rating2?: number,
             rating3?: number,
             feedback?: string,
-            verified?: boolean | undefined,
         ) => {
 
             if (!removedQuestionId) {
@@ -260,38 +259,25 @@ export const submitFeedback =
                     return;
                 }
 
+                const usersRef = doc(firestore, `users/${taID}`);
+                const feedbackRef = collection(usersRef, "feedback");
+
                 const feedbackRecord = {
                     organization: rating1,
                     efficiency: rating2,
                     overallExperience: rating3,
                     timeStamp,
                     writtenFeedback: feedback,
-                    session: sessionId,
-                    verification: verified,
+                    session: sessionId
                 };
 
-                const usersRef = doc(firestore, `users/${taID}`);
-                const userDoc = await getDoc(usersRef);
-
-                if (!userDoc.exists()) {
-                    return;
-                }
-
-                const existingFeedbackList = userDoc.data()?.feedbackList || [];
-                existingFeedbackList.push(feedbackRecord);
-
-                const updateData: any = {
-                    feedbackList: existingFeedbackList,
-                };
-
-                // Only set verified if it doesn’t exist yet
-                if (userDoc.data().verified === undefined && verified !== undefined) {
-                    updateData.verified = verified;
-                }
-
-                await updateDoc(usersRef, updateData);
+                const batch = writeBatch(firestore);
+                batch.set(doc(feedbackRef), feedbackRecord);
+                await batch.commit();
             } catch (error) {
                 // eslint-disable-next-line no-console
-                console.log("Error updating")
+                console.log("Error adding feedback")
+                // eslint-disable-next-line no-console
+                console.log(error);
             }
         };
