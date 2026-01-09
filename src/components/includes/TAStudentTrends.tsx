@@ -35,37 +35,6 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
     const [taskFilter, setTaskFilter] = useState("All Tasks");
     const [sortFilter, setSortFilter] = useState("Query Volume");
 
-    // for running generateStudentTrends once. for testing, (will be scheduled)
-    // useEffect(() => {
-    //     const initTrends = async () => {
-    //         try {
-    //             setLoading(true);
-
-    //             await tf.setBackend('cpu');
-    //             await tf.ready();
-
-    //             const trendsRef = collection(firestore, `courses/${courseId}/trends`);
-    //             const snapshot = await getDocs(trendsRef);
-
-    //             if (snapshot.empty) {
-    //                 console.log("No trends found, generating...");
-    //                 await generateStudentTrends(courseId);
-    //             }
-
-    //             const trends = await getStudentTrends(courseId);
-    //             setAllTrends(trends);
-    //             setError(null);
-    //         } catch (err) {
-    //             console.error("Error fetching trends:", err);
-    //             setError("Failed to load trends data");
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     initTrends();
-    // }, [courseId]);
-
     useEffect(() => {
         const fetchTrends = async () => {
             try {
