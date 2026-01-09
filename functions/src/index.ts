@@ -3,9 +3,12 @@ import * as functions from "firebase-functions/v1";
 // eslint-disable-next-line import/no-unresolved
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 // eslint-disable-next-line import/no-unresolved
-// import { onSchedule } from "firebase-functions/v2/scheduler";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 // eslint-disable-next-line import/no-unresolved
 import { vertexAI } from '@genkit-ai/google-genai';
+import * as use from "@tensorflow-models/universal-sentence-encoder";
+import * as tf from "@tensorflow/tfjs";
+import kmeans, { KMeans } from "kmeans-ts";
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
 import moment from "moment-timezone";
@@ -23,6 +26,8 @@ const RESEND_API_KEY = defineString('RESEND_API_KEY');
 admin.initializeApp();
 
 const db = admin.firestore();
+
+let useModel: use.UniversalSentenceEncoder | null = null;
 
 // Initialize Genkit with Vertex AI
 const ai = genkit({
@@ -85,6 +90,358 @@ export const feedbackVerificationFlow = ai.defineFlow(
         return output;
     },
 );
+
+
+// Type for Firebase
+type TrendDocument = {
+    title: string;
+    questions: QuestionDetail[];
+    volume: number;
+    firstMentioned: admin.firestore.Timestamp;
+    lastUpdated: admin.firestore.Timestamp;
+    assignmentName: string;
+    primaryTag: string;
+    secondaryTag: string;
+}
+
+
+type QuestionDetail = {
+    content: string;
+    timestamp: admin.firestore.Timestamp;
+    questionId: string;
+};
+
+type QuestionData = {
+    content: string;
+    primaryTag: string;
+    secondaryTag: string;
+    timestamp: admin.firestore.Timestamp;
+    questionId: string;
+}
+
+type TitledCluster = {
+    title: string,
+    questions: string[]
+}
+
+
+// Define input schema
+const titleInputSchema = z.object({
+    questions: z.array(z.string()).describe('An array of student questions from office hour sessions')
+});
+
+// Define output schema
+const titleOutputSchema = z.object({
+    title: z.string(),
+});
+
+// Define a flow for verifying student feedback
+export const titleGenerationFlow = ai.defineFlow(
+    {
+        name: 'titleGenerationFlow',
+        inputSchema: titleInputSchema,
+        outputSchema: titleOutputSchema,
+    },
+    async (input) => {
+        // Create a prompt based on the input
+        const prompt = `
+        Given these related questions:
+
+        Question list: "${input.questions}"
+        What short (2-4 words) topic title describes them?
+        
+        Return only the title, no additional text.
+    `;
+
+        // Generate structured output data using the same schema
+        const { output } = await ai.generate({
+            model: vertexAI.model('gemini-2.5-flash'),
+            prompt,
+            output: { schema: titleOutputSchema },
+        });
+
+        if (!output) {
+            functions.logger.log("Failed to run title flow.");
+            throw new Error('Failed to run title flow.');
+        } 
+        return output;
+    },
+);
+
+/**
+ * Given a list of tag ids, return a map of their id to their name.
+ * @param tagIds string list of firetag ids
+ * @returns 
+ */
+async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
+    const tagMap = new Map<string, string>();
+    const tagRef = db.collection("tags");
+
+    const uniqueTagIds = Array.from(new Set(tagIds.filter(id => id)));
+
+    const tagPromises = uniqueTagIds.map(async (tagId) => {
+        try {
+            const tagSnapshot = await tagRef.where("__name__", "==", tagId).get();
+            
+            if (!tagSnapshot.empty){
+                const tagDoc = tagSnapshot.docs[0];
+                const data = tagDoc.data();
+                return { id: tagId, name: data.name || tagId };
+            }
+            return { id : tagId, name: tagId };
+        } catch (error) {
+            functions.logger.error(`Error fetching tag ${tagId}:`, error);
+            return { id: tagId, name: tagId };
+        }
+    });
+
+    const tags = await Promise.all(tagPromises);
+    tags.forEach(tag => tagMap.set(tag.id, tag.name));
+
+    return tagMap;
+}
+
+
+/**
+ * Given a course id, fetch the questions belonging to the course, 
+ * the tags associated with the course, and return a list of the content, 
+ * tag information, timestamps, and ids.
+ * @param courseId id for the course
+ * @returns 
+ */
+async function getQuestions( courseId: string ): Promise<QuestionData[]> {
+    const questions : Array<QuestionData> = [];
+    const tagIds: string[] = [];
+
+    const questionSnapshot = await db.collection("questions").where("courseId", '==', courseId).get();
+    questionSnapshot.forEach(doc => {
+        const data = doc.data();
+        tagIds.push(data.primaryTag, data.secondaryTag);
+        questions.push({
+            content: data.content,
+            primaryTag: data.primaryTag,
+            secondaryTag: data.secondaryTag,
+            timestamp: data.timeEntered,
+            questionId: doc.id
+        });
+    });
+
+    const tagMap = await getTagNames(tagIds);
+
+    const result : QuestionData[] = questions.map(q => ({
+        content: q.content,
+        primaryTag: tagMap.get(q.primaryTag) || q.primaryTag,
+        secondaryTag: tagMap.get(q.secondaryTag) || q.secondaryTag,
+        timestamp: q.timestamp,
+        questionId: q.questionId
+    }));
+
+    return result;
+}
+
+/**
+ * `getEmbeddings` uses a typescript library for SBERT to embed each sentence 
+ * in `questions` into numerical vectors represented as number[][].
+ * @param questions the string list of questions that students ask
+ * @returns the sentence embeddings for the list of questions.
+ */
+async function getEmbeddings(questions: string[]): Promise<number[][]>{
+    functions.logger.log('Running getembeddings');
+    if (!useModel) {
+        functions.logger.log("Loading USE model...");
+        useModel = await use.load();
+        functions.logger.log("USE model loaded");
+    }
+    const model = useModel;
+    const embeddings = await model.embed(questions);
+    functions.logger.log('Loaded embeddings');
+    const result = await embeddings.array();
+    embeddings.dispose();
+    return result;
+}
+
+/**
+ * `clusterEmbeddings` uses kMeans algorithm to cluster the embedded questions into `k` clusters.
+ * @param embeddings embedded vectors of question data
+ * @param k number of clusters to group the data into
+ * @returns obj of KMeans type including number of iterations, indexes, centroids, k.
+ */
+async function clusterEmbeddings(embeddings: number[][], k = 2): Promise<KMeans>{
+    const clusters: KMeans = kmeans(embeddings, k);
+    return clusters;
+}
+
+/**
+ * Takes the output of kmeans clustering to obtain the list of questions that belong in each cluster. 
+ * @param clusters output of kmeans clustering
+ * @param questions full question data list
+ * @returns record containing the cluster number and its corresponding question list
+ */
+function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<number, string[]> {
+    const res: Record<number, string[]> = {};
+    for (let i = 0; i < clusters.k; i++){
+        res[i] = [];
+    }
+
+    clusters.indexes.forEach((clusterIdx, qIdx) => {
+        res[clusterIdx].push(questions[qIdx]);
+    });
+
+    return res;
+}
+
+/**
+ * Helper function to convert between titled clusters and question data objects.
+ * @returns an array of the title and its corresponding question data object. 
+ */
+function clustersToQuestionData(
+    clusters: TitledCluster[],
+    allQuestions: QuestionData[]
+): Array<{ title: string; questions: QuestionData[] }> {
+    const questionMap = new Map<string, QuestionData>();
+    allQuestions.forEach(q => questionMap.set(q.content, q));
+
+    return clusters.map(cluster => ({
+        title: cluster.title,
+        questions: cluster.questions
+            .map(content => questionMap.get(content))
+            .filter((q) : q is QuestionData => q !== undefined)
+    }));
+}
+
+
+
+/**
+ * Performs sentence embedding, kmeans clustering, and LLM prompting to
+ * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
+ * Returns a list of each cluster and its questions along with a title for the cluster.
+ * @param questions list of question data
+ */
+async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
+    const res: TitledCluster[] = [];
+    functions.logger.log('Running kmeans');
+    const embeddings = await getEmbeddings(questions);
+    functions.logger.log('Finished getEmbeddings');
+
+    const k = Math.ceil(Math.sqrt(questions.length));
+
+    const c: KMeans = await clusterEmbeddings(embeddings, k);
+    functions.logger.log('Finished clusterEmbeddings');
+
+    const groups: Record<number, string[]> = groupQuestionsByCluster(c, questions);
+
+    const clusterPromises = Object.entries(groups).map(async ([clusterIdx, questionsInCluster ]) => {
+        try {
+            const result = await titleGenerationFlow({
+                questions: questionsInCluster,
+            });
+            
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: result.title, questions: questionsInCluster },
+            };
+        } catch (err) {
+            functions.logger.error("LLM call failed:", err);
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: "Untitled", questions: questionsInCluster },
+            };
+        } 
+    });
+
+    const clusterResults = await Promise.all(clusterPromises);
+
+    for (const { clusterIdx, data } of clusterResults ){
+        res[clusterIdx] = data;
+    }
+
+    return res;
+}
+
+/**
+ * Given a list of clusters, create the TrendDocument object for each cluster. 
+ * Also grabs the assignment name corresponding the the tags for that question.
+ * @param clusters the list of clusters (title and question information)
+ * @returns the TrendDocument[] corresponding to each cluster. 
+ */
+function trendsByAssignment (
+    clusters: Array<{ title: string; questions: QuestionData[] }>
+) : TrendDocument[] {
+    const trends : TrendDocument[] = [];
+    
+    for (const c of clusters){
+        const byAssignment = new Map<string, QuestionData[]>();
+
+        for (const q of c.questions){
+            const assignmentName = `${q.primaryTag} ${q.secondaryTag}`;
+            if (!byAssignment.has(assignmentName)){
+                byAssignment.set(assignmentName, []);
+            }
+            byAssignment.get(assignmentName)?.push(q);
+        }
+        const entries = Array.from(byAssignment.entries());
+        entries.forEach(([assignmentName, questions]) => {
+            const timestamps = questions.map(q => q.timestamp.toMillis());
+            const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
+            const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
+
+            trends.push({
+                title: c.title,
+                questions: questions.map(q => ({
+                    content: q.content,
+                    timestamp: q.timestamp,
+                    questionId: q.questionId
+                })),
+                volume: questions.length,
+                firstMentioned,
+                lastUpdated,
+                assignmentName, 
+                primaryTag: questions[0].primaryTag,
+                secondaryTag: questions[0].secondaryTag
+            });
+        });
+    }
+
+    return trends;
+}
+
+
+/**
+ * Full workflow, grabs the questions from firebase, sends the content into the 
+ * kMeansMain clustering algorithm + LLM titling, processes the clusters to be formatted into a 
+ * TrendDocument[] and stores the TrendDocument[] to firebase. 
+ * @param courseId id for the course
+ */
+async function generateStudentTrends(
+    courseId: string,
+) : Promise<void>{
+    const questions = await getQuestions(courseId);
+    const questionStrings = questions.map(q => q.content);
+    if (questionStrings.length === 0) {
+        functions.logger.log(`No questions for class ${courseId}`);
+        return;
+    }
+    const clusters = await kMeansMain(questionStrings);
+    functions.logger.log("Finished kmeans function");
+
+    const processedClusters = clustersToQuestionData(clusters, questions);
+
+    const trends: TrendDocument[] = trendsByAssignment(processedClusters);
+    functions.logger.log("Finished assigning trends");
+
+    // Save trends
+    const trendsRef = db.collection("courses").doc(courseId).collection("trends");
+    const p = trends.map(async (trend) => {
+        try {
+            await trendsRef.add(trend);
+        } catch (error){
+            functions.logger.error(`Error adding trend ${trend.title}:`, error);
+        }
+    });
+
+    await Promise.all(p);
+}
+
 
 /**
  * Function that handles data and sends a text message to a requested phone number
@@ -810,3 +1167,38 @@ exports.sendEmail = onCall({enforceAppCheck: true}, async (request) => {
 
 
 });
+
+/**
+ * Scheduled firebase function that runs once a week in each semester.
+ * Generates topics in "Preparation" tab of TA Dashboard for all courses in current semester. 
+ */
+exports.weeklyTopicsGenerator = onSchedule( { 
+    schedule: "0 2 * 1-5,8-12 0", 
+    timeZone: "America/New_York",
+    memory: "1GiB" }, async () => {
+    functions.logger.log('Weekly topics generator ran');
+    await tf.setBackend('cpu');
+    await tf.ready();
+    functions.logger.log('tf backend ready');
+    // Fetch all active courses
+    const coursesSnapshot = await db
+        .collection("courses")
+        .where("semester", "==", "FA25")
+        .get();
+
+    if (coursesSnapshot.empty) {
+        functions.logger.log("No active courses found.");
+        return;
+    }
+
+    for (const course of coursesSnapshot.docs) {
+        try {
+            // eslint-disable-next-line no-await-in-loop
+            await generateStudentTrends(course.id);
+        } catch (err) {
+            functions.logger.warn(`Failed trends for course ${course.id}`);
+        }
+    }
+   
+}
+);
