@@ -1,8 +1,8 @@
 import { doc, updateDoc, setDoc, deleteDoc, getDocs, where, collection, 
     query, writeBatch, arrayUnion } from 'firebase/firestore';
-import { firestore } from '../firebase';
-import {Resend} from 'resend';
-import 'dotenv/config'
+import { httpsCallable } from "firebase/functions";
+
+import { firestore, functions } from '../firebase';
 
 export const updateCourses = (
     userId: string,
@@ -37,26 +37,18 @@ export const addPendingCourse = async (
      * @param template: string representing end of template id (currently, only valid values for template are 
      * "rejected" or "approved")
      */
-    const sendEmail = (course:FireCourse, user: FireUser, template: string) => {
-        const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY);
-        const subject = template === "approved" ? `Queue Me In ${course.code} ${course.semester} Approved`: `Queue Me In ${course.code} ${course.semester} Rejected`
-        /* eslint-disable max-len */
-        const message =`Hello ${user.firstName + " " + user.lastName},
-        ${template === "approved" ? 
-            "Your new class request on QMI has been approved. " + course.code + " has been added to the current classes for " +course.semester + ".":
-            "Your new class request on QMI has been rejected. "+ course.code + " for " + course.semester + " has been removed from the pending classes. Please email QMI directly for more info."}
-
-        Best wishes,
-        QMI`
-
-          resend.emails.send({
-            from: 'queuemein@cornelldti.org',
-            to: [user.email],
-            subject: subject,
-            html: message,
-          });
-
-    };
+const callSendEmailFunction = async (emailData: 
+{template:"approved"|"rejected", course: FireCourse, user: FireUser}) => {
+    try {
+        const sendEmail = httpsCallable(functions, 'sendEmail');
+        const result = await sendEmail(emailData);
+        // eslint-disable-next-line no-console
+        console.log('Email sent successfully:', result);
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error calling sendEmail function: ', error);
+    }
+};
 
 
 /**
@@ -70,7 +62,7 @@ export const rejectPendingCourse = (
     course: FireCourse,
     user: FireUser
 ): Promise<void> => {
-    sendEmail(course, user, "rejected");
+    callSendEmailFunction({template: "rejected", course, user});
     const courseId = course.courseId;
     return deleteDoc(doc(firestore, 'pendingCourses', courseId))
 }
@@ -87,7 +79,7 @@ export const confirmPendingCourse = (
     user: FireUser
 ): Promise<void> => {
     const courseId = course.courseId;
-    sendEmail(course, user, "approved");
+    callSendEmailFunction({template: "approved", course, user});
 
     const batch = writeBatch(firestore);
     batch.delete(doc(firestore, 'pendingCourses', courseId));
