@@ -93,7 +93,7 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
 
                 return a.title.localeCompare(b.title);
             }  
-            const dateDiff = a.firstMentioned.getTime() - b.firstMentioned.getTime();
+            const dateDiff = b.firstMentioned.getTime() - a.firstMentioned.getTime();
             if (dateDiff !== 0 ) return dateDiff;
             if (b.volume !== a.volume) return b.volume - a.volume;
             return a.title.localeCompare(b.title);
