@@ -112,7 +112,7 @@ const FeedbackPrompt = (props: Props) => {
                     style={{ fontStyle: "roboto", fontSize: "18px", 
                         fontWeight: "500", color:"#D81919"}}
                 >
-                    Please fill out at least one field.
+                    Please fill out at least the written feedback field, or all the ratings.
                 </Typography>
 
                 <Typography variant="body2" style={{ fontStyle: "roboto", fontSize: "16px" }}>
