@@ -123,7 +123,7 @@ type FireSessionSeriesDefinition =
 
 type FeedbackRecord = {
     session: string;
-    questionId: string;
+    timeStamp: FireTimestamp;
     organization: number?;
     efficiency: number?;
     overallExperience: number?;
@@ -212,8 +212,10 @@ interface ResolvedItem {
  * 3. The `roles` field are in sync with `FireCourse`'s `professors` and `tas` field
  *
  * @see FireCourse
+ * 
+ * Note: Also has "feedback" subcollection of FeedbackRecords
  */
-// Now contains feedbackList for each user
+
 interface FireUser {
     firstName: string;
     lastName: string;
@@ -227,7 +229,6 @@ interface FireUser {
     textPrompted?: boolean;
     wrapped?: string;
     recentlyResolvedQuestion?: ResolvedItem;
-    feedbackList?: FeedbackRecord[];
 }
 
 interface FirePendingUser {

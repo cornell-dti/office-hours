@@ -1,6 +1,6 @@
 import React , { useState, useEffect } from 'react';
 import { Dropdown } from "semantic-ui-react";
-import {  doc, getDoc } from 'firebase/firestore';
+import {  collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { firestore } from "../../firebase";
 import StudentReviewCard from "./StudentReviewCard";
 
@@ -8,19 +8,10 @@ type StudentReviewPanelProps = {
     user: FireUser;
 }
 
-// Feedback list type, copied from Firebase fields
-type FeedbackList = {
-    efficiency: number;
-    organization: number;
-    overallExperience: number;
-    timeStamp: FireTimestamp;
-    writtenFeedback: string;
-}
-
 const StudentReviewPanel = ( { user }: StudentReviewPanelProps) => {
-    const [reviewData, setReviewData] = useState<FeedbackList[]>([]);
+    const [reviewData, setReviewData] = useState<FeedbackRecord[]>([]);
     const [filter, setFilter] = useState<string>("Most recent");
-    const [sortedReviews, setSortedReviews] = useState<FeedbackList[]>([]);
+    const [sortedReviews, setSortedReviews] = useState<FeedbackRecord[]>([]);
 
     // Filter dropdown options
     const filterOptions = [
@@ -37,7 +28,14 @@ const StudentReviewPanel = ( { user }: StudentReviewPanelProps) => {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()){
-                    const feedbackList: FeedbackList[] = docSnap.data().feedbackList;
+                    const feedbackRef = collection(docRef, "feedback");
+                    const feedbackDocs = await getDocs(feedbackRef);
+               
+                    const feedbackList: FeedbackRecord[] = [];
+                    feedbackDocs.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                        feedbackList.push(doc.data() as FeedbackRecord);
+                    });
                     setReviewData(feedbackList);
                 }
             } catch (err) {
@@ -105,10 +103,10 @@ const StudentReviewPanel = ( { user }: StudentReviewPanelProps) => {
                     return (
                         // Adapt Firebase field formatting to Student Review Card props
                         <StudentReviewCard
-                            overall={review.overallExperience}
-                            efficiency={review.efficiency}
-                            organization={review.organization}
-                            feedback={review.writtenFeedback}
+                            overall={review.overallExperience ?? 0}
+                            efficiency={review.efficiency ?? 0}
+                            organization={review.organization ?? 0}
+                            feedback={review.writtenFeedback ?? ""}
                             date={review.timeStamp.toDate().toLocaleDateString()}
                         />
                     );

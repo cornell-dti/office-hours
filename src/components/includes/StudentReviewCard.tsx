@@ -43,7 +43,7 @@ const PercentageBar = ({ label, score }: PercentageBarProps) => {
                 />
             </div>
             <div className="score-text">
-                {score !== undefined ? Math.round(score) : "N/A"}
+                {score ? Math.round(score) : "N/A"}
             </div>
         </div>      
     );

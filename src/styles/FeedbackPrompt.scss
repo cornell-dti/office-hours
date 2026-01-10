@@ -24,11 +24,65 @@
     flex-direction: column;
     position: absolute;
     margin: auto;
-    width: 450px;
-    height: 580px;
+    width: 70%;
+    max-width: 1000px;
+    height: auto;
     background: white;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+    color: #1E1E1E;
+    text-align: left;
+}
+
+.MuiTypography-body2 {
+    margin-bottom: 16px;
+}
+
+.feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.feedback-left,
+.feedback-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.rating-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.rating-input {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.radio-group {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  padding: 0 1rem;
+}
+
+.radio-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.radio-option input {
+  margin: 0;
+  transform: scale(1.5);
 }
 
 .closeButtonContainer {
@@ -37,4 +91,21 @@
     position: "absolute";
     bottom: "2rem";
     right: "1.8rem";
+}
+
+.button-accept {
+    background-color: #5599DB !important;
+    color: white !important;
+}
+
+.button-accept.Mui-disabled {
+  background-color: #D3D2D2 !important;
+  color: white !important;
+}
+
+
+@media(max-width: 900px) {
+    .feedback {
+        grid-template-columns: 1fr;
+    }
 }

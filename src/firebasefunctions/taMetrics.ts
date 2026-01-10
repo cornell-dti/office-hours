@@ -89,7 +89,7 @@ export const calcTAMetrics = async(
         const assigned = data.timeAssigned?.toDate();
         const addressed = data.timeAddressed?.toDate();
 
-        const dayName = DAYS[entered.getUTCDay()];
+        const dayName = DAYS[entered.getDay()];
 
         if (entered && assigned && assigned > entered){
             const waitMin = (assigned.getTime() - entered.getTime()) / 1000 / 60;

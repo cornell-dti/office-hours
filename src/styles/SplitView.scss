@@ -99,6 +99,65 @@ section .SessionJoinButton {
     top: 0;
 }
 
+.feedbackPopup {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: grid;
+            padding: 16px;
+            align-items: flex-start;
+            text-align:left;
+            gap: 15px;
+            align-self: stretch;
+            border-radius: 16px;
+            background: #EFF7FF;
+            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+
+            .close{
+                position: absolute;
+                right: 10px;
+                top: 10px;
+            }
+
+            h1 {
+                color: #000;
+                font-family: "Roboto";
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                display: block;
+                margin:0;
+            }
+
+            p {
+                color: #807B7B;
+                font-family: "Roboto";
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                display: block;
+            }
+
+            .content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            }
+
+            .text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            }
+
+            .check {
+                color: #5599DB;
+            }
+        }
+
+
 @media only screen and (max-width: $mobile-breakpoint) {
     aside.CalendarView,
     section.StudentSessionView {
