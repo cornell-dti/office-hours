@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, Timestamp } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
 import { authState } from 'rxfire/auth';
 import { collectionData } from 'rxfire/firestore';
@@ -31,6 +32,8 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
 
 const app = initializeApp(firebaseConfig);
 
+const functions = getFunctions(app);
+
 const firestore = getFirestore(app);
 
 if (process.env.NODE_ENV === 'test') {
@@ -49,5 +52,6 @@ export {
     storage,
     collectionData,
     loggedIn$,
-    Timestamp
+    Timestamp,
+    functions
 };

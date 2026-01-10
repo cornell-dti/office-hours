@@ -21,6 +21,7 @@
     "firebase-functions": "^6.3.2",
     "firebase-tools": "^13.6.0",
     "moment-timezone": "^0.5.45",
+    "resend": "^6.7.0",
     "twilio": "^3.71.3"
   },
   "devDependencies": {
