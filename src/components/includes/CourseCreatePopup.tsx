@@ -231,20 +231,23 @@ const CourseCreatePopup = ({ setCourseCreatePopup, setCourseCreateHover, userId 
                         <p className="errorMessage"> Please enter a valid course name to create a new class. </p>
                     )}
 
-                    <label className="input_component">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label htmlFor="course_settings" className="input_component">
                         <p className="input_label">
                             Settings
                         </p>
                         <p className="input_label_valid">
-                            <b>Queue Open Interval</b> determines how long before OH starts that the queue opens. (0-60 min)
-                            <br></br>
-                            <b>Character Limit</b> determines how long of a question that students can input. (at least 50 characters)
+                            <b>Queue Open Interval</b> determines how long before OH starts that the queue
+                             opens. (0-60 min)
+                            <br />
+                            <b>Character Limit</b> determines how long of a question that students can input.
+                             (at least 50 characters)
                         </p>
                     </label>
-                     {showIntervalError && (
+                    {showIntervalError && (
                         <p className="errorMessage"> Please enter a interval number between 0-60 minutes. </p>
                     )}
-                     {showCharError && (
+                    {showCharError && (
                         <p className="errorMessage"> Please enter a character limit amount that is at least 50. </p>
                     )}
                     <div className="numberSection">
