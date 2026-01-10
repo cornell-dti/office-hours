@@ -15,7 +15,6 @@ import {
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
-import { getNumberOfStudentsPerTA } from "../../firebasefunctions/session";
 
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
