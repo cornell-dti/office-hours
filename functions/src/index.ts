@@ -17,6 +17,7 @@ import {genkit, z} from "genkit";
 // eslint-disable-next-line import/no-unresolved
 import { defineString } from "firebase-functions/params";
 import {Resend} from "resend";
+import { createHash } from "crypto";
 
 const TWILIO_ACCOUNTSID = defineString('TWILIO_ACCOUNTSID');
 const TWILIO_TWILIONUMBER = defineString('TWILIO_TWILIONUMBER');
@@ -212,8 +213,17 @@ async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
 async function getQuestions( courseId: string ): Promise<QuestionData[]> {
     const questions : Array<QuestionData> = [];
     const tagIds: string[] = [];
+    // Only get course questions from the last week since the scheduled function runs weekly
+    // Current time
+    const now = new Date(); 
+    // Time seven days ago
+    const sevenDaysAgo = now;
+    sevenDaysAgo.setDate(now.getDate() - 7);
 
-    const questionSnapshot = await db.collection("questions").where("courseId", '==', courseId).get();
+    const questionSnapshot = await db.collection("questions")
+        .where("courseId", '==', courseId)
+        .where("timeEntered", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+        .get();
     questionSnapshot.forEach(doc => {
         const data = doc.data();
         tagIds.push(data.primaryTag, data.secondaryTag);
@@ -367,7 +377,7 @@ async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
 function trendsByAssignment (
     clusters: Array<{ title: string; questions: QuestionData[] }>
 ) : TrendDocument[] {
-    const trends : TrendDocument[] = [];
+    const trendMap = new Map<string,TrendDocument>();
     
     for (const c of clusters){
         const byAssignment = new Map<string, QuestionData[]>();
@@ -381,18 +391,25 @@ function trendsByAssignment (
         }
         const entries = Array.from(byAssignment.entries());
         entries.forEach(([assignmentName, questions]) => {
-            const timestamps = questions.map(q => q.timestamp.toMillis());
+            let typedQuestions: QuestionDetail[] = questions.map(q => ({
+                content: q.content,
+                timestamp: q.timestamp,
+                questionId: q.questionId
+            }));
+            const oldTrend = trendMap.get("t=" + c.title.toLowerCase().trim() 
+            + ",a=" + assignmentName.toLowerCase().trim());
+            if (oldTrend) {
+                typedQuestions = [...typedQuestions, ...oldTrend.questions];
+            }
+            const timestamps = typedQuestions.map(q => q.timestamp.toMillis());
             const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
             const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
-
-            trends.push({
+            
+            trendMap.set("t=" + c.title.toLowerCase().trim() 
+            + ",a=" + assignmentName.toLowerCase().trim(),{
                 title: c.title,
-                questions: questions.map(q => ({
-                    content: q.content,
-                    timestamp: q.timestamp,
-                    questionId: q.questionId
-                })),
-                volume: questions.length,
+                questions: typedQuestions,
+                volume: typedQuestions.length,
                 firstMentioned,
                 lastUpdated,
                 assignmentName, 
@@ -402,8 +419,12 @@ function trendsByAssignment (
         });
     }
 
-    return trends;
+    return Array.from(trendMap.values());
 }
+
+const generateHash = (input:string) => {
+    return createHash("sha256").update(input).digest("hex");
+};
 
 
 /**
@@ -431,9 +452,33 @@ async function generateStudentTrends(
 
     // Save trends
     const trendsRef = db.collection("courses").doc(courseId).collection("trends");
+
     const p = trends.map(async (trend) => {
         try {
-            await trendsRef.add(trend);
+            const trendId = generateHash("t=" + trend.title.toLowerCase().trim() 
+            + ",a=" + trend.assignmentName.toLowerCase().trim());
+            const oldTrendRef = trendsRef.doc(trendId);
+            const oldTrendDoc = await oldTrendRef.get();
+            if (oldTrendDoc.exists) {
+                const oldTrendData = oldTrendDoc.data() as TrendDocument;
+                const combinedQuestions =  [...trend.questions, ...oldTrendData.questions];
+                const timestamps = combinedQuestions.map(q => q.timestamp.toMillis());
+                const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
+                const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
+                functions.logger.log(`Merging old trend document for class ${courseId}`);
+                await oldTrendRef.update(
+                    {
+                        questions: combinedQuestions,
+                        volume: combinedQuestions.length,
+                        firstMentioned,
+                        lastUpdated,
+                    }
+                )
+                
+            } else {
+                functions.logger.log(`Adding new trend document for class ${courseId}`);
+                await oldTrendRef.set(trend);
+            }
         } catch (error){
             functions.logger.error(`Error adding trend ${trend.title}:`, error);
         }

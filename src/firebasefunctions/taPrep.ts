@@ -30,13 +30,14 @@ export async function getStudentTrends(courseId: string) : Promise<TrendData[]>{
     const trends : TrendData[] = [];
     snapshot.forEach(doc => {
         const data = doc.data() as TrendDocument;
+        const time:Timestamp = data.firstMentioned;
         trends.push({
             title: data.title.toLowerCase(),
             volume: data.volume,
             mention: getRelativeTime(data.firstMentioned),
             assignment: data.assignmentName,
             questions: data.questions.map(q => q.content),
-            firstMentioned: data.firstMentioned.toDate()
+            firstMentioned: time.toDate()
         });
     });
 

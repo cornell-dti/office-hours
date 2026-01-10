@@ -128,6 +128,7 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
     return (
         <div className="trends-container">
             <h2 className="trends-header">Student Query Trends</h2>
+            <p className="trends-note"> Trends are updated on a weekly basis. </p>
             <div className="dropdowns-container">
                 <div className="time-task-dropdown-container">
                     <Dropdown
