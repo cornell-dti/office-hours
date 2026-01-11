@@ -279,17 +279,17 @@ export const submitFeedback = (removedQuestionId: string | undefined, sessionId:
             const existingFeedbackList = userDoc.data()?.feedbackList || [];
             existingFeedbackList.push(feedbackRecord);
 
-                const updateData: any = {
-                    feedbackList: existingFeedbackList,
-                };
+            const updateData: any = {
+                feedbackList: existingFeedbackList,
+            };
                 // Only set verified if it doesn’t exist yet
-                if (userDoc.data()?.verified === undefined && verified !== undefined) {
-                    updateData.verified = verified;
-                }
-                await usersRef.update(updateData);
+            if (userDoc.data()?.verified === undefined && verified !== undefined) {
+                updateData.verified = verified;
+            }
+            await usersRef.update(updateData);
         }       
         catch (error) {
             // eslint-disable-next-line no-console
             console.log("Error updating")
         }
-        };
+    };
