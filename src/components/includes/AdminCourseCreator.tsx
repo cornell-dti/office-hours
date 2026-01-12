@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import firebase from "firebase/compat/app";
+import { generateInitialWaitTimeMap } from '../../firebasefunctions/waitTimeMap';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
 
 const firestore = firebase.firestore();
-import { generateInitialWaitTimeMap } from '../../firebasefunctions/waitTimeMap';
+
 
 const startDate = new Date(START_DATE);
 const endDate = new Date(END_DATE);
