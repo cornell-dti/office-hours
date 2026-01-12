@@ -130,10 +130,17 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     };
 
     handleEditAssignment = (): void => {
+        if (!this.props.tag) return;
 
         const parentTagChanged = this.props.tag ?
             this.state.tag.name !== this.props.tag.name || this.state.tag.active !== this.props.tag.active
             : false;
+
+
+        const resolvedTag: FireTag = {
+            ...this.state.tag,
+            tagId: this.state.tag.tagId || this.props.tag.tagId,
+        };
 
         // deals w/ case where parent tag name is changed
         // no checking yet, like if A1 is changed to A0 but A0 already exists
@@ -147,9 +154,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
         const newTags = this.state.newTags
             .filter(tag => !preexistingTags.some(t => tag.name === t.name))
-
-
-        editAssignment(parentTagChanged, this.state.tag, this.props.childTags, deletedTags, newTags)
+      
+        editAssignment(parentTagChanged, resolvedTag, this.props.childTags, deletedTags, newTags)
     };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {

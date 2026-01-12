@@ -83,6 +83,11 @@ const SplitView = ({
         match.params.page === "add" ? "addQuestion" : match.params.sessionId ? "session" : "calendar"
     );
     const [showModal, setShowModal] = useState(false);
+    const [selectedDateEpoch, setSelectedDateEpoch] = useState(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today.getTime();
+    });
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
@@ -221,6 +226,8 @@ const SplitView = ({
                     setShowCalendarModal={setShowCalendarModal}
                     setIsDayExport={setIsDayExport}
                     setCurrentExportSessions={setCurrentExportSessions}
+                    selectedDateEpoch={selectedDateEpoch}
+                    setSelectedDateEpoch={setSelectedDateEpoch}
                 />
             )}
             <CalendarExportModal
@@ -242,6 +249,7 @@ const SplitView = ({
                             removeQuestionDisplayFeedback={removeQuestionDisplayFeedback}
                             timeWarning={course ? course.timeWarning : 1}
                             showProfessorStudentView={false}
+                            selectedDateEpoch={selectedDateEpoch}
                         />
                     ) : (
                         <section className="StudentSessionView">
@@ -279,7 +287,7 @@ const SplitView = ({
             ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
-                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
+                    onClose={submitFeedback(removedQuestionId, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}

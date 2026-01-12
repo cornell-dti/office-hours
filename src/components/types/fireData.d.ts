@@ -28,6 +28,8 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
 }
 
 interface FireSessionLocation {
@@ -78,6 +80,8 @@ interface FireBaseSessionSeries {
     startTime: FireTimestamp;
     tas: string[];
     title?: string;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
     sessionSeriesId: string;
 }
 
@@ -120,7 +124,9 @@ type FireSessionSeriesDefinition =
 type FeedbackRecord = {
     session: string;
     questionId: string;
-    rating: number?;
+    organization: number?;
+    efficiency: number?;
+    overallExperience: number?;
     writtenFeedback: string?;
 };
 
@@ -140,12 +146,16 @@ interface FireCourse {
     year: string;
     timeLimit?: number;
     timeWarning?: number;
-    isTimeLimit?: boolean;
-    feedbackList?: FeedbackRecord[]; // TODO: possibly change to non-null
+    isTimeLimit?: boolean; // TODO: possibly change to non-null
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";
 type FireCourseRole = "professor" | "ta" | "student";
+
+interface ResolvedItem {
+    questionId: string;
+    askerId: string;
+}
 
 /**
  * Invariant for fire user and course enrollment:
@@ -158,6 +168,7 @@ type FireCourseRole = "professor" | "ta" | "student";
  *
  * @see FireCourse
  */
+// Now contains feedbackList for each user
 interface FireUser {
     firstName: string;
     lastName: string;
@@ -170,6 +181,8 @@ interface FireUser {
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
     wrapped?: string;
+    recentlyResolvedQuestion?: ResolvedItem;
+    feedbackList?: FeedbackRecord[];
 }
 
 interface FirePendingUser {

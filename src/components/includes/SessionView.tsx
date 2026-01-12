@@ -16,7 +16,6 @@ import {
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
-
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
 import TaAnnouncements from "./TaAnnouncements";
@@ -24,6 +23,7 @@ import TaAnnouncements from "./TaAnnouncements";
 import "firebase/compat/auth";
 
 const firestore = firebase.firestore()
+
 
 type Props = {
     course: FireCourse;
@@ -39,6 +39,7 @@ type Props = {
     sessionBanners: Announcement[];
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
+    selectedDateEpoch: number;
 };
 
 type UndoState = {
@@ -69,6 +70,7 @@ const SessionView = ({
     timeWarning,
     sessionBanners,
     showProfessorStudentView,
+    selectedDateEpoch,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -126,34 +128,31 @@ const SessionView = ({
      * both modified and resolved, indicating that the TA has answered a question. !isTa and
      * !isProf ensures that this useEffect only runs for students.
      */
-    // useEffect(() => {
-    //     let unsubscribe: () => void;
-        
-    //     if (!isTa && !isProf) {
-    //         const userRef = doc(firestore, "users", user.userId);
-    //         unsubscribe = onSnapshot(userRef, (snapshot) => {
-    //             const userData = snapshot.data() as FireUser;
-    //             const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
-    //             if (!recentlyResolvedQuestion) {
-    //                 return;
-    //             }
-    //             if (recentlyResolvedQuestion.questionId) {
-    //                 removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
-    //                 // Deletes the recentlyResolvedQuestion field from the user document
-    //                 updateDoc(userRef, { 
-    //                     recentlyResolvedQuestion: deleteField()
-    //                 });
-    //             }
-    //         });
-    //     }
+    useEffect(() => {
+        let unsubscribe: () => void;
+        if (!isTa && !isProf) {
+            const userRef = firestore.collection("users").doc(user.userId);
+            unsubscribe = userRef.onSnapshot((snapshot) => {
+                const userData = snapshot.data() as FireUser;
+                const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
+                if (!recentlyResolvedQuestion) {
+                    return;
+                }
+                if (recentlyResolvedQuestion.questionId) {
+                    removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
+                    // Deletes the recentlyResolvedQuestion field from the user document
+                    userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
+                }
+            });
+        }
 
-    //     return () => {
-    //         if (unsubscribe) {
-    //             unsubscribe();
-    //         }
-    //     };
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -246,6 +245,7 @@ const SessionView = ({
                 }}
                 questions={questions.filter((q) => q.status === "unresolved")}
                 isPaused={session.isPaused}
+                selectedDateEpoch={selectedDateEpoch}
             />
 
             <TaAnnouncements showProfessorStudentView={showProfessorStudentView} />
