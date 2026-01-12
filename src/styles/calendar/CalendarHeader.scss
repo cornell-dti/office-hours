@@ -68,25 +68,23 @@
         }
 
         .courseMenu {
-            width: 110%;
+            width: 100%;
             position: absolute;
             top: 36px;
             border: solid 1px #e5e5e5;
             border-radius: 5px;
-            padding: 10px 20px;
             background-color: white;
             z-index: 1;
             animation: fadeIn 0.5s;
             
 
             .editClasses {
-                margin: 8px -20px;
                 border-top: solid 0.5px #d4d4d4;
             }
 
             li {
                 border: none;
-                padding: 5px;
+                padding: 0;
                 cursor: pointer;
                 width: 100%;
                 font-size: 15px;
@@ -97,7 +95,10 @@
                 div {
                     color: #494949;
                     width: 100%;
+                    padding: 10px;
+                    display: inline-block;
                     margin: auto;
+                    text-align: center;
                 }
 
                 .thisCourse {
