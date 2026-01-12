@@ -225,8 +225,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         setMissingLocation(locationMissing);
         setMissingQuestion(!question);
 
-        if ((primaryTags.length > 0 && missingPrimaryTags) || (secondaryTags.length > 0 && missingSecondaryTags) 
-            || missingLocation || missingQuestion) {
+        if ((primaryTags.length > 0 && (missingPrimaryTags || !selectedPrimary)) 
+            || (secondaryTags.length > 0 && (missingSecondaryTags || !selectedSecondary)) 
+            || (missingLocation || locationMissing) || (missingQuestion || !question)) {
             // eslint-disable-next-line no-console
             console.log("Fields missing, showing error state");
             return;
@@ -401,6 +402,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     onClick={() => {
                                                         setIsVirtual(!isVirtual);
                                                         !isVirtual && setMissingLocation(false);
+                                                        isVirtual && setMissingLocation(true);
                                                         !isVirtual && setStage(LOCATION_INPUTTED);
                                                     }}
                                                 />
