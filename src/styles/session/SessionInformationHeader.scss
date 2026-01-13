@@ -58,7 +58,8 @@
     padding:  6% 8%;
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
+    justify-content: flex-start;
 
     .Location {
       font-size: 24px;
@@ -70,14 +71,15 @@
       text-overflow: ellipsis;
     }
     .Date {
-      margin-top: 10px;
-      color: #484848;
-      font-family: Roboto;
-      font-size: 14.4px;
+      margin-top: 8px;
+      margin-left: 0;
+      color: #4d4d4d;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: normal;
-      line-height: 1.6; 
+      line-height: 1.4;
+      margin: 0;
     }
     .Title {
       margin-bottom: 6px;
@@ -85,26 +87,28 @@
       // overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      margin-bottom: 5px;
-      color: #484848;
-      font-family: Roboto;
-      font-size: 14.4px;
+      color: #4d4d4d;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: normal;
+      line-height: 1.4;
     }
-    .clockIcon {
-      vertical-align: middle;
-      margin-right: 6px; /* optional spacing between icon and text */
-      height: 16px;       /* adjust as needed */
-      }
-      .calendarIcon{
-      vertical-align: middle;
-      margin-right: 6px; /* optional spacing between icon and text */
-      height: 16px;  
-      }
+     .clockIcon {
+       vertical-align: middle;
+       margin-right: 10px;
+       height: 16px;
+       width: 16px;
+       opacity: 0.85;
+       }
+       .calendarIcon{
+       vertical-align: middle;
+       margin-right: 10px;
+       height: 16px;
+       width: 16px;
+       opacity: 0.85;
+       }
 }
-
 .TAsHeader {
   border-radius: 8px;
   box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -113,8 +117,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-    margin: 25px 48px;
-
 }
 
 .TAHeaderText {
@@ -133,7 +135,6 @@
 .TAImagesScroll {
   display: flex;
   gap: 4px;
-  // overflow: hidden;
   overflow: visible;
   flex: 1;
 }
@@ -142,7 +143,6 @@
   flex: 1;
   padding: 0 8px 0 10px; // keep a small buffer but allow 4th avatar to show
 }
-
 
 .TAImagesScroll::-webkit-scrollbar {
   display: none;
@@ -216,9 +216,6 @@
   transform: translateY(-50%);
   width: 28px;
   height: 28px;
-  // border-radius: 9999px;
-  // background: #ffffff;
-  // box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   background: transparent;
   border: none;
   box-shadow: none;
@@ -226,7 +223,6 @@
 
 .TAImagesWrapper > .ScrollArrow:first-child { left: 4px; }
 .TAImagesWrapper > .ScrollArrow:last-child { right: -12px; }
-
   .QueueInfo {
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -236,8 +232,6 @@
     text-align: center;
     padding: 4%;
     width: 100%;
-    margin: 25px 48px;
-
 
     p {
       text-align: left;
@@ -255,7 +249,6 @@
       line-height: normal;
       margin: 0 0 8px 0; // Add spacing below
     }
-
     .WaitSubtitle{
       color: #666;
       font-family: Roboto, sans-serif;
@@ -265,7 +258,6 @@
       line-height: normal;
       margin: 0 0 15px 0; // Add spacing below
     }
-
     .WaitSummary {
       color: #484848;
       font-family: Roboto, sans-serif;

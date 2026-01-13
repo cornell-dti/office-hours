@@ -742,7 +742,7 @@ const SessionInformationHeader = ({
                                                                 >
                                                                     <img
                                                                         src={ta.photoUrl || "/placeholder.png"}
-                                                                        alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                                                        alt={`${ta.firstName} ${ta.lastName}`}
                                                                         className="TACircle"
                                                                         style={{
                                                                             width: "48px",

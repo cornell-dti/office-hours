@@ -226,8 +226,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         setMissingLocation(locationMissing);
         setMissingQuestion(!question);
 
-        if ((primaryTags.length > 0 && (missingPrimaryTags || !selectedPrimary)) 
-            || (secondaryTags.length > 0 && (missingSecondaryTags || !selectedSecondary)) 
+        if (((primaryTags.length > 0 && activeTags.length > 0) && (missingPrimaryTags || !selectedPrimary)) 
+            || ((secondaryTags.length > 0 && activeTags.length > 0) && (missingSecondaryTags || !selectedSecondary)) 
             || (missingLocation || locationMissing) || (missingQuestion || !question)) {
             // eslint-disable-next-line no-console
             console.log("Fields missing, showing error state");
@@ -255,6 +255,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
             setMissingSecondaryTags(!selectedSecondary);
             setMissingLocation(locationMissing);
             setMissingQuestion(!question);
+        }
+
+        if (activeTags.length == 0) {
+            setMissingPrimaryTags(false);
+            setMissingSecondaryTags(false);
         }
     }, [selectedPrimary, selectedSecondary, location, locationMissing, question, attemptedSubmit]);
 
