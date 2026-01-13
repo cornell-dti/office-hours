@@ -1,5 +1,6 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/require-default-props */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";

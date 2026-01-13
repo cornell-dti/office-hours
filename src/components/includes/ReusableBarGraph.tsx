@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import * as React from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import { useMemo } from "react";

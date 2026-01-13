@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/require-default-props */
 import * as React from "react";
 import Moment from "react-moment";
-import { Icon } from "semantic-ui-react";
 
 import { Grid, Switch } from "@material-ui/core";
 import { connect } from "react-redux";
