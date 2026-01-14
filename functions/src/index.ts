@@ -7,6 +7,7 @@ import { vertexAI } from '@genkit-ai/google-genai';
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import * as tf from "@tensorflow/tfjs";
 import kmeans, { KMeans } from "kmeans-ts";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
 import moment from "moment-timezone";
@@ -15,10 +16,12 @@ import {genkit, z} from "genkit";
 // eslint-disable-next-line import/no-unresolved
 import { defineString } from "firebase-functions/params";
 import { createHash } from "crypto";
+import {Resend} from "resend";
 
 const TWILIO_ACCOUNTSID = defineString('TWILIO_ACCOUNTSID');
 const TWILIO_TWILIONUMBER = defineString('TWILIO_TWILIONUMBER');
 const TWILIO_TWILIO_AUTH_TOKEN = defineString('TWILIO_TWILIO_AUTH_TOKEN');
+const RESEND_API_KEY = defineString('RESEND_API_KEY');
 
 admin.initializeApp();
 
@@ -491,7 +494,7 @@ async function sendSMS(user: FireUser, message: string) {
     if (process.env.DATABASE === "staging") {
         return;
     }
- 
+
     // Twilio Setup
     const accountSid = TWILIO_ACCOUNTSID.value();
     const authToken = TWILIO_TWILIO_AUTH_TOKEN.value();
@@ -1189,3 +1192,54 @@ exports.weeklyTopicsGenerator = onSchedule( {
    
 }
 );
+/** Sends approval/rejection emails using Resend for automatic course creation. 
+ * This is technically a public endpoint, but has Firebase App Check and manual authentication checks.
+* @param  {template: "approved | rejected", course: FireCourse, user: FireUser}
+*/
+exports.sendEmail = onCall({enforceAppCheck: true}, async (request) => {
+    if (!request.auth || !request.auth.token || !request.auth.uid) {
+        functions.logger.error('Unauthenticated user tried sending email');
+        throw new HttpsError('unauthenticated', 'Only authenticated users can send emails.');
+    }
+
+    // TODO: does this only comes from admins? if so add extra check that request.auth.email is in admins collection
+
+    if (!request.data.template || !request.data.course || !request.data.user) {
+        functions.logger.error('Not enough information to send email');
+        throw new HttpsError('invalid-argument', 'Template, course, and user must all be passed in.')
+    }
+    // Template passed from the client.
+    const template: string = request.data.template;
+    const course = request.data.course;
+    const user = request.data.user;
+
+    const resendAPI = RESEND_API_KEY.value();
+    const resend = new Resend(resendAPI);
+    const subject = template === "approved" ? 
+        `Queue Me In ${course.code} ${course.semester} Approved`: 
+        `Queue Me In ${course.code} ${course.semester} Rejected`
+    /* eslint-disable max-len */
+    const message =`Hello ${user.firstName + " " + user.lastName},
+    ${template === "approved" ? 
+        "Your new class request on QMI has been approved. " + course.code + " has been added to the current classes for " +course.semester + ".":
+        "Your new class request on QMI has been rejected. "+ course.code + " for " + course.semester + " has been removed from the pending classes. Please email QMI directly for more info."}
+
+    Best wishes,
+    QMI`
+
+    try {
+        const response = await resend.emails.send({
+            from: 'queuemein@cornelldti.org',
+            to: [user.email],
+            subject,
+            html: message,
+        });
+        return { success: true, emailId: response.data?.id };
+    } catch (error) {
+        functions.logger.error("Error sending email:", error);
+        throw new HttpsError('internal', 'Failed to send email', error);
+    }
+
+
+
+});

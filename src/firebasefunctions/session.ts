@@ -1,4 +1,4 @@
-import { doc, addDoc, updateDoc, deleteDoc, getDoc, collection, Timestamp} from 'firebase/firestore';
+import { doc, addDoc, updateDoc, deleteDoc, getDoc, collection, Timestamp, setDoc} from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
@@ -6,7 +6,7 @@ export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
 }
 
 export const updateSession = (oldSession: FireSession, newSession: Omit<FireSession, 'sessionId'>) => {
-    return updateDoc(doc(firestore, 'sessions', oldSession.sessionId), newSession);
+    return setDoc(doc(firestore, 'sessions', oldSession.sessionId), newSession);
 }
 
 export const pauseSession = (oldSession: FireSession, isPaused: boolean) => {
