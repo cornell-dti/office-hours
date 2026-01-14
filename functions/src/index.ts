@@ -1,12 +1,22 @@
 // eslint-disable-next-line import/no-unresolved
 import * as functions from "firebase-functions/v1";
 // eslint-disable-next-line import/no-unresolved
+import { onSchedule } from "firebase-functions/v2/scheduler";
+// eslint-disable-next-line import/no-unresolved
+import { vertexAI } from '@genkit-ai/google-genai';
+import * as use from "@tensorflow-models/universal-sentence-encoder";
+import * as tf from "@tensorflow/tfjs";
+import kmeans, { KMeans } from "kmeans-ts";
+// eslint-disable-next-line import/no-unresolved
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
 import moment from "moment-timezone";
 // eslint-disable-next-line import/no-unresolved
+import {genkit, z} from "genkit";
+// eslint-disable-next-line import/no-unresolved
 import { defineString } from "firebase-functions/params";
+import { createHash } from "crypto";
 import {Resend} from "resend";
 
 const TWILIO_ACCOUNTSID = defineString('TWILIO_ACCOUNTSID');
@@ -14,11 +24,469 @@ const TWILIO_TWILIONUMBER = defineString('TWILIO_TWILIONUMBER');
 const TWILIO_TWILIO_AUTH_TOKEN = defineString('TWILIO_TWILIO_AUTH_TOKEN');
 const RESEND_API_KEY = defineString('RESEND_API_KEY');
 
-// Use admin SDK to enable writing to other parts of database
-// const admin = require('firebase-admin');
 admin.initializeApp();
 
 const db = admin.firestore();
+
+let useModel: use.UniversalSentenceEncoder | null = null;
+
+// Initialize Genkit with Vertex AI
+const ai = genkit({
+    plugins: [
+        vertexAI({
+            projectId: process.env.GCLOUD_PROJECT, // auto-set in Cloud Functions
+            location: "us-central1",
+        }),
+    ],
+    model: vertexAI.model('gemini-2.5-flash', {
+        temperature: 0.8,
+    }),
+});
+
+// Define input schema
+const feedbackInputSchema = z.object({
+    content: z.string().describe('Student written feedback about TA office hour session')
+});
+
+// Define output schema
+const feedbackOutputSchema = z.object({
+    verification: z.string(),
+});
+
+// Define a flow for verifying student feedback
+export const feedbackVerificationFlow = ai.defineFlow(
+    {
+        name: 'feedbackVerificationFlow',
+        inputSchema: feedbackInputSchema,
+        outputSchema: feedbackOutputSchema,
+    },
+    async (input) => {
+        // Create a prompt based on the input
+        const prompt = `
+        Analyze the following feedback and determine whether 
+        it is appropriate or not based on the following criteria.
+        Feedback Content: "${input.content}"
+        Please analyze this request and ONLY return a "yes" or "no" for whether the feedback
+         is acceptable or not based on the criteria below:
+        {           
+            "appropriateness": "[0-5 | 6-10 | 11-15 | 16-25 | 26+]",
+            "inappropriate language": "[yes | no]",
+        }
+        Return "yes" if the appropriateness is 10 or higher and inappropriate language is no. 
+        If the feedback content is empty, also return "yes".
+        Return "no" otherwise.
+    `;
+
+        // Generate structured output data using the same schema
+        const { output } = await ai.generate({
+            model: vertexAI.model('gemini-2.5-flash'),
+            prompt,
+            output: { schema: feedbackOutputSchema },
+        });
+
+        if (!output) {
+            functions.logger.log("Failed to run verification flow.");
+            throw new Error('Failed to run verification flow.');
+        } 
+        return output;
+    },
+);
+
+
+// Type for Firebase
+type TrendDocument = {
+    title: string;
+    questions: QuestionDetail[];
+    volume: number;
+    firstMentioned: admin.firestore.Timestamp;
+    lastUpdated: admin.firestore.Timestamp;
+    assignmentName: string;
+    primaryTag: string;
+    secondaryTag: string;
+}
+
+
+type QuestionDetail = {
+    content: string;
+    timestamp: admin.firestore.Timestamp;
+    questionId: string;
+};
+
+type QuestionData = {
+    content: string;
+    primaryTag: string;
+    secondaryTag: string;
+    timestamp: admin.firestore.Timestamp;
+    questionId: string;
+}
+
+type TitledCluster = {
+    title: string,
+    questions: string[]
+}
+
+
+// Define input schema
+const titleInputSchema = z.object({
+    questions: z.array(z.string()).describe('An array of student questions from office hour sessions')
+});
+
+// Define output schema
+const titleOutputSchema = z.object({
+    title: z.string(),
+});
+
+// Define a flow for verifying student feedback
+export const titleGenerationFlow = ai.defineFlow(
+    {
+        name: 'titleGenerationFlow',
+        inputSchema: titleInputSchema,
+        outputSchema: titleOutputSchema,
+    },
+    async (input) => {
+        // Create a prompt based on the input
+        const prompt = `
+        Given these related questions:
+
+        Question list: "${input.questions}"
+        What short (2-4 words) topic title describes them?
+        
+        Return only the title, no additional text.
+    `;
+
+        // Generate structured output data using the same schema
+        const { output } = await ai.generate({
+            model: vertexAI.model('gemini-2.5-flash'),
+            prompt,
+            output: { schema: titleOutputSchema },
+        });
+
+        if (!output) {
+            functions.logger.log("Failed to run title flow.");
+            throw new Error('Failed to run title flow.');
+        } 
+        return output;
+    },
+);
+
+/**
+ * Given a list of tag ids, return a map of their id to their name.
+ * @param tagIds string list of firetag ids
+ * @returns 
+ */
+async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
+    const tagMap = new Map<string, string>();
+    const tagRef = db.collection("tags");
+
+    const uniqueTagIds = Array.from(new Set(tagIds.filter(id => id)));
+
+    const tagPromises = uniqueTagIds.map(async (tagId) => {
+        try {
+            const tagSnapshot = await tagRef.where("__name__", "==", tagId).get();
+            
+            if (!tagSnapshot.empty){
+                const tagDoc = tagSnapshot.docs[0];
+                const data = tagDoc.data();
+                return { id: tagId, name: data.name || tagId };
+            }
+            return { id : tagId, name: tagId };
+        } catch (error) {
+            functions.logger.error(`Error fetching tag ${tagId}:`, error);
+            return { id: tagId, name: tagId };
+        }
+    });
+
+    const tags = await Promise.all(tagPromises);
+    tags.forEach(tag => tagMap.set(tag.id, tag.name));
+
+    return tagMap;
+}
+
+
+/**
+ * Given a course id, fetch the questions belonging to the course, 
+ * the tags associated with the course, and return a list of the content, 
+ * tag information, timestamps, and ids.
+ * @param courseId id for the course
+ * @returns 
+ */
+async function getQuestions( courseId: string ): Promise<QuestionData[]> {
+    const questions : Array<QuestionData> = [];
+    const tagIds: string[] = [];
+    // Only get course questions from the last week since the scheduled function runs weekly
+    // Current time
+    const now = new Date(); 
+    // Time seven days ago
+    const sevenDaysAgo = now;
+    sevenDaysAgo.setDate(now.getDate() - 7);
+
+    const questionSnapshot = await db.collection("questions")
+        .where("courseId", '==', courseId)
+        .where("timeEntered", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+        .get();
+    questionSnapshot.forEach(doc => {
+        const data = doc.data();
+        tagIds.push(data.primaryTag, data.secondaryTag);
+        questions.push({
+            content: data.content,
+            primaryTag: data.primaryTag,
+            secondaryTag: data.secondaryTag,
+            timestamp: data.timeEntered,
+            questionId: doc.id
+        });
+    });
+
+    const tagMap = await getTagNames(tagIds);
+
+    const result : QuestionData[] = questions.map(q => ({
+        content: q.content,
+        primaryTag: tagMap.get(q.primaryTag) || q.primaryTag,
+        secondaryTag: tagMap.get(q.secondaryTag) || q.secondaryTag,
+        timestamp: q.timestamp,
+        questionId: q.questionId
+    }));
+
+    return result;
+}
+
+/**
+ * `getEmbeddings` uses a typescript library for SBERT to embed each sentence 
+ * in `questions` into numerical vectors represented as number[][].
+ * @param questions the string list of questions that students ask
+ * @returns the sentence embeddings for the list of questions.
+ */
+async function getEmbeddings(questions: string[]): Promise<number[][]>{
+    functions.logger.log('Running getembeddings');
+    if (!useModel) {
+        functions.logger.log("Loading USE model...");
+        useModel = await use.load();
+        functions.logger.log("USE model loaded");
+    }
+    const model = useModel;
+    const embeddings = await model.embed(questions);
+    functions.logger.log('Loaded embeddings');
+    const result = await embeddings.array();
+    embeddings.dispose();
+    return result;
+}
+
+/**
+ * `clusterEmbeddings` uses kMeans algorithm to cluster the embedded questions into `k` clusters.
+ * @param embeddings embedded vectors of question data
+ * @param k number of clusters to group the data into
+ * @returns obj of KMeans type including number of iterations, indexes, centroids, k.
+ */
+async function clusterEmbeddings(embeddings: number[][], k = 2): Promise<KMeans>{
+    const clusters: KMeans = kmeans(embeddings, k);
+    return clusters;
+}
+
+/**
+ * Takes the output of kmeans clustering to obtain the list of questions that belong in each cluster. 
+ * @param clusters output of kmeans clustering
+ * @param questions full question data list
+ * @returns record containing the cluster number and its corresponding question list
+ */
+function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<number, string[]> {
+    const res: Record<number, string[]> = {};
+    for (let i = 0; i < clusters.k; i++){
+        res[i] = [];
+    }
+
+    clusters.indexes.forEach((clusterIdx, qIdx) => {
+        res[clusterIdx].push(questions[qIdx]);
+    });
+
+    return res;
+}
+
+/**
+ * Helper function to convert between titled clusters and question data objects.
+ * @returns an array of the title and its corresponding question data object. 
+ */
+function clustersToQuestionData(
+    clusters: TitledCluster[],
+    allQuestions: QuestionData[]
+): Array<{ title: string; questions: QuestionData[] }> {
+    const questionMap = new Map<string, QuestionData>();
+    allQuestions.forEach(q => questionMap.set(q.content, q));
+
+    return clusters.map(cluster => ({
+        title: cluster.title,
+        questions: cluster.questions
+            .map(content => questionMap.get(content))
+            .filter((q) : q is QuestionData => q !== undefined)
+    }));
+}
+
+
+
+/**
+ * Performs sentence embedding, kmeans clustering, and LLM prompting to
+ * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
+ * Returns a list of each cluster and its questions along with a title for the cluster.
+ * @param questions list of question data
+ */
+async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
+    const res: TitledCluster[] = [];
+    functions.logger.log('Running kmeans');
+    const embeddings = await getEmbeddings(questions);
+    functions.logger.log('Finished getEmbeddings');
+
+    const k = Math.ceil(Math.sqrt(questions.length));
+
+    const c: KMeans = await clusterEmbeddings(embeddings, k);
+    functions.logger.log('Finished clusterEmbeddings');
+
+    const groups: Record<number, string[]> = groupQuestionsByCluster(c, questions);
+
+    const clusterPromises = Object.entries(groups).map(async ([clusterIdx, questionsInCluster ]) => {
+        try {
+            const result = await titleGenerationFlow({
+                questions: questionsInCluster,
+            });
+            
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: result.title, questions: questionsInCluster },
+            };
+        } catch (err) {
+            functions.logger.error("LLM call failed:", err);
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: "Untitled", questions: questionsInCluster },
+            };
+        } 
+    });
+
+    const clusterResults = await Promise.all(clusterPromises);
+
+    for (const { clusterIdx, data } of clusterResults ){
+        res[clusterIdx] = data;
+    }
+
+    return res;
+}
+
+/**
+ * Given a list of clusters, create the TrendDocument object for each cluster. 
+ * Also grabs the assignment name corresponding the the tags for that question.
+ * @param clusters the list of clusters (title and question information)
+ * @returns the TrendDocument[] corresponding to each cluster. 
+ */
+function trendsByAssignment (
+    clusters: Array<{ title: string; questions: QuestionData[] }>
+) : TrendDocument[] {
+    const trendMap = new Map<string,TrendDocument>();
+    
+    for (const c of clusters){
+        const byAssignment = new Map<string, QuestionData[]>();
+
+        for (const q of c.questions){
+            const assignmentName = `${q.primaryTag} ${q.secondaryTag}`;
+            if (!byAssignment.has(assignmentName)){
+                byAssignment.set(assignmentName, []);
+            }
+            byAssignment.get(assignmentName)?.push(q);
+        }
+        const entries = Array.from(byAssignment.entries());
+        entries.forEach(([assignmentName, questions]) => {
+            let typedQuestions: QuestionDetail[] = questions.map(q => ({
+                content: q.content,
+                timestamp: q.timestamp,
+                questionId: q.questionId
+            }));
+            const oldTrend = trendMap.get("t=" + c.title.toLowerCase().trim() 
+            + ",a=" + assignmentName.toLowerCase().trim());
+            if (oldTrend) {
+                typedQuestions = [...typedQuestions, ...oldTrend.questions];
+            }
+            const timestamps = typedQuestions.map(q => q.timestamp.toMillis());
+            const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
+            const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
+            
+            trendMap.set("t=" + c.title.toLowerCase().trim() 
+            + ",a=" + assignmentName.toLowerCase().trim(),{
+                title: c.title,
+                questions: typedQuestions,
+                volume: typedQuestions.length,
+                firstMentioned,
+                lastUpdated,
+                assignmentName, 
+                primaryTag: questions[0].primaryTag,
+                secondaryTag: questions[0].secondaryTag
+            });
+        });
+    }
+
+    return Array.from(trendMap.values());
+}
+
+const generateHash = (input:string) => {
+    return createHash("sha256").update(input).digest("hex");
+};
+
+
+/**
+ * Full workflow, grabs the questions from firebase, sends the content into the 
+ * kMeansMain clustering algorithm + LLM titling, processes the clusters to be formatted into a 
+ * TrendDocument[] and stores the TrendDocument[] to firebase. 
+ * @param courseId id for the course
+ */
+async function generateStudentTrends(
+    courseId: string,
+) : Promise<void>{
+    const questions = await getQuestions(courseId);
+    const questionStrings = questions.map(q => q.content);
+    if (questionStrings.length === 0) {
+        functions.logger.log(`No questions for class ${courseId}`);
+        return;
+    }
+    const clusters = await kMeansMain(questionStrings);
+    functions.logger.log("Finished kmeans function");
+
+    const processedClusters = clustersToQuestionData(clusters, questions);
+
+    const trends: TrendDocument[] = trendsByAssignment(processedClusters);
+    functions.logger.log("Finished assigning trends");
+
+    // Save trends
+    const trendsRef = db.collection("courses").doc(courseId).collection("trends");
+
+    const p = trends.map(async (trend) => {
+        try {
+            const trendId = generateHash("t=" + trend.title.toLowerCase().trim() 
+            + ",a=" + trend.assignmentName.toLowerCase().trim());
+            const oldTrendRef = trendsRef.doc(trendId);
+            const oldTrendDoc = await oldTrendRef.get();
+            if (oldTrendDoc.exists) {
+                const oldTrendData = oldTrendDoc.data() as TrendDocument;
+                const combinedQuestions =  [...trend.questions, ...oldTrendData.questions];
+                const timestamps = combinedQuestions.map(q => q.timestamp.toMillis());
+                const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
+                const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
+                functions.logger.log(`Merging old trend document for class ${courseId}`);
+                await oldTrendRef.update(
+                    {
+                        questions: combinedQuestions,
+                        volume: combinedQuestions.length,
+                        firstMentioned,
+                        lastUpdated,
+                    }
+                )
+                
+            } else {
+                functions.logger.log(`Adding new trend document for class ${courseId}`);
+                await oldTrendRef.set(trend);
+            }
+        } catch (error){
+            functions.logger.error(`Error adding trend ${trend.title}:`, error);
+        }
+    });
+
+    await Promise.all(p);
+}
+
 
 /**
  * Function that handles data and sends a text message to a requested phone number
@@ -130,6 +598,40 @@ exports.onUserCreate = functions.firestore.document("users/{userId}").onCreate(a
         await batch.commit();
     });
 });
+
+exports.onFeedbackCreate = functions.firestore
+    .document(`users/{userId}/feedback/{feedbackId}`)
+    .onCreate(async (snap) => {
+        functions.logger.info("onFeedbackCreate triggered");
+        const data = snap.data();
+        const feedbackId = snap.id;
+        if (!process.env.GCLOUD_PROJECT) {
+            functions.logger.error("Gcloud project not found in environment");
+        }
+
+        try {
+            const {verification} = await feedbackVerificationFlow({
+                content: data.writtenFeedback ?? "",
+            });
+
+            /* If "yes" is returned, we don't need to modify anything. 
+            For anything else, this FeedbackRecord is deleted from the user's feedback subcollection. */
+            if (verification !== "yes") {
+                functions.logger.info("Feedback determined to be inappropriate.");
+                await snap.ref.delete();
+            }
+        } catch (err) {
+            // If there is an error, delete the feedback to be safe.
+            functions.logger.error("Feedback verification failed", {
+                feedbackId,
+                error: err instanceof Error ? err.message : err,
+            });
+
+            await snap.ref.delete();
+
+        }
+    });
+
 
 exports.onCommentCreate = functions.firestore
     .document(`questions/{questionId}/comments/{commentId}`)
@@ -656,6 +1158,41 @@ exports.onStudentJoinSession = functions.firestore
         });
     });
 
+
+/**
+ * Scheduled firebase function that runs once a week in each semester.
+ * Generates topics in "Preparation" tab of TA Dashboard for all courses in current semester. 
+ */
+exports.weeklyTopicsGenerator = onSchedule( { 
+    schedule: "0 2 * 1-5,8-12 0", 
+    timeZone: "America/New_York",
+    memory: "1GiB" }, async () => {
+    functions.logger.log('Weekly topics generator ran');
+    await tf.setBackend('cpu');
+    await tf.ready();
+    functions.logger.log('tf backend ready');
+    // Fetch all active courses
+    const coursesSnapshot = await db
+        .collection("courses")
+        .where("semester", "==", "FA25")
+        .get();
+
+    if (coursesSnapshot.empty) {
+        functions.logger.log("No active courses found.");
+        return;
+    }
+
+    for (const course of coursesSnapshot.docs) {
+        try {
+            // eslint-disable-next-line no-await-in-loop
+            await generateStudentTrends(course.id);
+        } catch (err) {
+            functions.logger.warn(`Failed trends for course ${course.id}`);
+        }
+    }
+   
+}
+);
 /** Sends approval/rejection emails using Resend for automatic course creation. 
  * This is technically a public endpoint, but has Firebase App Check and manual authentication checks.
 * @param  {template: "approved | rejected", course: FireCourse, user: FireUser}

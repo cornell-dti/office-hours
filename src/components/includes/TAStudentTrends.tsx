@@ -35,37 +35,6 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
     const [taskFilter, setTaskFilter] = useState("All Tasks");
     const [sortFilter, setSortFilter] = useState("Query Volume");
 
-    // for running generateStudentTrends once. for testing, (will be scheduled)
-    // useEffect(() => {
-    //     const initTrends = async () => {
-    //         try {
-    //             setLoading(true);
-
-    //             await tf.setBackend('cpu');
-    //             await tf.ready();
-
-    //             const trendsRef = collection(firestore, `courses/${courseId}/trends`);
-    //             const snapshot = await getDocs(trendsRef);
-
-    //             if (snapshot.empty) {
-    //                 console.log("No trends found, generating...");
-    //                 await generateStudentTrends(courseId);
-    //             }
-
-    //             const trends = await getStudentTrends(courseId);
-    //             setAllTrends(trends);
-    //             setError(null);
-    //         } catch (err) {
-    //             console.error("Error fetching trends:", err);
-    //             setError("Failed to load trends data");
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     initTrends();
-    // }, [courseId]);
-
     useEffect(() => {
         const fetchTrends = async () => {
             try {
@@ -124,7 +93,7 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
 
                 return a.title.localeCompare(b.title);
             }  
-            const dateDiff = a.firstMentioned.getTime() - b.firstMentioned.getTime();
+            const dateDiff = b.firstMentioned.getTime() - a.firstMentioned.getTime();
             if (dateDiff !== 0 ) return dateDiff;
             if (b.volume !== a.volume) return b.volume - a.volume;
             return a.title.localeCompare(b.title);
@@ -159,6 +128,7 @@ const TAStudentTrends = ({ courseId }: TAStudentTrendsProps) => {
     return (
         <div className="trends-container">
             <h2 className="trends-header">Student Query Trends</h2>
+            <p className="trends-note"> Trends are updated on a weekly basis. </p>
             <div className="dropdowns-container">
                 <div className="time-task-dropdown-container">
                     <Dropdown
