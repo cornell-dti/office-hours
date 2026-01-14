@@ -1,5 +1,4 @@
-import firebase from "firebase/compat/app"
-import {Resend} from 'resend';
+import firebase from "firebase/compat/app";
 import 'dotenv/config'
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../firebase";
@@ -26,9 +25,9 @@ export const addPendingCourse = async (
     if ((await firestore.collection('pendingCourses').where('courseId', '==', courseId).get()).empty
         && (await firestore.collection('courses').where('courseId', '==', courseId).get()).empty) {
         return firestore.collection('pendingCourses').doc(courseId).set(course);
-    } else {
-        throw new Error('courseId already exists in pendingCourses or courses');
-    }
+    } 
+    throw new Error('courseId already exists in pendingCourses or courses');
+    
 };
 
 /**

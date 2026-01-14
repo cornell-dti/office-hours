@@ -31,8 +31,8 @@ const AdminView = () => {
         return course?.professors?.length !== 0
             ? course.professors[0]
             : course.tas.length !== 0
-            ? course.tas[0]
-            : undefined;
+                ? course.tas[0]
+                : undefined;
     };
 
     const [sem, setSem] = useState(CURRENT_SEMESTER);
