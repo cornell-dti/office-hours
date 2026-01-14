@@ -1166,7 +1166,7 @@ exports.onStudentJoinSession = functions.firestore
  * This is technically a public endpoint, but has Firebase App Check and manual authentication checks.
 * @param  {template: "approved | rejected", course: FireCourse, user: FireUser}
 */
-exports.sendEmail = onCall({enforceAppCheck: true}, async (request) => {
+exports.sendEmail = onCall(async (request) => {
     if (!request.auth || !request.auth.token || !request.auth.uid) {
         functions.logger.error('Unauthenticated user tried sending email');
         throw new HttpsError('unauthenticated', 'Only authenticated users can send emails.');
@@ -1190,10 +1190,11 @@ exports.sendEmail = onCall({enforceAppCheck: true}, async (request) => {
         `Queue Me In ${course.code} ${course.semester} Rejected`
     /* eslint-disable max-len */
     const message =`Hello ${user.firstName + " " + user.lastName},
+    <br>
     ${template === "approved" ? 
         "Your new class request on QMI has been approved. " + course.code + " has been added to the current classes for " +course.semester + ".":
         "Your new class request on QMI has been rejected. "+ course.code + " for " + course.semester + " has been removed from the pending classes. Please email QMI directly for more info."}
-
+    <br>
     Best wishes,
     QMI`
 
@@ -1204,6 +1205,7 @@ exports.sendEmail = onCall({enforceAppCheck: true}, async (request) => {
             subject,
             html: message,
         });
+        functions.logger.log(`Sent email to ${user.email}`)
         return { success: true, emailId: response.data?.id };
     } catch (error) {
         functions.logger.error("Error sending email:", error);
