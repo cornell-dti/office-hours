@@ -2,24 +2,26 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { Icon, Loader } from 'semantic-ui-react'
-import TopBar from './TopBar';
-import CourseCard from './CourseCard';
-import { CURRENT_SEMESTER } from '../../constants';
-import { updateCourses } from '../../firebasefunctions/courses';
-import { RootState } from '../../redux/store';
+import TopBar from "./TopBar";
+import CourseCard from "./CourseCard";
+import { CURRENT_SEMESTER } from "../../constants";
+import { updateCourses } from "../../firebasefunctions/courses";
+import { RootState } from "../../redux/store";
+import CourseCreatePopup from "./CourseCreatePopup";
 
 
 type Props = {
     readonly user: FireUser;
     readonly allCourses: readonly FireCourse[];
+    readonly allPendingCourses: readonly FireCourse[];
     readonly isEdit: boolean;
 };
 
 export type PageState = "ready" | "pending";
 
-function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
+function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props): React.ReactElement {
     const history = useHistory();
     const [isWritingChanges, setIsWritingChanges] = useState(false);
     const [, setPageState] = useState<PageState>("ready");
@@ -30,6 +32,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
+
+    const [currentPendingCourses, setCurrentPendingCourses] = useState<FireCourse[]>([]);
+    const [createCourseHover, setCreateCourseHover] = useState<boolean>(false);
+    const [courseCreatePopup, setCourseCreatePopup] = useState(false);
 
     // current searched courses
     const [filteredCourses] = useState<FireCourse[]>(currentCourses);
@@ -57,11 +63,19 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setCurrentCourses(filterOnActiveAndRole);
 
         setFormerCourses(
+            
             allCourses.filter((course) => {
                 return course.semester !== CURRENT_SEMESTER;
-            }),
+            })
         );
-    }, [filterOnActiveAndRole, allCourses]);
+
+        setCurrentPendingCourses(
+            allPendingCourses.filter((course) => {
+                return course.semester === CURRENT_SEMESTER;
+            })
+            ,
+        );
+    }, [filterOnActiveAndRole, allCourses, allPendingCourses]);
 
 
     const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = useState(new Set<string>());
@@ -132,7 +146,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     useEffect(() => {
         if (!isNormalEditingMode) {
             setIsSaveDisabled(
-                coursesToEnroll.length + coursesToUnenroll.length + numCoursesWithRoles === 0 && !isWritingChanges,
+                coursesToEnroll.length + coursesToUnenroll.length + numCoursesWithRoles === 0 && !isWritingChanges
             );
         } else {
             setIsSaveDisabled(coursesToEnroll.length + coursesToUnenroll.length === 0 && !isWritingChanges);
@@ -209,9 +223,31 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push("/home");
     };
 
+
     // changed guard from selectedCourses.length + numCoursesWithRoles === 0 to selectedCourses.length === 0
     //  so that when you cannot unenroll from a course, it says No Classes Chosen instead of an empty box
     const selectedCoursesString = selectedCourses.length === 0 ? "" : selectedCourses.map((c) => c.code).join(", ");
+    const hasCurrentCourse =
+        currentCourses
+            .map((course) => course.professors)
+            .flat()
+            .includes(user.userId) ||
+        currentCourses
+            .map((course) => course.tas)
+            .flat()
+            .includes(user.userId);
+
+    const hasCurrentPendingCourse =
+        currentPendingCourses
+            .map((course) => course.professors)
+            .flat()
+            .includes(user.userId) ||
+        currentPendingCourses
+            .map((course) => course.tas)
+            .flat()
+            .includes(user.userId);
+        
+
 
     /* eslint-disable max-len */
     return (
@@ -342,8 +378,36 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                 </div>
+
+                {/* Course creation submitted popup shows after submitting request or when hovering on disabled button. */}
+                {(createCourseHover && hasCurrentPendingCourse && 
+                            <div className="createCourseHover">
+                                <Icon link name="close" className="close" onClick={() => setCreateCourseHover(false)} />
+                                <h1>New Class Sent</h1>
+                                <p>Your submission is pending to be reviewed by the team.</p>
+                            </div>
+                )}
                 
                 <div className="EnrollBar">
+                    <div className="EnrolledCourses web">
+                       
+                        {Object.keys(user.roles).length > 0 && (<button
+                            type="button"
+                            className={
+                                "createNewCourseButton" + (hasCurrentCourse || hasCurrentPendingCourse ? " disabled" : "")
+                            }
+                            disabled={hasCurrentCourse || hasCurrentPendingCourse}
+                            onMouseOver={() => setCreateCourseHover(hasCurrentPendingCourse)}
+                            onMouseOut={() => setCreateCourseHover(false)}
+                            // Include these for accessibility
+                            onFocus={() => setCreateCourseHover(hasCurrentPendingCourse)}
+                            onBlur={() => setCreateCourseHover(false)}
+                            onClick={() => setCourseCreatePopup(true)}
+                        >
+                        Create a Class
+                        </button>
+                        )}
+                    </div>
                     <div className="buttons">
                         {!isEdit && (
                             <button
@@ -374,6 +438,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
             </div>
+            {courseCreatePopup && (
+                <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} setCourseCreateHover={setCreateCourseHover} userId={user.userId} />
+            )}
         </div>
     );
 }
