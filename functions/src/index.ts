@@ -7,6 +7,7 @@ import { vertexAI } from '@genkit-ai/google-genai';
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import * as tf from "@tensorflow/tfjs";
 import kmeans, { KMeans } from "kmeans-ts";
+// eslint-disable-next-line import/no-unresolved
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
