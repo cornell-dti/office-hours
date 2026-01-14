@@ -14,8 +14,8 @@
 .desktop.logoutMenu {
     border-radius: 5px;
     position: absolute;
-    width: fit-content;
-    right: 5%;
+    width: 300px;
+    right: 8px;
     top: 50px;
     left: auto;
     overflow: hidden;
@@ -26,8 +26,7 @@
     animation: fadeIn 0.5s;
 
     li {
-        height: auto;
-        padding: 5px;
+        padding-top: 16px;
     }
 
     li:last-child {

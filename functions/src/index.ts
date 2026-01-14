@@ -1161,6 +1161,7 @@ exports.onStudentJoinSession = functions.firestore
         });
     });
 
+
 /** Sends approval/rejection emails using Resend for automatic course creation. 
  * This is technically a public endpoint, but has Firebase App Check and manual authentication checks.
 * @param  {template: "approved | rejected", course: FireCourse, user: FireUser}
