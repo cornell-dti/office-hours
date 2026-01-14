@@ -1,0 +1,25 @@
+.ta-metrics-container{
+    background-color: #F5F6F5;
+    width: 1152px;
+    margin-bottom: 64px;
+    .ta-metrics-header{
+        margin-bottom: 24px;
+        .header-text{
+            color: #484848;
+            font-family: Roboto;
+            font-size: 28px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+            text-align: left;
+        }
+    }
+
+    .graphs-container{
+        display: flex;
+        gap: 30px;
+        .emphasis{
+            color: #5599DB;
+        }
+    }
+}

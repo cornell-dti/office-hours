@@ -30,6 +30,22 @@ type Props = {
     showProfessorStudentView: boolean;
 };
 
+/**
+ * `AddQuestion` Component - Displays a component that allows users ask a question
+ *  to join the queue.
+ * 
+ * @remarks
+ * This component is used within a course session to enable students to submit 
+ * questions to join the queue. The user submits information about location as well
+ * as the specific assignment. It adapts its layout based on screen size and provides different 
+ * views depending on the user's role (professor's student view or student view).
+ * 
+ * @param props - Contains:
+ *   - `course`: The course associated with the session.
+ *   - `session`: The current session where the question will be added.
+ *   - `mobileBreakpoint`: The screen width threshold for mobile layout.
+ *   - `showProfessorStudentView`: boolean to toggle ProfessorStudentView.
+ */
 const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentView }: Props) => {
     /*
      * State machine states
@@ -51,10 +67,17 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [tags, setTags] = useState<FireTag[]>([]);
     // For hybrid sessions to keep track if student is in virtual location
     const [isVirtual, setIsVirtual] = useState<boolean>(false);
+    const [missingPrimaryTags, setMissingPrimaryTags] = useState<boolean>(false);
+    const [missingSecondaryTags, setMissingSecondaryTags] = useState<boolean>(false);
+    const [missingLocation, setMissingLocation] = useState<boolean>(false);
+    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
+    const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
     const activeTags = tags.filter((tag) => tag.active);
+    const locationMissing = ((session.modality === "hybrid" && isVirtual) || session.modality === "virtual") 
+        ? false : !location;
 
     useEffect(() => {
         const updateWindowDimensions = () => {
@@ -63,6 +86,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         window.addEventListener("resize", updateWindowDimensions);
 
+        return () => {
+            window.removeEventListener("resize", updateWindowDimensions);
+        };
+    }, []);
+
+   
+    useEffect(() => {
         const tags$ = collectionData<FireTag>(
             query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
                 where('courseId', '==', course.courseId)),{idField: "tagId"}
@@ -70,16 +100,20 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
         return () => {
-            window.removeEventListener("resize", updateWindowDimensions);
             subscription.unsubscribe();
         };
-    });
+    }, [course.courseId]);
 
     const handleXClick = () => {
         setRedirect(true);
     };
 
     const handlePrimarySelected = (tag: FireTag | undefined): void => {
+        if (tag) {
+            setMissingPrimaryTags(false);
+        } else {
+            setMissingPrimaryTags(true); 
+        }
         if (selectedPrimary) {
             setLocation("");
             setQuestion("");
@@ -103,6 +137,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     };
 
     const handleSecondarySelected = (tag: FireTag): void => {
+        if (tag) {
+            setMissingSecondaryTags(false); 
+        } else {
+            setMissingSecondaryTags(true); 
+        }
         if (selectedSecondary) {
             setLocation("");
             setQuestion("");
@@ -129,6 +168,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
         let newStage: number;
+
+        const isLocationEmpty = target.value.length === 0;
+        setMissingLocation(isLocationEmpty);
+
         if (target.value.length > 0) {
             if (question.length > 0) {
                 newStage = QUESTION_INPUTTED;
@@ -150,6 +193,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
     const handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
+        const isQuestionEmpty = target.value.length === 0;
+        setMissingQuestion(isQuestionEmpty);
         setQuestion(target.value.length <= course.charLimit ? target.value : question);
         setStage(target.value.length > 0 ? QUESTION_INPUTTED : LOCATION_INPUTTED);
     };
@@ -158,6 +203,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const allowRedirect = addQuestion(
             auth.currentUser,
             session,
+            course,
             compatFirestore,
             location,
             selectedPrimary,
@@ -168,6 +214,55 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         setRedirect(allowRedirect);
     };
+
+    const handleClick = () : void => {
+        // eslint-disable-next-line no-console
+        console.log("Button Clicked");
+
+        setAttemptedSubmit(true);
+
+        setMissingPrimaryTags(!selectedPrimary);
+        setMissingSecondaryTags(!selectedSecondary);
+        setMissingLocation(locationMissing);
+        setMissingQuestion(!question);
+
+        if (((primaryTags.length > 0 && activeTags.length > 0) && (missingPrimaryTags || !selectedPrimary)) 
+            || ((secondaryTags.length > 0 && activeTags.length > 0) && (missingSecondaryTags || !selectedSecondary)) 
+            || (missingLocation || locationMissing) || (missingQuestion || !question)) {
+            // eslint-disable-next-line no-console
+            console.log("Fields missing, showing error state");
+            return;
+        }
+    
+        // eslint-disable-next-line no-console
+        console.log("All fields filled, submitting...");
+        handleJoinClick(); 
+    };
+
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log({
+            missingPrimaryTags,
+            missingSecondaryTags,
+            missingLocation,
+            missingQuestion,
+        });
+    }, [missingPrimaryTags, missingSecondaryTags, missingLocation, missingQuestion]);
+    
+    useEffect(() => {
+        if (attemptedSubmit){
+            setMissingPrimaryTags(!selectedPrimary);
+            setMissingSecondaryTags(!selectedSecondary);
+            setMissingLocation(locationMissing);
+            setMissingQuestion(!question);
+        }
+
+        if (activeTags.length == 0) {
+            setMissingPrimaryTags(false);
+            setMissingSecondaryTags(false);
+        }
+    }, [selectedPrimary, selectedSecondary, location, locationMissing, question, attemptedSubmit]);
+
 
     const handleJoinClick = (): void => {
         if (
@@ -196,6 +291,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         }
     };
 
+    const Asterisk = () => <span className="required"> * </span>;
+
     if (redirect) {
         return (
             <Redirect
@@ -211,6 +308,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     }
 
     return (
+        
         <div className="QuestionView" onKeyDown={(e) => handleKeyPressDown(e)}>
             {(stage < CLOSE_TO_END_OF_OH || width < mobileBreakpoint) && (
                 <div className="AddQuestion">
@@ -220,32 +318,41 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <hr />
-                                <div className="tagsMiniContainer">
-                                    <p className="header">Select a Category</p>
-                                    <div className="QuestionTags">
-                                        {tags
-                                            .filter((tag) => tag.active && tag.level === 1)
-                                            .map((tag) => (
-                                                <SelectedTags
-                                                    key={tag.tagId}
-                                                    tag={tag}
-                                                    isSelected={stage > INITIAL_STATE}
-                                                    onClick={() => handlePrimarySelected(tag)}
-                                                    check={tag.name === selectedPrimary?.name}
-                                                    isPrimary={true}
-                                                    select={true}
-                                                />
-                                            ))}
+                                <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
+                                    <div className="disclaimerContainer text">
+                                        <p> <Asterisk /> Required</p>
+                                    </div>
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">Select a Category<Asterisk /></p>
+                                        <div className="category">
+                                            {tags
+                                                .filter((tag) => tag.active && tag.level === 1)
+                                                .map((tag) => (
+                                                    <SelectedTags
+                                                        key={tag.tagId}
+                                                        tag={tag}
+                                                        isSelected={stage > INITIAL_STATE}
+                                                        onClick={() => handlePrimarySelected(tag)}
+                                                        check={tag.name === selectedPrimary?.name}
+                                                        isPrimary={true}
+                                                        select={true}
+                                                    />
+                                                ))}
+                                        </div>
                                     </div>
                                 </div>
+                                
                             </>
                         )}
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
-                                <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
-                                    <p className="header">Select a Tag</p>
+                                <div className={`tagsMiniContainer 
+                                    ${missingSecondaryTags ? "error " :  ""}`
+                                    + !!selectedPrimary
+                                }
+                                >
+                                    <p className="header">Select a Tag<Asterisk /></p>
                                     {selectedPrimary ? (
                                         tags
                                             .filter((tag) => tag.active && tag.level === 2)
@@ -272,7 +379,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className="tagsMiniContainer">
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
                                     {
                                         <p className="header">
                                             {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
@@ -288,6 +395,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     {LOCATION_CHAR_LIMIT - location.length !== 1 && "s"} left)
                                                 </span>
                                             )}
+                                            <Asterisk/>
                                         </p>
                                     }
                                     {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
@@ -297,13 +405,18 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     className="hybridCheckbox"
                                                     label="Are you virtual?"
                                                     checked={isVirtual}
-                                                    onClick={() => setIsVirtual(!isVirtual)}
+                                                    onClick={() => {
+                                                        setIsVirtual(!isVirtual);
+                                                        !isVirtual && setMissingLocation(false);
+                                                        isVirtual && setMissingLocation(true);
+                                                        !isVirtual && setStage(LOCATION_INPUTTED);
+                                                    }}
                                                 />
                                             )}
                                             {!(
                                                 session.modality === "hybrid" &&
                                                 typeof session.useTALink !== "undefined" &&
-                                                session.useTALink
+                                                session.useTALink && isVirtual
                                             ) && (
                                                 <textarea
                                                     className="TextInput location"
@@ -311,7 +424,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     onChange={handleUpdateLocation}
                                                     placeholder={
                                                         session.modality === "in-person" || !isVirtual
-                                                            ? "What is your location?"
+                                                            ? "Enter where you are (room & location in room)"
                                                             : "What is your zoom link?"
                                                     }
                                                 />
@@ -321,11 +434,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         <p className="placeHolder text">Finish selecting tags...</p>
                                     )}
                                 </div>
-                                <hr />
                             </>
                         )}
-                        <div className="tagsMiniContainer">
-                            <p className="header">{"Question "}</p>
+                        <hr/>
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
+                            <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
@@ -334,7 +447,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         className="TextInput question"
                                         value={question}
                                         onChange={handleUpdateQuestion}
-                                        placeholder="What's your question about?"
+                                        placeholder="What would you like help or feedback on?"
                                     />
                                 ) : (
                                     <textarea
@@ -351,13 +464,15 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                 )}
                         </div>
                         <div className="addButtonWrapper">
-                            {stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? (
-                                <p className="AddButton active" onClick={() => handleJoinClick()}>
-                                    Add My Question
-                                </p>
-                            ) : (
-                                <p className="AddButton"> Add My Question </p>
-                            )}
+                            <p
+                                className={`AddButton ${stage > LOCATION_INPUTTED 
+                                    || primaryTags.length === 0 
+                                    || secondaryTags.length === 0 ? "active" : ""}`}
+                                onClick={handleClick}
+                            >
+                                Add My Question
+                            </p>
+                            
                         </div>
                     </div>
                 </div>

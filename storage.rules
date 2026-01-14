@@ -1,0 +1,50 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is professor for a course
+    function isProfessor(courseId) {
+      let userDoc = get(/databases/(default)/documents/users/$(request.auth.uid));
+      return request.auth != null 
+        && userDoc.data.roles.get(courseId, null) == 'professor';
+    }
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to validate file type
+    function isValidFileType() {
+      return request.resource.contentType.matches('image/.*|application/pdf|application/vnd.openxmlformats-officedocument.*|application/vnd.ms-powerpoint');
+    }
+    
+    // Helper function to validate file size (30 MB limit)
+    function isValidFileSize() {
+      return request.resource.size < 30 * 1024 * 1024;
+    }
+    
+    // Assignment resources
+    // - Professors: can upload, delete, and read
+    // - TAs and Students: can only read/download
+    match /assignments/{courseId}/{tagId}/{fileName} {
+      // Allow read for all authenticated users (professor, TA, student)
+      allow read: if isAuthenticated();
+      
+      // Allow create (upload) for all authenticated users with valid file type and size
+      allow create: if isAuthenticated() && isValidFileSize() && isValidFileType();
+      
+      // Allow delete for all authenticated users
+      allow delete: if isAuthenticated();
+      
+      // Allow update (modify existing file) for all authenticated users with valid file type and size
+      allow update: if isAuthenticated() && isValidFileSize() && isValidFileType();
+    }
+    
+    // Default: deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

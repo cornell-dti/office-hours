@@ -94,13 +94,6 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                 </div>
             </div>
 
-            {!inactive && !editable ? (
-                <div className="myClasses">
-                    <div className="myClassesText">Go to course</div>
-                </div>
-            ) : (
-                <></>
-            )}
         </div>
     );
 };

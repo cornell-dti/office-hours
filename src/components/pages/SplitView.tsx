@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as H from "history";
-import { Loader } from "semantic-ui-react";
+import { Icon, Loader } from "semantic-ui-react";
 
 import { connect } from "react-redux";
 import firebase from "firebase/compat/app"
@@ -83,6 +83,12 @@ const SplitView = ({
         match.params.page === "add" ? "addQuestion" : match.params.sessionId ? "session" : "calendar"
     );
     const [showModal, setShowModal] = useState(false);
+    const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+    const [selectedDateEpoch, setSelectedDateEpoch] = useState(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today.getTime();
+    });
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
@@ -161,6 +167,39 @@ const SplitView = ({
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
     };
+
+    const handleCloseFeedbackPrompt = () => {
+        setDisplayFeedbackPrompt(false);
+        setShowFeedbackPopup(true);
+    }
+
+    
+    const FeedbackPopup = () => { 
+
+        useEffect(() => {
+            // Set a timer to close the modal
+            const timer = setTimeout(() => {
+                setShowFeedbackPopup(false);
+            }, 3000);
+
+            // Cleanup function to clear the timeout if the component unmounts early
+            return () => clearTimeout(timer);
+        }, [showFeedbackPopup]);
+        
+        return (
+            <div className="feedbackPopup">
+                <Icon link name="close" className="close" onClick={() => setShowFeedbackPopup(false)} />
+                <div className="content">
+                    <Icon name="check" className="check" />
+                    <div className="text">
+                        <h1>Thanks for sharing!</h1>
+                        <p>Your feedback is viewable by the TA.</p>
+                    </div>
+                </div>
+                
+            </div>
+        )
+    }
     
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
@@ -221,6 +260,8 @@ const SplitView = ({
                     setShowCalendarModal={setShowCalendarModal}
                     setIsDayExport={setIsDayExport}
                     setCurrentExportSessions={setCurrentExportSessions}
+                    selectedDateEpoch={selectedDateEpoch}
+                    setSelectedDateEpoch={setSelectedDateEpoch}
                 />
             )}
             <CalendarExportModal
@@ -242,6 +283,7 @@ const SplitView = ({
                             removeQuestionDisplayFeedback={removeQuestionDisplayFeedback}
                             timeWarning={course ? course.timeWarning : 1}
                             showProfessorStudentView={false}
+                            selectedDateEpoch={selectedDateEpoch}
                         />
                     ) : (
                         <section className="StudentSessionView">
@@ -277,13 +319,14 @@ const SplitView = ({
                     wrappedDate={{ launchDate: launch, startDate: start }}
                 />
             ) : null}
-            {displayFeedbackPrompt ? (
+            {displayFeedbackPrompt && (
                 <FeedbackPrompt
-                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
-                    closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
+                    onClose={submitFeedback(removedQuestionId, session.sessionId)}
+                    closeFeedbackPrompt={handleCloseFeedbackPrompt}
                 />
-            ) : null}
+            )}
 
+            {showFeedbackPopup && <FeedbackPopup />}
             {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
         </>
     );

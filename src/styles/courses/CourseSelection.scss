@@ -103,6 +103,7 @@
 
     hr {
         border: 2px solid #F0F0F0;
+        width:auto;
     }
 
     .EnrolledClasses {
@@ -126,16 +127,58 @@
         padding: 0px 35px 0 35px;
         flex-shrink: 1;
         flex-wrap: wrap;
-        justify-content: center;
+        justify-content: left;
         border-radius: 15px;
         border-color: black;
     }
 }
 
 
+    .createCourseHover {
+            position: fixed;
+            bottom: 135px;
+            right: 30px;
+            display: grid;
+            padding: 16px;
+            align-items: flex-start;
+            text-align:left;
+            gap: 15px;
+            align-self: stretch;
+            border-radius: 16px;
+            background: #EFF7FF;
+            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+
+            .close{
+                position: absolute;
+                right: 10px;
+                top: 10px;
+            }
+           
+            h1 {
+                color: #000;
+                font-family: "Roboto";
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                display: block;
+                margin:0;
+            }
+
+            p {
+                color: #807B7B;
+                font-family: "Roboto";
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                display: block;
+            }
+        }
+
+
 .EnrollBar {
     font-family: 'Roboto';
-    float: right;
     position: fixed;
     padding: 0px 30px;
     left: 0;
@@ -146,12 +189,36 @@
     height: 100px;
     font-size: 18px;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     flex-wrap: wrap;
 
     .EnrolledCourses.web {
         display: block;
+        margin-right: auto;
+
+        .createNewCourseButton {
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+            border: none;
+            padding: 0;
+            width: 200px;
+            height: 40px;
+
+            color: white;
+            background-color: #5DA9F2;
+            margin: 5px;
+        }
+
+        .createNewCourseButton:hover {
+            background-color: #4E769C;
+            transition:0.3s;
+        }
+
+        .disabled {
+            background-color: #7E7E7E;
+            cursor: default;
+        }
     }
 
     button:hover {
@@ -209,14 +276,6 @@
 
     .CourseSelection {
         background-color: white;
-
-        .QMeLogo.course {
-            display: none;
-        }
-
-        .topBar {
-            display: none;
-        }
 
         .GreyBackground {
             padding: 20px;

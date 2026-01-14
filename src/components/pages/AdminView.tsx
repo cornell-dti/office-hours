@@ -7,15 +7,18 @@ import { Icon } from 'semantic-ui-react'
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
-import { useAllCourses, useIsAdmin } from '../../firehooks';
+import AdminPendingCourseCard from '../includes/AdminPendingCourseCard';
+import { useAllCourses, useAllPendingCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
 import  AnalyticsView from './AnalyticsView';
 
 
 const AdminView = () => {
     const [collapsed, setCollapsed] = useState(true);
+    const [analyticsLoaded, setAnalyticsLoaded] = useState(false);
     const history = useHistory();
     const courses = useAllCourses();
+    const pendingCourses = useAllPendingCourses();
     const isAdmin = useIsAdmin();
     const [inCreationMode, setInCreationMode] = useState(false);
     useEffect(() => {
@@ -24,12 +27,27 @@ const AdminView = () => {
         }
     }, [isAdmin, history])
 
+    const courseRequestUserId = (course: FireCourse) => {
+        return course?.professors?.length !== 0
+            ? course.professors[0]
+            : course.tas.length !== 0
+                ? course.tas[0]
+                : undefined;
+    };
+
     const [sem, setSem] = useState(CURRENT_SEMESTER);
     const validSems = ALL_SEMESTERS;
 
 
     const handleChange = (event: SelectChangeEvent) => {
         setSem(event.target.value);
+    };
+
+    const handleExpand = () => {
+        setCollapsed(false);
+        if (!analyticsLoaded) {
+            setAnalyticsLoaded(true); // ensures <AnalyticsView/> mounts when user clicks on icon
+        }
     };
 
     return (
@@ -48,7 +66,7 @@ const AdminView = () => {
                 <Icon
                     // Chevron used to denote the location of the analytics table when it is expanded.
                     name='chevron down'
-                    onClick={() => { setCollapsed(false)}}
+                    onClick={handleExpand}
                 />
             ) : (
                 <div>
@@ -62,9 +80,56 @@ const AdminView = () => {
             )}
             {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
              not each time the arrow is clicked. This reduces repeated Firebase reads. */}
-            <div style={collapsed ? {"display":"None"}: {}}>
-                <AnalyticsView/>
+            {analyticsLoaded && (
+                <div style={collapsed ? { display: "none" } : {}}>
+                    <AnalyticsView />
+                </div>
+            )}
+            
+
+
+
+            <h2>New Course Requests</h2>
+            <div className="course-container" >
+                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                    {pendingCourses && pendingCourses.map(course => (
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
+                            <AdminPendingCourseCard
+                                key={course.courseId}
+                                course={course}
+                                userId={courseRequestUserId(course)}
+                            />
+                        </Grid>
+                    ))}
+                </Grid>
             </div>
+
+
+            <h2><br />Queue Me In Product Analytics</h2>   
+                  
+            {collapsed ? (
+                <Icon
+                    // Chevron used to denote the location of the analytics table when it is expanded.
+                    name='chevron down'
+                    onClick={handleExpand}
+                />
+            ) : (
+                <div>
+                    <Icon
+                        // Chevron used to denote the location of the analytics table when it is collapsed.
+                        name='chevron up'
+                        onClick={() => setCollapsed(true)}
+                    />
+                    
+                </div>
+            )}
+            {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
+             not each time the arrow is clicked. This reduces repeated Firebase reads. */}
+            {analyticsLoaded && (
+                <div style={collapsed ? { display: "none" } : {}}>
+                    <AnalyticsView />
+                </div>
+            )}
             
 
 

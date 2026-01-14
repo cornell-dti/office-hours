@@ -8,7 +8,7 @@ export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
 }
 
 export const updateSession = (oldSession: FireSession, newSession: Omit<FireSession, 'sessionId'>) => {
-    return firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
+    return firestore.collection('sessions').doc(oldSession.sessionId).set(newSession);
 }
 
 export const pauseSession = (oldSession: FireSession, isPaused: boolean) => {

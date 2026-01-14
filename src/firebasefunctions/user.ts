@@ -1,5 +1,6 @@
 import firebase from 'firebase/compat/app';
-import {User} from 'firebase/auth'
+import {User} from 'firebase/auth';
+import "firebase/compat/auth";
 
 
 const auth = firebase.auth;

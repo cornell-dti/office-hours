@@ -32,7 +32,7 @@ export default ({ courseId, context }: Props): React.ReactElement => {
                 <div className={(isProf ? "SelectedProfessorView" : "UnselectedProfessorView") + "Dashboard"}>
                     <div
                         onClick={() => profCourseClicked(courseId)}
-                    > DASHBOARD
+                    > DASHBOARD {isProf && <>&#10003;</>}
                     </div>
                 </div>
             </div>
