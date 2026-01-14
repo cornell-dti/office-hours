@@ -252,16 +252,16 @@ export const submitFeedback =
                 return;
             }
 
-        try {
-            const questionRef = firestore.collection("questions").doc(removedQuestionId);
-            const questionDoc = await questionRef.get();
+            try {
+                const questionRef = firestore.collection("questions").doc(removedQuestionId);
+                const questionDoc = await questionRef.get();
 
-            if (!questionDoc.exists) {
-                return;
-            }
+                if (!questionDoc.exists) {
+                    return;
+                }
 
-            const taID = questionDoc.data()?.answererId || undefined;
-            const timeStamp = questionDoc.data()?.timeAddressed || undefined;
+                const taID = questionDoc.data()?.answererId || undefined;
+                const timeStamp = questionDoc.data()?.timeAddressed || undefined;
 
                 if (!taID) {
                     return;
