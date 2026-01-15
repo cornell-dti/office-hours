@@ -28,4 +28,4 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           yarn firebase use oberlin
-          yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive
+          yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --only hosting
