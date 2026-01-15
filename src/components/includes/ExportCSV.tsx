@@ -73,7 +73,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [includeTimestamp, setIncludeTimestamp] = useState<boolean>(true);
     const [includeQuestion, setIncludeQuestion] = useState<boolean>(true);
     const [includeWaitTime, setIncludeWaitTime] = useState<boolean>(true);
-    const [includeRating, setIncludeRating] = useState<boolean>(true);
+    // const [includeRating, setIncludeRating] = useState<boolean>(true);
 
     // years for semester picker
     const yearArray = Array.from({ length: new Date().getFullYear() - 2017 + 1 }, (_value, index) => 2017 + index);
