@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 
-
-
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
     const taMap = useCourseTAMap(course);

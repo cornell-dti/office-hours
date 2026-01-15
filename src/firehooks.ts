@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
 import { docData } from 'rxfire/firestore';
-import { switchMap } from 'rxjs/operators';
+import { switchMap} from 'rxjs/operators';
 import { Observable, of, EMPTY, combineLatest } from 'rxjs';
 import moment from 'moment';
-import { collection, doc, query, where, orderBy, documentId, Query, DocumentData, getDocs } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
 import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
@@ -232,6 +232,11 @@ const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData(collection(firestore,'courses') , {idField: 'courseId'}) as Observable<FireCourse[]>)
 );
 
+const allPendingCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
+    switchMap(() => collectionData(collection(firestore,'pendingCourses') ,
+        {idField: 'courseId'}) as Observable<FireCourse[]>)
+);
+
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
     const questionsRef = collection(firestore, 'questions');
     return query(questionsRef, where('sessionId', '==', sessionId), where('askerId', '==', askerId));
@@ -250,6 +255,11 @@ const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObse
 
 export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
+
+const allPendingCoursesSingletonObservable = new SingletonObservable([], allPendingCoursesObservable);
+
+export const useAllPendingCourses: () => readonly FireCourse[] =
+    createUseSingletonObservableHook(allPendingCoursesSingletonObservable);
 
 export const useMyCourses = (): readonly FireCourse[] => {
     const allCourses = useAllCourses();
@@ -436,61 +446,7 @@ export const useUser = (userId: string | undefined) =>
 export const getTagsQuery = (courseId: string) => query(
     collection(firestore,'tags')
     ,where('courseId', '==', courseId));
-    
-// Replaces getQuestionsQuery since courseId does not exist in the questions collection. 
-// Returns questions from a given courseId within startDate to endDate.
-export const useQuestionsQueries = ( startDate: moment.Moment,
-    endDate: moment.Moment,
-    courseId: string) => {
-    const [questions, setQuestions] = useState<FireQuestion[]>([]);
 
-    useEffect(() => {
-        let cancelled = false;
-
-        const fetchQuestions = async () => {
-            const sessionsRef = collection(firestore, 'sessions');
-            const sessionsQuery = query(
-                sessionsRef,
-                where('startTime', '>=', startDate.toDate()),
-                where('startTime', '<=', endDate.toDate()),
-                where('courseId', '==', courseId)
-            );
-
-            const snapshot = await getDocs(sessionsQuery);
-            const courseSessions = snapshot.docs.map((d) => d.id);
-
-            if (cancelled) return;
-
-            if (courseSessions.length === 0) {
-                setQuestions([]);
-                return;
-            }
-
-            // Split into chunks of <= 10 for Firestore "in"
-            const sessionIdBlocks = blockArray(courseSessions, 10);
-            const queries = sessionIdBlocks.map((block) =>
-                query(collection(firestore, "questions"), where("sessionId", "in", block))
-            );
-            const qsSnapshots = await Promise.all(queries.map((q) => getDocs(q)));
-
-            const allQuestions: FireQuestion[] = qsSnapshots.flatMap((qsSnapshot) =>
-                qsSnapshot.docs.map((d) => {
-                    const data = d.data() as Omit<FireQuestion, "questionId">;
-                    return { questionId: d.id, ...data };
-                }));
-
-            if (!cancelled) {
-                setQuestions(allQuestions);
-            }
-        };
-
-        fetchQuestions();
-        return () => {
-            cancelled = true;
-        };
-    }, 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [startDate.valueOf(), endDate.valueOf(), courseId]);
-
-    return questions;
-}
+export const getQuestionsQuery = (courseId: string) => query(
+    collection(firestore,'questions')
+    ,where('courseId', '==', courseId));

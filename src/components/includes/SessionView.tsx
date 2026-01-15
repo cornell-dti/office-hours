@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
-import firebase from "firebase/compat/app"
+import firebase from "firebase/compat/app";
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -20,7 +20,6 @@ import { filterUnresolvedQuestions } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
 import TaAnnouncements from "./TaAnnouncements";
-
 import "firebase/compat/auth";
 
 const firestore = firebase.firestore()
@@ -39,6 +38,7 @@ type Props = {
     sessionBanners: Announcement[];
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
+    selectedDateEpoch: number;
 };
 
 type UndoState = {
@@ -46,12 +46,6 @@ type UndoState = {
     undoName?: string;
     undoQuestionId?: string;
     timeoutId: NodeJS.Timeout | null;
-};
-
-type AbsentState = {
-    showAbsent: boolean;
-    dismissedAbsent: boolean;
-    lastAskedQuestion: FireQuestion | null;
 };
 
 const SessionView = ({
@@ -64,11 +58,11 @@ const SessionView = ({
     user,
     setShowModal,
     setRemoveQuestionId,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeQuestionDisplayFeedback,
     timeWarning,
     sessionBanners,
     showProfessorStudentView,
+    selectedDateEpoch,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -77,11 +71,6 @@ const SessionView = ({
     const users = useCourseUsersMap(course.courseId, isTa);
     const [{ undoAction, undoName, undoQuestionId, timeoutId }, setUndoState] = useState<UndoState>({
         timeoutId: null,
-    });
-    const [, setAbsentState] = useState<AbsentState>({
-        showAbsent: true,
-        dismissedAbsent: true,
-        lastAskedQuestion: null,
     });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
@@ -92,32 +81,8 @@ const SessionView = ({
         },
         [questions, user]
     );
-
-    useEffect(() => {
-        const myQuestions = questions.filter((q) => q.askerId === user.userId);
-        const lastAskedQuestion =
-            myQuestions.length > 0
-                ? myQuestions.reduce((prev, current) =>
-                    prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
-                )
-                : null;
-
-        setAbsentState((currentState) => {
-            let showAbsent = currentState.showAbsent;
-            let dismissedAbsent = currentState.dismissedAbsent;
-            if (lastAskedQuestion !== null && lastAskedQuestion.status !== "no-show") {
-                if (currentState.showAbsent) {
-                    showAbsent = false;
-                    dismissedAbsent = true;
-                } else if (currentState.dismissedAbsent) {
-                    showAbsent = true;
-                    dismissedAbsent = false;
-                }
-            }
-            return { lastAskedQuestion, showAbsent, dismissedAbsent };
-        });
-        // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
+    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
+    const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
 
     /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
      * state of the current question. Firebase's [onSnapshot] method is used to monitor any
@@ -126,34 +91,31 @@ const SessionView = ({
      * both modified and resolved, indicating that the TA has answered a question. !isTa and
      * !isProf ensures that this useEffect only runs for students.
      */
-    // useEffect(() => {
-    //     let unsubscribe: () => void;
-        
-    //     if (!isTa && !isProf) {
-    //         const userRef = doc(firestore, "users", user.userId);
-    //         unsubscribe = onSnapshot(userRef, (snapshot) => {
-    //             const userData = snapshot.data() as FireUser;
-    //             const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
-    //             if (!recentlyResolvedQuestion) {
-    //                 return;
-    //             }
-    //             if (recentlyResolvedQuestion.questionId) {
-    //                 removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
-    //                 // Deletes the recentlyResolvedQuestion field from the user document
-    //                 updateDoc(userRef, { 
-    //                     recentlyResolvedQuestion: deleteField()
-    //                 });
-    //             }
-    //         });
-    //     }
+    useEffect(() => {
+        let unsubscribe: () => void;
+        if (!isTa && !isProf) {
+            const userRef = firestore.collection("users").doc(user.userId);
+            unsubscribe = userRef.onSnapshot((snapshot) => {
+                const userData = snapshot.data() as FireUser;
+                const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
+                if (!recentlyResolvedQuestion) {
+                    return;
+                }
+                if (recentlyResolvedQuestion.questionId) {
+                    removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
+                    // Deletes the recentlyResolvedQuestion field from the user document
+                    userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
+                }
+            });
+        }
 
-    //     return () => {
-    //         if (unsubscribe) {
-    //             unsubscribe();
-    //         }
-    //     };
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -210,9 +172,6 @@ const SessionView = ({
         new Date(session.endTime.toDate()) >= new Date() &&
         questions.some(({ askerId, status }) => askerId === user.userId && status === "unresolved");
 
-    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
-    const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
-
     const myQuestion = React.useMemo(() => {
         if (myQuestions && myQuestions.length > 0) {
             return (
@@ -246,6 +205,7 @@ const SessionView = ({
                 }}
                 questions={questions.filter((q) => q.status === "unresolved")}
                 isPaused={session.isPaused}
+                selectedDateEpoch={selectedDateEpoch}
             />
 
             <TaAnnouncements showProfessorStudentView={showProfessorStudentView} />

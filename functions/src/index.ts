@@ -1,38 +1,517 @@
 // eslint-disable-next-line import/no-unresolved
-import * as functions from 'firebase-functions/v1';
-import * as admin from 'firebase-admin';
-import { Twilio } from 'twilio';
+import * as functions from "firebase-functions/v1";
+// eslint-disable-next-line import/no-unresolved
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+// eslint-disable-next-line import/no-unresolved
+import { onSchedule } from "firebase-functions/v2/scheduler";
+// eslint-disable-next-line import/no-unresolved
+import { vertexAI } from '@genkit-ai/google-genai';
+import * as use from "@tensorflow-models/universal-sentence-encoder";
+import * as tf from "@tensorflow/tfjs";
+import kmeans, { KMeans } from "kmeans-ts";
+import * as admin from "firebase-admin";
+import { Twilio } from "twilio";
+import moment from "moment-timezone";
+// eslint-disable-next-line import/no-unresolved
+import {genkit, z} from "genkit";
+// eslint-disable-next-line import/no-unresolved
+import { defineString } from "firebase-functions/params";
+import {Resend} from "resend";
+import { createHash } from "crypto";
 
-// Use admin SDK to enable writing to other parts of database
-// const admin = require('firebase-admin');
+const TWILIO_ACCOUNTSID = defineString('TWILIO_ACCOUNTSID');
+const TWILIO_TWILIONUMBER = defineString('TWILIO_TWILIONUMBER');
+const TWILIO_TWILIO_AUTH_TOKEN = defineString('TWILIO_TWILIO_AUTH_TOKEN');
+const RESEND_API_KEY = defineString('RESEND_API_KEY');
+
 admin.initializeApp();
 
 const db = admin.firestore();
 
-// Twilio Setup
-const accountSid = functions.config().twilio.accountsid;
-const authToken = functions.config().twilio.twilio_auth_token;
-const twilioNumber = functions.config().twilio.twilionumber;
+let useModel: use.UniversalSentenceEncoder | null = null;
 
-const client = new Twilio(accountSid, authToken);
+// Initialize Genkit with Vertex AI
+const ai = genkit({
+    plugins: [
+        vertexAI({
+            projectId: process.env.GCLOUD_PROJECT, // auto-set in Cloud Functions
+            location: "us-central1",
+        }),
+    ],
+    model: vertexAI.model('gemini-2.5-flash', {
+        temperature: 0.8,
+    }),
+});
+
+// Define input schema
+const feedbackInputSchema = z.object({
+    content: z.string().describe('Student written feedback about TA office hour session')
+});
+
+// Define output schema
+const feedbackOutputSchema = z.object({
+    verification: z.string(),
+});
+
+// Define a flow for verifying student feedback
+export const feedbackVerificationFlow = ai.defineFlow(
+    {
+        name: 'feedbackVerificationFlow',
+        inputSchema: feedbackInputSchema,
+        outputSchema: feedbackOutputSchema,
+    },
+    async (input) => {
+        // Create a prompt based on the input
+        const prompt = `
+        Analyze the following feedback and determine whether 
+        it is appropriate or not based on the following criteria.
+        Feedback Content: "${input.content}"
+        Please analyze this request and ONLY return a "yes" or "no" for whether the feedback
+         is acceptable or not based on the criteria below:
+        {           
+            "appropriateness": "[0-5 | 6-10 | 11-15 | 16-25 | 26+]",
+            "inappropriate language": "[yes | no]",
+        }
+        Return "yes" if the appropriateness is 10 or higher and inappropriate language is no. 
+        If the feedback content is empty, also return "yes".
+        Return "no" otherwise.
+    `;
+
+        // Generate structured output data using the same schema
+        const { output } = await ai.generate({
+            model: vertexAI.model('gemini-2.5-flash'),
+            prompt,
+            output: { schema: feedbackOutputSchema },
+        });
+
+        if (!output) {
+            functions.logger.log("Failed to run verification flow.");
+            throw new Error('Failed to run verification flow.');
+        } 
+        return output;
+    },
+);
+
+
+// Type for Firebase
+type TrendDocument = {
+    title: string;
+    questions: QuestionDetail[];
+    volume: number;
+    firstMentioned: admin.firestore.Timestamp;
+    lastUpdated: admin.firestore.Timestamp;
+    assignmentName: string;
+    primaryTag: string;
+    secondaryTag: string;
+}
+
+
+type QuestionDetail = {
+    content: string;
+    timestamp: admin.firestore.Timestamp;
+    questionId: string;
+};
+
+type QuestionData = {
+    content: string;
+    primaryTag: string;
+    secondaryTag: string;
+    timestamp: admin.firestore.Timestamp;
+    questionId: string;
+}
+
+type TitledCluster = {
+    title: string,
+    questions: string[]
+}
+
+
+// Define input schema
+const titleInputSchema = z.object({
+    questions: z.array(z.string()).describe('An array of student questions from office hour sessions')
+});
+
+// Define output schema
+const titleOutputSchema = z.object({
+    title: z.string(),
+});
+
+// Define a flow for verifying student feedback
+export const titleGenerationFlow = ai.defineFlow(
+    {
+        name: 'titleGenerationFlow',
+        inputSchema: titleInputSchema,
+        outputSchema: titleOutputSchema,
+    },
+    async (input) => {
+        // Create a prompt based on the input
+        const prompt = `
+        Given these related questions:
+
+        Question list: "${input.questions}"
+        What short (2-4 words) topic title describes them?
+        
+        Return only the title, no additional text.
+    `;
+
+        // Generate structured output data using the same schema
+        const { output } = await ai.generate({
+            model: vertexAI.model('gemini-2.5-flash'),
+            prompt,
+            output: { schema: titleOutputSchema },
+        });
+
+        if (!output) {
+            functions.logger.log("Failed to run title flow.");
+            throw new Error('Failed to run title flow.');
+        } 
+        return output;
+    },
+);
+
+/**
+ * Given a list of tag ids, return a map of their id to their name.
+ * @param tagIds string list of firetag ids
+ * @returns 
+ */
+async function getTagNames(tagIds: string[]) : Promise<Map<string, string>> {
+    const tagMap = new Map<string, string>();
+    const tagRef = db.collection("tags");
+
+    const uniqueTagIds = Array.from(new Set(tagIds.filter(id => id)));
+
+    const tagPromises = uniqueTagIds.map(async (tagId) => {
+        try {
+            const tagSnapshot = await tagRef.where("__name__", "==", tagId).get();
+            
+            if (!tagSnapshot.empty){
+                const tagDoc = tagSnapshot.docs[0];
+                const data = tagDoc.data();
+                return { id: tagId, name: data.name || tagId };
+            }
+            return { id : tagId, name: tagId };
+        } catch (error) {
+            functions.logger.error(`Error fetching tag ${tagId}:`, error);
+            return { id: tagId, name: tagId };
+        }
+    });
+
+    const tags = await Promise.all(tagPromises);
+    tags.forEach(tag => tagMap.set(tag.id, tag.name));
+
+    return tagMap;
+}
+
+
+/**
+ * Given a course id, fetch the questions belonging to the course, 
+ * the tags associated with the course, and return a list of the content, 
+ * tag information, timestamps, and ids.
+ * @param courseId id for the course
+ * @returns 
+ */
+async function getQuestions( courseId: string ): Promise<QuestionData[]> {
+    const questions : Array<QuestionData> = [];
+    const tagIds: string[] = [];
+    // Only get course questions from the last week since the scheduled function runs weekly
+    // Current time
+    const now = new Date(); 
+    // Time seven days ago
+    const sevenDaysAgo = now;
+    sevenDaysAgo.setDate(now.getDate() - 7);
+
+    const questionSnapshot = await db.collection("questions")
+        .where("courseId", '==', courseId)
+        .where("timeEntered", ">=", admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+        .get();
+    questionSnapshot.forEach(doc => {
+        const data = doc.data();
+        tagIds.push(data.primaryTag, data.secondaryTag);
+        questions.push({
+            content: data.content,
+            primaryTag: data.primaryTag,
+            secondaryTag: data.secondaryTag,
+            timestamp: data.timeEntered,
+            questionId: doc.id
+        });
+    });
+
+    const tagMap = await getTagNames(tagIds);
+
+    const result : QuestionData[] = questions.map(q => ({
+        content: q.content,
+        primaryTag: tagMap.get(q.primaryTag) || q.primaryTag,
+        secondaryTag: tagMap.get(q.secondaryTag) || q.secondaryTag,
+        timestamp: q.timestamp,
+        questionId: q.questionId
+    }));
+
+    return result;
+}
+
+/**
+ * `getEmbeddings` uses a typescript library for SBERT to embed each sentence 
+ * in `questions` into numerical vectors represented as number[][].
+ * @param questions the string list of questions that students ask
+ * @returns the sentence embeddings for the list of questions.
+ */
+async function getEmbeddings(questions: string[]): Promise<number[][]>{
+    functions.logger.log('Running getembeddings');
+    if (!useModel) {
+        functions.logger.log("Loading USE model...");
+        useModel = await use.load();
+        functions.logger.log("USE model loaded");
+    }
+    const model = useModel;
+    const embeddings = await model.embed(questions);
+    functions.logger.log('Loaded embeddings');
+    const result = await embeddings.array();
+    embeddings.dispose();
+    return result;
+}
+
+/**
+ * `clusterEmbeddings` uses kMeans algorithm to cluster the embedded questions into `k` clusters.
+ * @param embeddings embedded vectors of question data
+ * @param k number of clusters to group the data into
+ * @returns obj of KMeans type including number of iterations, indexes, centroids, k.
+ */
+async function clusterEmbeddings(embeddings: number[][], k = 2): Promise<KMeans>{
+    const clusters: KMeans = kmeans(embeddings, k);
+    return clusters;
+}
+
+/**
+ * Takes the output of kmeans clustering to obtain the list of questions that belong in each cluster. 
+ * @param clusters output of kmeans clustering
+ * @param questions full question data list
+ * @returns record containing the cluster number and its corresponding question list
+ */
+function groupQuestionsByCluster(clusters: KMeans, questions: string[]): Record<number, string[]> {
+    const res: Record<number, string[]> = {};
+    for (let i = 0; i < clusters.k; i++){
+        res[i] = [];
+    }
+
+    clusters.indexes.forEach((clusterIdx, qIdx) => {
+        res[clusterIdx].push(questions[qIdx]);
+    });
+
+    return res;
+}
+
+/**
+ * Helper function to convert between titled clusters and question data objects.
+ * @returns an array of the title and its corresponding question data object. 
+ */
+function clustersToQuestionData(
+    clusters: TitledCluster[],
+    allQuestions: QuestionData[]
+): Array<{ title: string; questions: QuestionData[] }> {
+    const questionMap = new Map<string, QuestionData>();
+    allQuestions.forEach(q => questionMap.set(q.content, q));
+
+    return clusters.map(cluster => ({
+        title: cluster.title,
+        questions: cluster.questions
+            .map(content => questionMap.get(content))
+            .filter((q) : q is QuestionData => q !== undefined)
+    }));
+}
+
+
+
+/**
+ * Performs sentence embedding, kmeans clustering, and LLM prompting to
+ * obtain the values needed for the Student Trends feature in the TA Dashboard Preparation Tab.
+ * Returns a list of each cluster and its questions along with a title for the cluster.
+ * @param questions list of question data
+ */
+async function kMeansMain(questions: string[]): Promise<TitledCluster[]> {
+    const res: TitledCluster[] = [];
+    functions.logger.log('Running kmeans');
+    const embeddings = await getEmbeddings(questions);
+    functions.logger.log('Finished getEmbeddings');
+
+    const k = Math.ceil(Math.sqrt(questions.length));
+
+    const c: KMeans = await clusterEmbeddings(embeddings, k);
+    functions.logger.log('Finished clusterEmbeddings');
+
+    const groups: Record<number, string[]> = groupQuestionsByCluster(c, questions);
+
+    const clusterPromises = Object.entries(groups).map(async ([clusterIdx, questionsInCluster ]) => {
+        try {
+            const result = await titleGenerationFlow({
+                questions: questionsInCluster,
+            });
+            
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: result.title, questions: questionsInCluster },
+            };
+        } catch (err) {
+            functions.logger.error("LLM call failed:", err);
+            return {
+                clusterIdx: Number(clusterIdx),
+                data: { title: "Untitled", questions: questionsInCluster },
+            };
+        } 
+    });
+
+    const clusterResults = await Promise.all(clusterPromises);
+
+    for (const { clusterIdx, data } of clusterResults ){
+        res[clusterIdx] = data;
+    }
+
+    return res;
+}
+
+/**
+ * Given a list of clusters, create the TrendDocument object for each cluster. 
+ * Also grabs the assignment name corresponding the the tags for that question.
+ * @param clusters the list of clusters (title and question information)
+ * @returns the TrendDocument[] corresponding to each cluster. 
+ */
+function trendsByAssignment (
+    clusters: Array<{ title: string; questions: QuestionData[] }>
+) : TrendDocument[] {
+    const trendMap = new Map<string,TrendDocument>();
+    
+    for (const c of clusters){
+        const byAssignment = new Map<string, QuestionData[]>();
+
+        for (const q of c.questions){
+            const assignmentName = `${q.primaryTag} ${q.secondaryTag}`;
+            if (!byAssignment.has(assignmentName)){
+                byAssignment.set(assignmentName, []);
+            }
+            byAssignment.get(assignmentName)?.push(q);
+        }
+        const entries = Array.from(byAssignment.entries());
+        entries.forEach(([assignmentName, questions]) => {
+            let typedQuestions: QuestionDetail[] = questions.map(q => ({
+                content: q.content,
+                timestamp: q.timestamp,
+                questionId: q.questionId
+            }));
+            const oldTrend = trendMap.get("t=" + c.title.toLowerCase().trim() 
+            + ",a=" + assignmentName.toLowerCase().trim());
+            if (oldTrend) {
+                typedQuestions = [...typedQuestions, ...oldTrend.questions];
+            }
+            const timestamps = typedQuestions.map(q => q.timestamp.toMillis());
+            const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
+            const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
+            
+            trendMap.set("t=" + c.title.toLowerCase().trim() 
+            + ",a=" + assignmentName.toLowerCase().trim(),{
+                title: c.title,
+                questions: typedQuestions,
+                volume: typedQuestions.length,
+                firstMentioned,
+                lastUpdated,
+                assignmentName, 
+                primaryTag: questions[0].primaryTag,
+                secondaryTag: questions[0].secondaryTag
+            });
+        });
+    }
+
+    return Array.from(trendMap.values());
+}
+
+const generateHash = (input:string) => {
+    return createHash("sha256").update(input).digest("hex");
+};
+
+
+/**
+ * Full workflow, grabs the questions from firebase, sends the content into the 
+ * kMeansMain clustering algorithm + LLM titling, processes the clusters to be formatted into a 
+ * TrendDocument[] and stores the TrendDocument[] to firebase. 
+ * @param courseId id for the course
+ */
+async function generateStudentTrends(
+    courseId: string,
+) : Promise<void>{
+    const questions = await getQuestions(courseId);
+    const questionStrings = questions.map(q => q.content);
+    if (questionStrings.length === 0) {
+        functions.logger.log(`No questions for class ${courseId}`);
+        return;
+    }
+    const clusters = await kMeansMain(questionStrings);
+    functions.logger.log("Finished kmeans function");
+
+    const processedClusters = clustersToQuestionData(clusters, questions);
+
+    const trends: TrendDocument[] = trendsByAssignment(processedClusters);
+    functions.logger.log("Finished assigning trends");
+
+    // Save trends
+    const trendsRef = db.collection("courses").doc(courseId).collection("trends");
+
+    const p = trends.map(async (trend) => {
+        try {
+            const trendId = generateHash("t=" + trend.title.toLowerCase().trim() 
+            + ",a=" + trend.assignmentName.toLowerCase().trim());
+            const oldTrendRef = trendsRef.doc(trendId);
+            const oldTrendDoc = await oldTrendRef.get();
+            if (oldTrendDoc.exists) {
+                const oldTrendData = oldTrendDoc.data() as TrendDocument;
+                const combinedQuestions =  [...trend.questions, ...oldTrendData.questions];
+                const timestamps = combinedQuestions.map(q => q.timestamp.toMillis());
+                const firstMentioned = admin.firestore.Timestamp.fromMillis(Math.min(...timestamps));
+                const lastUpdated = admin.firestore.Timestamp.fromMillis(Math.max(...timestamps));
+                functions.logger.log(`Merging old trend document for class ${courseId}`);
+                await oldTrendRef.update(
+                    {
+                        questions: combinedQuestions,
+                        volume: combinedQuestions.length,
+                        firstMentioned,
+                        lastUpdated,
+                    }
+                )
+                
+            } else {
+                functions.logger.log(`Adding new trend document for class ${courseId}`);
+                await oldTrendRef.set(trend);
+            }
+        } catch (error){
+            functions.logger.error(`Error adding trend ${trend.title}:`, error);
+        }
+    });
+
+    await Promise.all(p);
+}
+
 
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
-async function sendSMS (user: FireUser, message: string) {
-    if(process.env.DATABASE === "staging") {
+async function sendSMS(user: FireUser, message: string) {
+    if (process.env.DATABASE === "staging") {
         return;
     }
+
+    // Twilio Setup
+    const accountSid = TWILIO_ACCOUNTSID.value();
+    const authToken = TWILIO_TWILIO_AUTH_TOKEN.value();
+    const twilioNumber = TWILIO_TWILIONUMBER.value();
+
+    const client = new Twilio(accountSid, authToken);
     const userPhone = user.phoneNumber;
-    if (userPhone === "Dummy number" || userPhone === undefined)
-        return;
+    if (userPhone === "Dummy number" || userPhone === undefined) return;
     try {
         await client.messages
             .create({
                 from: twilioNumber,
                 to: userPhone,
                 body: `[QueueMeIn] ${message}`.replace(/\s+/g, " "),
-            }).then(msg => {
+            })
+            .then((msg) => {
                 functions.logger.log(msg);
             });
     } catch (error) {
@@ -45,85 +524,114 @@ async function sendSMS (user: FireUser, message: string) {
  * already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
  * pendingUsers COLLECTION IN THE FIRST PLACE)
  */
-exports.onUserCreate = functions.firestore
-    .document('users/{userId}')
-    .onCreate(async (snap, context) => {
-        const userId = context.params.userId;
+exports.onUserCreate = functions.firestore.document("users/{userId}").onCreate(async (snap, context) => {
+    const userId = context.params.userId;
 
-        // get the user doc
-        const userRef = db.collection('users').doc(userId);
-        const userDoc = await userRef.get();
-        const user = userDoc.data() as FireUser;
+    // get the user doc
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+    const user = userDoc.data() as FireUser;
 
-        const currentRoles = user.roles;
-        const email = user.email;
+    const currentRoles = user.roles;
+    const email = user.email;
 
-        // match this email with a user in the pendingUsers collection
-        const pendingUsersSnap = await db.collection('pendingUsers').where('email', '==', email).get();
+    // match this email with a user in the pendingUsers collection
+    const pendingUsersSnap = await db.collection("pendingUsers").where("email", "==", email).get();
 
-        pendingUsersSnap.forEach(async doc => {
+    pendingUsersSnap.forEach(async (doc) => {
+        // delete the pendingUsers entry because they now exist in QMI...
+        await db.collection("pendingUsers").doc(doc.id).delete();
 
-            // delete the pendingUsers entry because they now exist in QMI...
-            await db.collection('pendingUsers').doc(doc.id).delete();
+        // get the users's roles map as a Map<string, FireCourseRole>
+        const newRoles = (doc.data() as FirePendingUser).roles;
+        const taCourseIds: string[] = [];
+        const profCourseIds: string[] = [];
 
-            // get the users's roles map as a Map<string, FireCourseRole>
-            const newRoles = (doc.data() as FirePendingUser).roles;
-            const taCourseIds: string[] = [];
-            const profCourseIds: string[] = [];
-
-            for (const [courseId, role] of Object.entries(newRoles)) {
-
-                if (role === 'ta') {
-                    taCourseIds.push(courseId);
-                } else if (role === 'professor') {
-                    profCourseIds.push(courseId);
-                }
+        for (const [courseId, role] of Object.entries(newRoles)) {
+            if (role === "ta") {
+                taCourseIds.push(courseId);
+            } else if (role === "professor") {
+                profCourseIds.push(courseId);
             }
+        }
 
-            const batch = db.batch();
+        const batch = db.batch();
 
-            // and update the newly-created user with their new roles
-            userRef.update({
-                courses: [...taCourseIds, ...profCourseIds],
-                roles: { ...currentRoles, ...newRoles }
-            })
-
-            const taCourseDocs = await Promise.all(
-                taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
-
-            const profCourseDocs = await Promise.all(
-                profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
-            taCourseDocs.forEach((taDoc, index) => {
-                if (!taDoc.exists) {
-                    functions.logger.error('ta course doc does not exist.')
-                }
-
-                const courseId = taCourseIds[index];
-
-                // const course = doc.data() as FireCourse;
-                batch.update(
-                    db.collection('courses').doc(courseId),
-                    { tas: admin.firestore.FieldValue.arrayUnion(userId) }
-                );
-            });
-
-            profCourseDocs.forEach((pfDoc, index) => {
-                if (!pfDoc.exists) {
-                    functions.logger.error('prof course doc does not exist.')
-                }
-
-                const courseId = profCourseIds[index];
-                // const course = doc.data() as FireCourse;
-                batch.update(
-                    db.collection('courses').doc(courseId),
-                    { professors: admin.firestore.FieldValue.arrayUnion(userId) }
-                );
-            });
-
-            await batch.commit();
+        // and update the newly-created user with their new roles
+        userRef.update({
+            courses: [...taCourseIds, ...profCourseIds],
+            roles: { ...currentRoles, ...newRoles },
         });
 
+        const taCourseDocs = await Promise.all(
+            taCourseIds.map((courseId) => db.collection("courses").doc(courseId).get())
+        );
+
+        const profCourseDocs = await Promise.all(
+            profCourseIds.map((courseId) => db.collection("courses").doc(courseId).get())
+        );
+        taCourseDocs.forEach((taDoc, index) => {
+            if (!taDoc.exists) {
+                functions.logger.error("ta course doc does not exist.");
+            }
+
+            const courseId = taCourseIds[index];
+
+            // const course = doc.data() as FireCourse;
+            batch.update(db.collection("courses").doc(courseId), {
+                tas: admin.firestore.FieldValue.arrayUnion(userId),
+            });
+        });
+
+        profCourseDocs.forEach((pfDoc, index) => {
+            if (!pfDoc.exists) {
+                functions.logger.error("prof course doc does not exist.");
+            }
+
+            const courseId = profCourseIds[index];
+            // const course = doc.data() as FireCourse;
+            batch.update(db.collection("courses").doc(courseId), {
+                professors: admin.firestore.FieldValue.arrayUnion(userId),
+            });
+        });
+
+        await batch.commit();
     });
+});
+
+exports.onFeedbackCreate = functions.firestore
+    .document(`users/{userId}/feedback/{feedbackId}`)
+    .onCreate(async (snap) => {
+        functions.logger.info("onFeedbackCreate triggered");
+        const data = snap.data();
+        const feedbackId = snap.id;
+        if (!process.env.GCLOUD_PROJECT) {
+            functions.logger.error("Gcloud project not found in environment");
+        }
+
+        try {
+            const {verification} = await feedbackVerificationFlow({
+                content: data.writtenFeedback ?? "",
+            });
+
+            /* If "yes" is returned, we don't need to modify anything. 
+            For anything else, this FeedbackRecord is deleted from the user's feedback subcollection. */
+            if (verification !== "yes") {
+                functions.logger.info("Feedback determined to be inappropriate.");
+                await snap.ref.delete();
+            }
+        } catch (err) {
+            // If there is an error, delete the feedback to be safe.
+            functions.logger.error("Feedback verification failed", {
+                feedbackId,
+                error: err instanceof Error ? err.message : err,
+            });
+
+            await snap.ref.delete();
+
+        }
+    });
+
 
 exports.onCommentCreate = functions.firestore
     .document(`questions/{questionId}/comments/{commentId}`)
@@ -133,174 +641,200 @@ exports.onCommentCreate = functions.firestore
         const answererId = data.answererId;
         const commenterId = data.commenterId;
         const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
-        if(askerId === commenterId && answererId !== "") {
+        if (askerId === commenterId && answererId !== "") {
             const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
             db.doc(`notificationTrackers/${answerer.email}`)
                 .update({
                     notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: 'Student comment',
+                        title: "Student comment",
                         subtitle: "New student comment",
                         message: `${asker.firstName} commented \
                         on your assigned question`.trim(),
-                        createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
-                        notificationList: [{
-                            title: 'Student comment',
-                            subtitle: "New student comment",
-                            message: `${asker.firstName} commented \
+                        createdAt: admin.firestore.Timestamp.now(),
+                    }),
+                })
+                .catch(() => {
+                    db.doc(`notificationTrackers/${answerer.email}`).create({
+                        id: answerer.email,
+                        notificationList: [
+                            {
+                                title: "Student comment",
+                                subtitle: "New student comment",
+                                message: `${asker.firstName} commented \
                         on your assigned question`.trim(),
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
+                                createdAt: admin.firestore.Timestamp.now(),
+                            },
+                        ],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-                    
+                        lastSent: admin.firestore.Timestamp.now(),
+                    });
                 });
         } else {
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({
                     notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: 'TA comment',
-                        subtitle: 'New TA comment',
+                        title: "TA comment",
+                        subtitle: "New TA comment",
                         message: `A TA commented on your question`.trim(),
-                        createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'TA comment',
-                            subtitle: 'New TA comment',
-                            message: `A TA commented on your question`.trim(),
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
+                        createdAt: admin.firestore.Timestamp.now(),
+                    }),
+                })
+                .catch(() => {
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
+                        notificationList: [
+                            {
+                                title: "TA comment",
+                                subtitle: "New TA comment",
+                                message: `A TA commented on your question`.trim(),
+                                createdAt: admin.firestore.Timestamp.now(),
+                            },
+                        ],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-                    
+                        lastSent: admin.firestore.Timestamp.now(),
+                    });
                 });
         }
-    })
+    });
 
-exports.onSessionUpdate = functions.firestore
-    .document('sessions/{sessionId}')
-    .onUpdate(async (change) => {
-        // retrieve session id and ordered queue of active questions
-        const afterSessionId = change.after.id;
-        const afterQuestions = (await db.collection('questions')
-            .where('sessionId', '==', afterSessionId)
-            .where('status', 'in', ['assigned', 'unresolved'])
-            .orderBy('timeEntered', 'asc').get()).docs;
+exports.onSessionUpdate = functions.firestore.document("sessions/{sessionId}").onUpdate(async (change) => {
+    // NOTE: This function only handles notifications. WaitTimeMap updates are handled by onQuestionUpdate
+    // to ensure we use the question's entry time (not session start time) for slotting.
+    // When onQuestionUpdate updates totalWaitTime, it triggers this function, but we don't touch waitTime here.
+    
+    // retrieve session id and ordered queue of active questions
+    const afterSessionId = change.after.id;
+    const afterQuestions = (
+        await db
+            .collection("questions")
+            .where("sessionId", "==", afterSessionId)
+            .where("status", "in", ["assigned", "unresolved"])
+            .orderBy("timeEntered", "asc")
+            .get()
+    ).docs;
 
-        const sessionName: string | undefined= (change.after.data() as FireSession).title;
-        if (afterQuestions.length === 0) {
-            return; // exit early, nothing to notify
-        }
-        const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
+    const sessionName: string | undefined= (change.after.data() as FireSession).title;
+    if (afterQuestions.length === 0) {
+        return; // exit early, nothing to notify
+    }
+    const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
 
-        // if the top active question was not notified, notify them
-        if (topQuestion && !topQuestion.wasNotified) {
-            const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
-                .get()).data() as FireUser;
-            sendSMS(asker, `Your question has reached the top of the \
-                ${sessionName} queue. A TA will likely help you shortly.`);
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: 'Your Question is Up!',
-                        subtitle: `Your question has reached the top of the \
+    // if the top active question was not notified, notify them
+    if (topQuestion && !topQuestion.wasNotified) {
+        const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
+            .get()).data() as FireUser;
+        sendSMS(asker, `Your question has reached the top of the \
+            ${sessionName} queue. A TA will likely help you shortly.`);
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Your Question is Up!',
+                    subtitle: `Your question has reached the top of the \
                      ${sessionName} queue.`,
-                        message: `Your question has reached the top of the \
+                    message: `Your question has reached the top of the \
                     ${sessionName} queue. A TA will likely help you shortly.`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'Your Question is Up!',
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({
+                    id: asker.email,
+                    notificationList: [
+                        {
+                            title: "Your Question is Up!",
                             subtitle: `Your question has reached the top of the \
                      ${sessionName} queue.`,
                             message: `Your question has reached the top of the \
                     ${sessionName} queue. A TA will likely help you shortly.`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-          
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
                 });
-            db.doc(`questions/${afterQuestions[0].id}`).update({
-                wasNotified: true
-            })
-        }
-    })
+            });
+        db.doc(`questions/${afterQuestions[0].id}`).update({
+            wasNotified: true,
+        });
+    }
+});
 
-exports.onQuestionCreate = functions.firestore
-    .document('questions/{questionId}')
-    .onCreate(async (snap) => {
-        // Get data object and obtain session/course
-        const data = snap.data();
-        const sessionId = data.sessionId;
-        const session = (await db.collection('sessions').doc(sessionId).get()).data() as FireSession;
-        const course = (await db.collection('courses').doc(session.courseId).get()).data() as FireCourse;
+exports.onQuestionCreate = functions.firestore.document("questions/{questionId}").onCreate(async (snap) => {
+    // Get data object and obtain session/course
+    const data = snap.data();
+    const sessionId = data.sessionId;
+    const session = (await db.collection("sessions").doc(sessionId).get()).data() as FireSession;
+    const course = (await db.collection("courses").doc(session.courseId).get()).data() as FireCourse;
 
-        // Increment total number of questions of relevant session
-        const increment = admin.firestore.FieldValue.increment(1);
+    // Increment total number of questions of relevant session
+    const increment = admin.firestore.FieldValue.increment(1);
 
-        // Add new question notification for all TAs
-        course.tas.forEach(async ta => {
-            const user: FireUser = (await db.doc(`users/${ta}`).get()).data() as FireUser;
-            db.doc(`notificationTrackers/${user.email}`).update({
+    // Add new question notification for all TAs
+    course.tas.forEach(async (ta) => {
+        const user: FireUser = (await db.doc(`users/${ta}`).get()).data() as FireUser;
+        db.doc(`notificationTrackers/${user.email}`)
+            .update({
                 notificationList: admin.firestore.FieldValue.arrayUnion({
-                    title: 'New Question',
+                    title: "New Question",
                     subtitle: `A new question has been added to the ${session.title} queue`,
                     message: `A new question has been added to the ${session.title} queue`,
-                    createdAt: admin.firestore.Timestamp.now()
-                })
-            }).catch(() => {
-                db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
-                    notificationList: [{
-                        title: 'New Question',
-                        subtitle: `A new question has been added to the ${session.title} queue`,
-                        message: `A new question has been added to the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    }],
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${user.email}`).create({
+                    id: user.email,
+                    notificationList: [
+                        {
+                            title: "New Question",
+                            subtitle: `A new question has been added to the ${session.title} queue`,
+                            message: `A new question has been added to the ${session.title} queue`,
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
                     notifications: admin.firestore.Timestamp.now(),
                     productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),})
-              
-            })
-        });
-
-        // Add new question notification for all Professors
-        course.professors.forEach(async professor => {
-            const user: FireUser = (await db.doc(`users/${professor}`).get()).data() as FireUser;
-            db.doc(`notificationTrackers/${user.email}`).update({
-                notificationList: admin.firestore.FieldValue.arrayUnion({
-                    title: 'New Question',
-                    subtitle: `A new question has been added to the ${session.title} queue`,
-                    message: `A new question has been added to the ${session.title} queue`,
-                    createdAt: admin.firestore.Timestamp.now()
-                })
-            }).catch(() => {
-                db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
-                    notificationList: [{
-                        title: 'New Question',
-                        subtitle: `A new question has been added to the ${session.title} queue`,
-                        message: `A new question has been added to the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    }],
-                    notifications: admin.firestore.Timestamp.now(),
-                    productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),})
-            
-            })
-        });
-        return db.doc(`sessions/${sessionId}`).update({
-            totalQuestions: increment,
-        });
+                    lastSent: admin.firestore.Timestamp.now(),
+                });
+            });
     });
+
+    // Add new question notification for all Professors
+    course.professors.forEach(async (professor) => {
+        const user: FireUser = (await db.doc(`users/${professor}`).get()).data() as FireUser;
+        db.doc(`notificationTrackers/${user.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: "New Question",
+                    subtitle: `A new question has been added to the ${session.title} queue`,
+                    message: `A new question has been added to the ${session.title} queue`,
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${user.email}`).create({
+                    id: user.email,
+                    notificationList: [
+                        {
+                            title: "New Question",
+                            subtitle: `A new question has been added to the ${session.title} queue`,
+                            message: `A new question has been added to the ${session.title} queue`,
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
+                });
+            });
+    });
+    return db.doc(`sessions/${sessionId}`).update({
+        totalQuestions: increment,
+    });
+});
 
 // This map maps a question status to a tuple of
 // 1. The number of questions this counts as (0 if no show or retracted)
@@ -313,216 +847,406 @@ questionStatusNumbers.set("retracted", [0, 0, 0]);
 questionStatusNumbers.set("unresolved", [1, 0, 0]);
 questionStatusNumbers.set("no-show", [0, 0, 0]);
 
-exports.onQuestionUpdate = functions.firestore
-    .document('questions/{questionId}')
-    .onUpdate(async (change) => {
-        // Log when the function is triggered
-        functions.logger.info("Function triggered", {
-            questionId: change.after.id,
-        });
-        // retrieve old and new questions
-        const newQuestion: FireQuestion = change.after.data() as FireQuestion;
-        const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
+exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}").onUpdate(async (change) => {
+    // Log when the function is triggered
+    functions.logger.info("Function triggered", {
+        questionId: change.after.id,
+    });
+    // retrieve old and new questions
+    const newQuestion: FireQuestion = change.after.data() as FireQuestion;
+    const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
 
-        // Derive session ID
-        const sessionId = newQuestion.sessionId;
+    // Derive session ID
+    const sessionId = newQuestion.sessionId;
 
-        // Derive changes in counts
-        const newStatus = newQuestion.status;
-        const prevStatus = prevQuestion.status;
-        const newNumbers = questionStatusNumbers.get(newStatus) ?? 
-            [0, 0, 0];
-        const prevNumbers = questionStatusNumbers.get(prevStatus) ?? 
-            [0, 0, 0];
+    // Derive changes in counts
+    const newStatus = newQuestion.status;
+    const prevStatus = prevQuestion.status;
+    const newNumbers = questionStatusNumbers.get(newStatus) ?? 
+        [0, 0, 0];
+    const prevNumbers = questionStatusNumbers.get(prevStatus) ?? 
+        [0, 0, 0];
 
-        // Grab number of changes
-        const numQuestionChange = newNumbers[0] - prevNumbers[0];
-        const numAssignedChange = newNumbers[1] - prevNumbers[1];
-        const numResolvedChange = newNumbers[2] - prevNumbers[2];
+    // Grab number of changes
+    const numQuestionChange = newNumbers[0] - prevNumbers[0];
+    const numAssignedChange = newNumbers[1] - prevNumbers[1];
+    const numResolvedChange = newNumbers[2] - prevNumbers[2];
 
-        let waitTimeChange = 0;
-        let resolveTimeChange = 0;
+    let waitTimeChange = 0;
+    let resolveTimeChange = 0;
 
-        // Derive timing changes (changes from assigned to unassigned)
-        if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
-            // Add new time addressed
-            waitTimeChange =
-                (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) / (newQuestion.position || 1);
-        } else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
-            // Subtract previous time addressed
-            waitTimeChange =
-                (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) / (newQuestion.position || 1);
-        }
+    // Derive timing changes (changes from assigned to unassigned)
+    if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
+        // Add new time addressed
+        waitTimeChange =
+            (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) / (newQuestion.position || 1);
+    } else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
+        // Subtract previous time addressed
+        waitTimeChange =
+            (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) / (newQuestion.position || 1);
+    }
 
-        // Derive timing changes (changes from assigned to resolved)
-        if (numResolvedChange === 1 && newQuestion.timeAssigned !== 
-            undefined && newQuestion.timeAddressed !== undefined) {
-            resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
-        } else if (
-            numResolvedChange === -1 &&
-            prevQuestion.timeAssigned !== undefined &&
-            prevQuestion.timeAddressed !== undefined
-        ) {
-            resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
-        }
+    // Derive timing changes (changes from assigned to resolved)
+    if (numResolvedChange === 1 && newQuestion.timeAssigned !== 
+        undefined && newQuestion.timeAddressed !== undefined) {
+        resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
+    } else if (
+        numResolvedChange === -1 &&
+        prevQuestion.timeAssigned !== undefined &&
+        prevQuestion.timeAddressed !== undefined
+    ) {
+        resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
+    }
 
-        // Figure out who needs to be updated with a notification based on the changes
-        const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
+    // Figure out who needs to be updated with a notification based on the changes
+    const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
 
-        if (prevQuestion.answererId !== newQuestion.answererId && newQuestion.answererId !== "") {
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: "TA Assigned",
-                        subtitle: "TA Assigned",
-                        message: "A TA has been assigned to your question",
-                        createdAt: admin.firestore.Timestamp.now(),
-                    }),
-                })
-                .catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({
-                        id: asker.email,
-                        notificationList: [
-                            {
-                                title: "TA Assigned",
-                                subtitle: "TA Assigned",
-                                message: "A TA has been assigned to your question",
-                                createdAt: admin.firestore.Timestamp.now(),
-                            },
-                        ],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),
-                    });
+    if (prevQuestion.answererId !== newQuestion.answererId && newQuestion.answererId !== "") {
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: "TA Assigned",
+                    subtitle: "TA Assigned",
+                    message: "A TA has been assigned to your question",
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({
+                    id: asker.email,
+                    notificationList: [
+                        {
+                            title: "TA Assigned",
+                            subtitle: "TA Assigned",
+                            message: "A TA has been assigned to your question",
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
                 });
-        }
+            });
+    }
 
-        if (prevQuestion.answererId !== newQuestion.answererId && newQuestion.answererId === "") {
-            const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: "TA Unassigned",
-                        subtitle: "TA Unassigned",
-                        message: `A TA has been unassigned from your question and you have \
+    if (prevQuestion.answererId !== newQuestion.answererId && newQuestion.answererId === "") {
+        const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: "TA Unassigned",
+                    subtitle: "TA Unassigned",
+                    message: `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
-                        createdAt: admin.firestore.Timestamp.now(),
-                    }),
-                })
-                .catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({
-                        id: asker.email,
-                        notificationList: [
-                            {
-                                title: "TA Unassigned",
-                                subtitle: "TA Unassigned",
-                                message: `A TA has been unassigned from your question and you have \
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({
+                    id: asker.email,
+                    notificationList: [
+                        {
+                            title: "TA Unassigned",
+                            subtitle: "TA Unassigned",
+                            message: `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
-                                createdAt: admin.firestore.Timestamp.now(),
-                            },
-                        ],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),
-                    });
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
                 });
-        } else if (newQuestion.status === "resolved") {
-            const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: "Question resolved",
-                        subtitle: "Question marked as resolved",
-                        message: `A TA has marked your question as resolved and you \
+            });
+    } else if (newQuestion.status === "resolved") {
+        const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: "Question resolved",
+                    subtitle: "Question marked as resolved",
+                    message: `A TA has marked your question as resolved and you \
                             have been removed from the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now(),
-                    }),
-                })
-                .catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({
-                        id: asker.email,
-                        notificationList: [
-                            {
-                                title: "Question marked no-show",
-                                subtitle: "Question marked as no-show",
-                                message: `A TA has marked your question as no-show and you \
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({
+                    id: asker.email,
+                    notificationList: [
+                        {
+                            title: "Question marked no-show",
+                            subtitle: "Question marked as no-show",
+                            message: `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
-                                createdAt: admin.firestore.Timestamp.now(),
-                            },
-                        ],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),
-                    });
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
                 });
-        } else if (newQuestion.status === "no-show") {
-            const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: "Question marked no-show",
-                        subtitle: "Question marked as no-show",
-                        message: `A TA has marked your question as no-show and you \
+            });
+    } else if (newQuestion.status === "no-show") {
+        const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: "Question marked no-show",
+                    subtitle: "Question marked as no-show",
+                    message: `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now(),
-                    }),
-                })
-                .catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({
-                        id: asker.email,
-                        notificationList: [
-                            {
-                                title: "Question marked no-show",
-                                subtitle: "Question marked as no-show",
-                                message: `A TA has marked your question as no-show and you \
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({
+                    id: asker.email,
+                    notificationList: [
+                        {
+                            title: "Question marked no-show",
+                            subtitle: "Question marked as no-show",
+                            message: `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
-                                createdAt: admin.firestore.Timestamp.now(),
-                            },
-                        ],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),
-                    });
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
                 });
+            });
+    }
+
+    // Update relevant statistics in database
+    const sessionRef = db.doc(`sessions/${sessionId}`);
+    
+    // Update session statistics - return the promise to match original behavior
+    const sessionUpdatePromise = sessionRef.update({
+        totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
+        assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
+        resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
+        totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
+        totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
+    });
+    
+    // Additionally update waitTimeMap using the question's timeEntered to choose the slot (America/New_York)
+    // This is a non-blocking side effect - errors are caught and logged but don't affect the main operation
+    if (waitTimeChange !== 0) {
+        // Fire-and-forget: run waitTimeMap update in background, don't block session update
+        // eslint-disable-next-line no-void
+        void (async () => {
+            try {
+                const tz = 'America/New_York';
+                const sessionSnap = await db.doc(`sessions/${sessionId}`).get();
+                const sessionForCourse = sessionSnap.data() as FireSession;
+                if (!sessionForCourse) {
+                    functions.logger.warn('onQuestionUpdate: Session not found for waitTimeMap update', { sessionId });
+                    return;
+                }
+                const courseId = sessionForCourse.courseId;
+
+                // Choose the student's entry time for slotting; fall back to previous if undefined
+                const entryTs = (newQuestion.timeEntered ?? prevQuestion.timeEntered);
+                if (entryTs) {
+                    const entryDate = entryTs.toDate();
+                    const m = moment.tz(entryDate, tz);
+                    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    const weekday = dayNames[(m.day() + 6) % 7];
+                    const minute = Math.floor(m.minute() / 30) * 30;
+                    const slot = m.clone().minute(minute).second(0).millisecond(0);
+                    const timeSlotStr = slot.format('h:mm A');
+
+                    // Load course waitTimeMap
+                    const courseRef = db.doc(`courses/${courseId}`);
+                    const courseDoc = await courseRef.get();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const courseData = courseDoc.data() as any;
+                    const waitTimeMap = courseData?.waitTimeMap || {};
+                    if (!waitTimeMap[weekday]) waitTimeMap[weekday] = {};
+
+                    const prevSec: number = waitTimeMap[weekday][timeSlotStr] || 0;
+                    const deltaSec = Math.abs(waitTimeChange); // ensure positive contribution
+                    const newAvg = prevSec === 0 ? deltaSec : Math.round(prevSec * 0.8 + deltaSec * 0.2);
+                    waitTimeMap[weekday][timeSlotStr] = newAvg;
+
+                    await courseRef.update({ waitTimeMap });
+                    functions.logger.info(
+                        `✓ Updated waitTimeMap via onQuestionUpdate: ${weekday} ${timeSlotStr} = ${deltaSec}s, ` +
+                        `new avg = ${waitTimeMap[weekday][timeSlotStr]}s`
+                    );
+                }
+            } catch (err) {
+                functions.logger.error('Error updating waitTimeMap from onQuestionUpdate', err as Error);
+            }
+        })();
+    }
+
+    // Return the session update promise to match original behavior and ensure proper error handling
+    return sessionUpdatePromise;
+});
+
+exports.onQuestionStatusUpdate = functions.firestore
+    .document("questions/{questionId}")
+    .onUpdate(async (change, context) => {
+        const newQuestion = change.after.data();
+        const prevQuestion = change.before.data();
+        const questionId = context.params.questionId;
+
+        if (prevQuestion.status !== "resolved" && newQuestion.status === "resolved") {
+            const userId = newQuestion.askerId;
+
+            // Retrieve the user document reference
+            const userDoc = db.doc(`users/${userId}`);
+
+            // Update the resolvedQuestionsArray field in the user document if it exists
+            return userDoc.update({
+                // Keeps track of the most recent question that was resolved
+                // Object with questionId and askerId fields
+                // questionId: the id of the question that was resolved
+                // askerId: the id of the user who asked the question
+                recentlyResolvedQuestion: {
+                    questionId,
+                    askerId: userId,
+                },
+            });
+        }
+        // If the question is not resolved yet, then we do nothing
+        return null;
+    });
+
+exports.onStudentJoinSession = functions.firestore
+    .document("sessions/{sessionId}")
+    .onUpdate(async (change, context) => {
+        const beforeData = change.before.data();
+        const afterData = change.after.data();
+        const sessionId = context.params.sessionId;
+
+        const beforeStudents = beforeData.totalQuestions - beforeData.resolvedQuestions;
+        const afterStudents = afterData.totalQuestions - afterData.resolvedQuestions;
+
+        const beforeTAs = beforeData.tas.length;
+        const afterTAs = afterData.tas.length;
+
+        // If number of students in queue and number of TAs in session have not changed, do nothing
+        // Exit early
+        if (beforeStudents === afterStudents && beforeTAs === afterTAs) {
+            return null;
         }
 
-        // Update relevant statistics in database
-        return db.doc(`sessions/${sessionId}`).update({
-            totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
-            assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
-            resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
-            totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
-            totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
+        // Get the session reference
+        const sessionRef = db.doc(`sessions/${sessionId}`);
+
+        // Get the number of TAs in the session
+        const numberOfTAs = afterData.tas.length;
+
+        // If no TAs, set ratio to -1 to indicate that there are no TAs
+        // Since there are no TAs, we don't have enough information to determine the ratio
+        // If there are still unresolved questions, set hasUnresolvedQuestion to true
+        // Otherwise, set it to false
+        if (numberOfTAs === 0) {
+            return db.doc(`sessions/${sessionId}`).update({
+                studentPerTaRatio: -1,
+                hasUnresolvedQuestion: afterStudents > 0,
+            });
+        }
+        const ratio = afterStudents / numberOfTAs;
+
+        // Update when the ratio has changed
+        // If there are still unresolved questions, set hasUnresolvedQuestion to true
+        // Otherwise, set it to false
+        return sessionRef.update({
+            studentPerTaRatio: ratio,
+            hasUnresolvedQuestion: afterStudents > 0,
         });
     });
 
-// exports.onQuestionStatusUpdate = functions.firestore
-//     .document("questions/{questionId}")
-//     .onUpdate(async (change, context) => {
-//         const newQuestion = change.after.data();
-//         const prevQuestion = change.before.data();
-//         const questionId = context.params.questionId;
 
-//         if (prevQuestion.status !== "resolved" && newQuestion.status === "resolved") {
-//             const userId = newQuestion.askerId;
+/** Sends approval/rejection emails using Resend for automatic course creation. 
+ * This is technically a public endpoint, but has Firebase App Check and manual authentication checks.
+* @param  {template: "approved | rejected", course: FireCourse, user: FireUser}
+*/
+exports.sendEmail = onCall(async (request) => {
+    if (!request.auth || !request.auth.token || !request.auth.uid) {
+        functions.logger.error('Unauthenticated user tried sending email');
+        throw new HttpsError('unauthenticated', 'Only authenticated users can send emails.');
+    }
 
-//             // Retrieve the session document reference 
-//             const userDoc = db.doc(`users/${userId}`);
+    // TODO: does this only comes from admins? if so add extra check that request.auth.email is in admins collection
 
-//             // Update the resolvedQuestionsArray field in the user document if it exists
-//             return userDoc.update(
-//                 {
-//                     // Keeps track of the most recent question that was resolved
-//                     // Object with questionId and askerId fields
-//                     // questionId: the id of the question that was resolved
-//                     // askerId: the id of the user who asked the question
-//                     recentlyResolvedQuestion: {
-//                         questionId,
-//                         askerId: userId,
-//                     }
-//                 });
-//         }
-//         // If the question is not resolved yet, then we do nothing
-//         return null;
-//     });
-    
+    if (!request.data.template || !request.data.course || !request.data.user) {
+        functions.logger.error('Not enough information to send email');
+        throw new HttpsError('invalid-argument', 'Template, course, and user must all be passed in.')
+    }
+    // Template passed from the client.
+    const template: string = request.data.template;
+    const course = request.data.course;
+    const user = request.data.user;
+
+    const resendAPI = RESEND_API_KEY.value();
+    const resend = new Resend(resendAPI);
+    const subject = template === "approved" ? 
+        `Queue Me In ${course.code} ${course.semester} Approved`: 
+        `Queue Me In ${course.code} ${course.semester} Rejected`
+    /* eslint-disable max-len */
+    const message =`Hello ${user.firstName + " " + user.lastName},
+    <br>
+    ${template === "approved" ? 
+        "Your new class request on QMI has been approved. " + course.code + " has been added to the current classes for " +course.semester + ".":
+        "Your new class request on QMI has been rejected. "+ course.code + " for " + course.semester + " has been removed from the pending classes. Please email QMI directly for more info."}
+    <br>
+    Best wishes,
+    QMI`
+
+    try {
+        const response = await resend.emails.send({
+            from: 'queuemein@cornelldti.org',
+            to: [user.email],
+            subject,
+            html: message,
+        });
+        functions.logger.log(`Sent email to ${user.email}`)
+        return { success: true, emailId: response.data?.id };
+    } catch (error) {
+        functions.logger.error("Error sending email:", error);
+        throw new HttpsError('internal', 'Failed to send email', error);
+    }
+
+
+
+});
+
+/**
+ * Scheduled firebase function that runs once a week in each semester.
+ * Generates topics in "Preparation" tab of TA Dashboard for all courses in current semester. 
+ */
+exports.weeklyTopicsGenerator = onSchedule( { 
+    schedule: "0 2 * 1-5,8-12 0", 
+    timeZone: "America/New_York",
+    memory: "1GiB" }, async () => {
+    functions.logger.log('Weekly topics generator ran');
+    await tf.setBackend('cpu');
+    await tf.ready();
+    functions.logger.log('tf backend ready');
+    // Fetch all active courses
+    const coursesSnapshot = await db
+        .collection("courses")
+        .where("semester", "==", "FA25")
+        .get();
+
+    if (coursesSnapshot.empty) {
+        functions.logger.log("No active courses found.");
+        return;
+    }
+
+    for (const course of coursesSnapshot.docs) {
+        try {
+            // eslint-disable-next-line no-await-in-loop
+            await generateStudentTrends(course.id);
+        } catch (err) {
+            functions.logger.warn(`Failed trends for course ${course.id}`);
+        }
+    }
+   
+}
+);

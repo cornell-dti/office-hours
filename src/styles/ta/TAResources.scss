@@ -1,0 +1,33 @@
+.ta-resources-container{
+    width: 1180px;
+    background-color: #FFF;
+    border-radius: 12px;
+    padding-left: 32px;
+    padding-top: 36px;
+    padding-bottom: 24px;
+    .ta-resources-header{
+        width: 133px;
+        color: #484848;
+        font-family: Roboto;
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+    }
+}
+
+.files{
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.files-loading,
+.files-empty {
+    color: #484848;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    margin-top: 16px;
+}
