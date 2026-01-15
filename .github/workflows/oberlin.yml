@@ -14,7 +14,11 @@ jobs:
         with:
           node-version: "^20.19.0"
       - name: Install
-        run: yarn install
+        run: |
+          yarn install
+          cd functions
+          yarn install
+          cd ..
       - name: Build Client
         env: 
           REACT_APP_API_KEY: ${{ secrets.REACT_APP_OBERLIN_KEY }}
