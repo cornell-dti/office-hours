@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 import { docData } from 'rxfire/firestore';
 import { switchMap} from 'rxjs/operators';
@@ -90,6 +90,11 @@ export const useBatchQueryWithLoading = <T, P = string>(
     return result;
 };
 
+/**
+ * This function retrieves the sessions for a given course during a given week.
+ * @param courseId: courseId of the course to retrieve sessions for
+ * @param selectedWeekEpoch: the start of the week to retrieve session for
+ */
 export const useProfessorViewSessions = (
     courseId: string,
     selectedWeekEpoch: number
@@ -227,6 +232,11 @@ const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData(collection(firestore,'courses') , {idField: 'courseId'}) as Observable<FireCourse[]>)
 );
 
+const allPendingCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
+    switchMap(() => collectionData(collection(firestore,'pendingCourses') ,
+        {idField: 'courseId'}) as Observable<FireCourse[]>)
+);
+
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
     const questionsRef = collection(firestore, 'questions');
     return query(questionsRef, where('sessionId', '==', sessionId), where('askerId', '==', askerId));
@@ -245,6 +255,11 @@ const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObse
 
 export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
+
+const allPendingCoursesSingletonObservable = new SingletonObservable([], allPendingCoursesObservable);
+
+export const useAllPendingCourses: () => readonly FireCourse[] =
+    createUseSingletonObservableHook(allPendingCoursesSingletonObservable);
 
 export const useMyCourses = (): readonly FireCourse[] => {
     const allCourses = useAllCourses();

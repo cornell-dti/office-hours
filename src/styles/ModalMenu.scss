@@ -35,3 +35,13 @@
 .logoutMenu li {
   padding-left: 80px;
 }
+
+@media only screen and (max-width: $mobile-breakpoint) {
+  .logoutMenu {
+    li {
+      height: 65px;
+      padding-top: 22px !important;
+
+    }
+  }
+}

@@ -1,0 +1,221 @@
+.profTopBar {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
+.TAView {
+    padding-bottom: 50px;
+
+    .UploadPopUpMessageWrap {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+    .UploadPopUpMessage {
+        background-color: #E4EFFF;
+        color: #7C8FBA;
+        font-size: 15px;
+        font-weight: 500;
+        height: 75px;
+        width: 90%;
+        padding: 12px;
+        margin: 21px;
+        margin-bottom: 0;
+        width: 60%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 30px;
+
+
+        #MessageCloseIcon {
+            float: right;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        p {
+            margin: 0;
+            text-align: left;
+            justify-self: flex-start;
+        }
+    }
+
+    input:not(.DateInput_input) {
+        border:none;
+        background-color: #edeff2;
+        height: 25px;
+        padding-left: 10px;
+
+        .ProfessorOHInfo {
+        margin: 0px 20px;
+        }
+    }
+
+    Button:not(.react-datepicker__navigation) {
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        color: #a0a0a0;
+        outline: none;
+        user-select: none;
+    }
+    .CalendarSessionCard .cal-btn {
+        color: white;
+    }
+
+    .main {
+        margin-right: 50px;
+        margin-left: 200px+50px;
+
+        .CalendarWeekSelect {
+            margin: 5px 0;
+            background-color: transparent;
+            border-top: none;
+        }
+
+        .SelectCategory {
+            padding-top: 200px;
+            font-family: Roboto;
+            font-size: 28px;
+            font-weight: 300;
+            color: $text-grey;
+        }
+
+        Button#profSettings {
+            float: right;
+            font-size: 14px;
+            color: black;
+            margin-top: 30px;
+            padding: 15px 0px;
+        }
+
+        .importProfs {
+            font-family: Roboto;
+            font-weight: 500;
+            font-size: 30px;
+            color: #474747;
+            margin: 1em 0em 30px 20px;
+            text-align: left;
+        }
+
+        .rightHeading {
+            margin-right: 10%;
+            text-align: left;
+    
+            .manageRoles {
+                font-family: Roboto;
+                font-weight: 500;
+                font-size: 30px;
+                margin-top: 1em;
+                margin-bottom: 0;
+                color: #474747;
+            }
+        
+            Button#importProf {
+                margin-top: 1em;
+                font-family: Roboto;
+                color: #474747;
+                background-color: white;
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 18px;
+                font-weight: 500;
+                box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);
+
+                .plus.icon {
+                    margin-right: 10px;
+                    color: #474747;
+                }
+            }
+    
+        }
+    }
+
+    // Dropdown CSS
+    .ui.selection.dropdown {
+        width: 40%;
+        margin-right: 20px;
+        background-color: #edeff2;
+        border-radius: 0px;
+        border: none;
+        color: black;
+        padding: 5px 10px;
+        min-height: 25px;
+    }
+
+    .ui.selection.dropdown>.dropdown.icon{
+        padding: 4px 10px;
+    }
+
+    .ui.dropdown:not(.button)>.default.text {
+        color: #898989;
+    }
+
+    .ui.selection.active.dropdown .menu {
+        border-color: gainsboro!important;
+        border-radius: 0;
+    }
+
+    // End Dropdown CSS
+
+    .rightOfSidebar {
+        min-width: 820px;
+        align-self: center;
+        padding-top: 50px;
+        background-color: #F5F6F5;
+    }
+
+    // professor student view custom css
+
+    aside.CalendarView {
+        position: fixed;
+        top: 50px;
+        bottom: 0;
+        left: 200px;
+        width: 390px;
+        box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+        overflow-y: scroll;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        user-select: none;
+        @media (max-width: $mobile-breakpoint){
+            width: -webkit-fill-available;
+            top: 105px;
+        }
+    }
+
+    section.StudentSessionView {
+        position: fixed;
+        top: 50px;
+        bottom: 0;
+        right: 0;
+        left: 590px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        @media (max-width: $mobile-breakpoint){
+            left: 200px;
+            top: 105px;
+            width: -webkit-fill-available;
+        }
+    }
+
+    .leave-queue-background {
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Roboto";
+        font-weight: 400;
+        background-color: rgba(112, 112, 112,0.8);
+        animation: fade 0.6s;
+    }
+
+}

@@ -3,6 +3,8 @@ import 'firebase/compat/firestore';
 import firebase from "firebase/compat/app";
 import { getAuth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, Timestamp } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
 import { authState } from 'rxfire/auth';
 import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
@@ -25,13 +27,15 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
         authDomain: 'qmi-test.firebaseapp.com',
         databaseURL: 'https://qmi-test.firebaseio.com',
         projectId: 'qmi-test',
-        storageBucket: 'qmi-test.appspot.com',
+        storageBucket: 'qmi-test.firebasestorage.app',
         messagingSenderId: '349252319671',
     };
 }
 
 const app = firebase.initializeApp(firebaseConfig);
 firebase.firestore(app); // Initialize firestore
+
+const functions = getFunctions(app);
 
 const firestore = getFirestore(app);
 
@@ -40,6 +44,7 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 const loggedIn$ = authState(auth).pipe(filter((user) => !!user));
 
@@ -47,7 +52,9 @@ export {
     app,
     auth,
     firestore,
+    storage,
     collectionData,
     loggedIn$,
-    Timestamp
+    Timestamp,
+    functions
 };

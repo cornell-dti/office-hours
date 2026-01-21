@@ -75,12 +75,26 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorRoles";
 @import "./professor/ExportCSVModal";
 
+//TA
+@import "./ta/TASidebar.scss";
+@import "./ta/TAView.scss";
+@import "./ta/TAStudentTrends.scss";
+@import "./ta/TAQuery.scss";
+@import "./ta/TAResources.scss";
+@import "./ta/TAResourceFile.scss";
+@import "./ta/TAAnalyticsView.scss";
+@import "./ta/StudentReviewCard.scss";
+@import "./ta/StudentReviewPanel.scss";
+@import "./ta/ReusableBarGraph.scss";
+@import "./ta/TAMetrics.scss";
+
 // Admin
 @import "./AdminView";
 
 // Courses
 @import "./courses/CourseCard";
 @import "./courses/CourseSelection";
+@import "./courses/CourseCreatePopup.scss";
 
 // Blog Posts
 @import "./blogPosts/AddBlogPost.scss";

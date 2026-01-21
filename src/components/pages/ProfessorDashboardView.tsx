@@ -130,7 +130,10 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                                     <p className="totalQuestions"> {currentCategory.totalQuestions} </p>
                                     <p className="totalQuestionsLabel"> questions total </p>
                                     <hr />
-                                    <p className="percentResolved"> {currentCategory.percentResolved}% </p>
+                                    <p className="percentResolved"> {Number.isInteger(currentCategory.percentResolved)
+                                        ? currentCategory.percentResolved: 
+                                        currentCategory.percentResolved.toFixed(2)}% 
+                                    </p>
                                     <p className="percentResolvedLabel"> answered </p>
                                 </div>
                                 <TagsBarChart

@@ -128,6 +128,7 @@ const TopBarNotifications = (
             </div>
             <div
                 className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
+                style={{backgroundColor: "#ffffff"}}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Additional notification when countdownZero is true */}
