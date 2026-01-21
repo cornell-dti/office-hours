@@ -14,9 +14,10 @@
     width: 100%;
     top: 30px;
     bottom: 30px;
-    padding-bottom: 5px;
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-top: 32px;
+    padding-bottom: 4px;
+    // padding-right: 32px;
+    // padding-left: 32px;
     margin-bottom: 40px;
     
 
@@ -28,8 +29,6 @@
       margin: 0;
       padding: 0;
       width: 100%;
-      
-      
     }
 
     .queueHeader {
@@ -50,7 +49,7 @@
         font-family: Roboto;
         font-style: normal;
         font-weight: 500;
-        font-size: 22px;
+        font-size: 24px;
         color: #484848;
       }
 
@@ -75,9 +74,37 @@
         clear:both;
       }
 
+      .topRow{
+        position: relative;
+        width: 100%;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        &.error{
+          animation: errorFadeIn 0.5s forwards;
+        }
+        &.clearError{
+          animation: errorFadeOut 0.5s forwards;
+        }
+      }
+
+      .disclaimerContainer{
+        position: absolute;
+        right: 32px; 
+        top: 24px; 
+        width: 100%;
+        font-family: Roboto;
+        font-weight: 500;
+        font-size: 9.87px;
+        line-height: 11.56px;
+        letter-spacing: 0%;
+        text-align: right;
+        &.text{
+          color: #F67D7D;
+        }
+      }
+
       .tagsMiniContainer {
-        padding: 10px 32px;
-        padding: 10px 32px;
+        padding: 10px 64px;
         clear: both;
         width: 100%;
         display:inline-block;
@@ -90,13 +117,23 @@
           text-align: left;
           margin-bottom:0.5em;
         }
+        &.error{
+          animation: errorFadeIn 0.5s forwards;
+        }
+        &.clearError{
+          animation: errorFadeOut 1s forwards;
+        }
+
+        .category{
+          padding-top: 12px;
+        }
 
         .header {
           height: 17px;
           font-family: Roboto;
           font-style: normal;
           font-weight: 500;
-          font-size: 14.625px;
+          font-size: 14px;
           line-height: 17px;
           color: #696969;
           margin-bottom: 14px;
@@ -114,7 +151,7 @@
           font-family: Roboto;
           font-style: normal;
           font-weight: 300;
-          font-size: 12.675px;
+          font-size: 12px;
           color: #BBBBBB;
         }
 
@@ -127,7 +164,7 @@
             font-weight: normal;
             border: 0px;
             color: $text-grey;
-            font-size:15px;
+            font-size:12px;
             padding: 8px;
             border-radius: 3.3px;
             resize: none;
@@ -146,7 +183,7 @@
               font-family: Roboto;
               font-style: normal;
               font-weight: 300;
-              font-size: 12.675px;
+              font-size: 12px;
               color: #BBBBBB;
             }
         }
@@ -168,6 +205,12 @@
             width: 100%;
         }
       }
+    }
+    .required{
+      color: #F67D7D;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 16.41px;
     }
 
     .locationInput {
@@ -194,6 +237,7 @@
       padding-bottom: 20px;
       border-bottom-right-radius: 8px;
       border-bottom-left-radius: 8px;
+      padding-top: 40px;
       display: flex;
       justify-content: center;
       
@@ -227,4 +271,18 @@
   .placeHolder {
     display: inline;
   }
+}
+
+@keyframes errorFadeIn {
+  0%{
+    background-color: rgba(246, 125, 125, 0);  }
+  100%{
+    background-color: rgba(246, 125, 125, 0.15);  }
+}
+
+@keyframes errorFadeOut {
+  0%{
+    background-color: rgba(246, 125, 125, 0.15);  }
+  100%{
+    background-color: rgba(246, 125, 125, 0);  }
 }

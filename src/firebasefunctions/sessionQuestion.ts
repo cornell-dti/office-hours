@@ -22,6 +22,7 @@ export const updateVirtualLocation = (
 export const addQuestion = (
     user: User | null,
     session: FireSession,
+    course: FireCourse,
     db: firebase.firestore.Firestore,
     location: string,
     selectedPrimary: FireTag | undefined,
@@ -39,34 +40,33 @@ export const addQuestion = (
             timeEntered: firebase.firestore.Timestamp.now()
         };
 
-        const addVirtual = session.modality === 'hybrid' ?
-            { isVirtual } : {};
+        const addVirtual = session.modality === "hybrid" ? { isVirtual } : {};
 
         const finalLocation = location.length === 0 ? {} : { location };
-        const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {}
+        const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {};
 
-        const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
+        const newQuestion: Omit<FireOHQuestion, "questionId"> = {
             ...newQuestionSlot,
             ...finalLocation,
             ...upvotedUsers,
             ...addVirtual,
-            answererId: '',
+            answererId: "",
+            courseId:course.courseId,
             content: question,
-            primaryTag: selectedPrimary != null ? selectedPrimary.tagId : '',
-            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : '',
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId : "",
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : "",
             wasNotified: false,
             position: session.totalQuestions - session.assignedQuestions + 1,
-
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);
         batch.commit();
 
-        return true
+        return true;
     }
 
-    return false
-}
+    return false;
+};
 
 export const markStudentNoShow = (
     db: firebase.firestore.Firestore,
@@ -93,8 +93,7 @@ export const markQuestionDone = (
     batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
-
+};
 
 export const markQuestionDontKnow = (
     db: firebase.firestore.Firestore,
@@ -106,8 +105,7 @@ export const markQuestionDontKnow = (
     batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
-
+};
 
 export const retractStudentQuestion = (
     db: firebase.firestore.Firestore,
@@ -119,8 +117,7 @@ export const retractStudentQuestion = (
     batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
-
+};
 
 export const updateComment = (
     db: firebase.firestore.Firestore,
@@ -153,7 +150,7 @@ export const assignQuestionToTA = (
     const batch = db.batch();
     const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
     const questionUpdate: Partial<FireOHQuestion> = {
-        status: 'assigned',
+        status: "assigned",
         answererId: myUserId,
         timeAssigned: firebase.firestore.Timestamp.now(),
         ...(virtualLocation ? { answererLocation: virtualLocation } : {})
@@ -161,7 +158,7 @@ export const assignQuestionToTA = (
     batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
+};
 
 export const removeQuestionbyID = (
     db: firebase.firestore.Firestore,
@@ -175,14 +172,13 @@ export const removeQuestionbyID = (
         batch.update(db.doc(`questions/${removeQuestionId}`), questionUpdate);
         batch.commit();
     }
-}
+};
 
 export const updateQuestion = (
     db: firebase.firestore.Firestore,
     virtualLocation: string,
     questions: readonly FireQuestion[],
     user: FireUser
-
 ) => {
     const batch = db.batch();
 
@@ -194,7 +190,7 @@ export const updateQuestion = (
     });
 
     batch.commit();
-}
+};
 
 export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean,
     askerId: string, answererId: string) => {
@@ -213,21 +209,21 @@ export const addComment = (content: string, commenterId: string, questionId: str
     const batch = firestore.batch();
     batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId), newComment);
     batch.commit();
-}
+};
 
 export const deleteComment = (commentId: string, questionId: string) => {
     const batch = firestore.batch();
     const delCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
     batch.delete(delCommentRef);
     batch.commit();
-}
+};
 
 export const updateCurrentComment = (commentId: string, questionId: string, newContent: string) => {
     const batch = firestore.batch();
     const curCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
     batch.update(curCommentRef, { content: newContent });
     batch.commit();
-}
+};
 
 export const getComments = (questionId: string, setComments: ((comments: FireComment[]) => void)): (() => void) => {
     const unsubscribe = firestore.doc(`questions/${questionId}`).collection('comments').onSnapshot((commentData) => {
@@ -238,29 +234,56 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
         setComments(comments);
     });
     return unsubscribe;
-}
+};
 
-export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
-    (rating?: number, feedback?: string) => {
-        
-        const feedbackRecord = {
-            session,
-            questionId: removedQuestionId,
-            rating,
-            writtenFeedback: feedback,
+/* Adds three new ratings (organization, efficiency, overallExperience) 
+to the firebase under the users tab for each question asked. Also adds a verification field
+to determine whether or not a review was checked. */
+export const submitFeedback =
+    (removedQuestionId: string | undefined, sessionId: string) =>
+        async (
+            rating1?: number,
+            rating2?: number,
+            rating3?: number,
+            feedback?: string,
+        ) => {
+
+            if (!removedQuestionId) {
+                return;
+            }
+
+            try {
+                const questionRef = firestore.collection("questions").doc(removedQuestionId);
+                const questionDoc = await questionRef.get();
+
+                if (!questionDoc.exists) {
+                    return;
+                }
+
+                const taID = questionDoc.data()?.answererId || undefined;
+                const timeStamp = questionDoc.data()?.timeAddressed || undefined;
+
+                if (!taID) {
+                    return;
+                }
+
+                const feedbackRecord = {
+                    organization: rating1,
+                    efficiency: rating2,
+                    overallExperience: rating3,
+                    timeStamp,
+                    writtenFeedback: feedback,
+                    session: sessionId
+                };
+
+                const batch = firestore.batch();
+                batch.set(firestore.doc(`users/${taID}`).collection('feedback').doc(), feedbackRecord);
+                await batch.commit();
+
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log("Error adding feedback")
+                // eslint-disable-next-line no-console
+                console.log(error);
+            }
         };
-        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
-        courseRef.get().then((doc) => {
-            if (doc.exists) {
-                const existingFeedbackList = doc.data()?.feedbackList || [];
-            
-                existingFeedbackList.push(feedbackRecord);
-
-                return courseRef.update({
-                    feedbackList: existingFeedbackList
-                })
-            } 
-            return Promise.resolve();
-        })
-    
-    };
