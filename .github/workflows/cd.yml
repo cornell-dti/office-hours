@@ -14,11 +14,7 @@ jobs:
         with:
           node-version: "^20.19.0"
       - name: Install
-        run: |
-          yarn install
-          cd functions
-          yarn install
-          cd ..
+        run: yarn install
       - name: Build Client
         env:
           REACT_APP_API_KEY: ${{ secrets.REACT_TEST_API_KEY }}
