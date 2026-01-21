@@ -1231,7 +1231,7 @@ exports.weeklyTopicsGenerator = onSchedule( {
     // Fetch all active courses
     const coursesSnapshot = await db
         .collection("courses")
-        .where("semester", "==", "FA    25")
+        .where("semester", "==", "FA25")
         .get();
 
     if (coursesSnapshot.empty) {
