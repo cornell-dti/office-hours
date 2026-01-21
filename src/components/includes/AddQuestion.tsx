@@ -257,7 +257,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
             setMissingQuestion(!question);
         }
 
-        if (activeTags.length == 0) {
+        if (activeTags.length === 0) {
             setMissingPrimaryTags(false);
             setMissingSecondaryTags(false);
         }
