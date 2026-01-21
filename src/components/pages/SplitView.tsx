@@ -184,7 +184,9 @@ const SplitView = ({
 
             // Cleanup function to clear the timeout if the component unmounts early
             return () => clearTimeout(timer);
-        }, [showFeedbackPopup]);
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [showFeedbackPopup]);
         
         return (
             <div className="feedbackPopup">

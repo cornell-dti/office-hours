@@ -261,7 +261,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
             setMissingPrimaryTags(false);
             setMissingSecondaryTags(false);
         }
-    }, [selectedPrimary, selectedSecondary, location, locationMissing, question, attemptedSubmit]);
+    }, [selectedPrimary, selectedSecondary, location, locationMissing, question, 
+        attemptedSubmit, activeTags.length]);
 
 
     const handleJoinClick = (): void => {
