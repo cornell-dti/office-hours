@@ -3,7 +3,7 @@ import * as functions from "firebase-functions/v1";
 // eslint-disable-next-line import/no-unresolved
 import { onSchedule } from "firebase-functions/v2/scheduler";
 // eslint-disable-next-line import/no-unresolved
-import vertexAI from '@genkit-ai/google-genai';
+import { vertexAI } from '@genkit-ai/google-genai';
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import * as tf from "@tensorflow/tfjs";
 import kmeans, { KMeans } from "kmeans-ts";
