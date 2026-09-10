@@ -13,7 +13,7 @@ import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
 import moment from "moment-timezone";
 // eslint-disable-next-line import/no-unresolved
-import {genkit, z} from "genkit";
+import {genkit, z} from "@genkit-ai/genkit";
 // eslint-disable-next-line import/no-unresolved
 import { defineString } from "firebase-functions/params";
 import { createHash } from "crypto";
