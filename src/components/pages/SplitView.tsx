@@ -184,7 +184,7 @@ const SplitView = ({
 
             // Cleanup function to clear the timeout if the component unmounts early
             return () => clearTimeout(timer);
-        }, [showFeedbackPopup]);
+        }, []);
         
         return (
             <div className="feedbackPopup">
