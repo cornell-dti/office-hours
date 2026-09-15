@@ -1,4 +1,4 @@
-export const CURRENT_SEMESTER = 'SP26';
+export const CURRENT_SEMESTER = 'FA26';
 export const ALL_SEMESTERS = ['SP20', 'FA20', 'SP21', 'FA21', 'SP22', 'FA22',
     'SP23', 'FA23', 'SP24', 'FA24', 'SP25', 'FA25', 'SP26', 'FA26']
 
